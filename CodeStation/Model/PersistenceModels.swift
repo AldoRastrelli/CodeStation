@@ -6,6 +6,7 @@ struct StoreSnapshot: Codable {
     var fontSize: Double
     var notificationSettings: NotificationSettings?
     var promptButtons: [PromptButton]?
+    var skipCloseConfirmation: Bool?
 }
 
 struct EnvironmentSnapshot: Codable {

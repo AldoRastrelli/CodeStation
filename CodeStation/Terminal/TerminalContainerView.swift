@@ -9,18 +9,35 @@ struct TerminalContainerView: View {
     }
 
     let viewModel: TerminalSessionViewModel
+    var terminalNumber: Int?
     var onClose: () -> Void
     var onAddPromptButton: ((PromptButton) -> Void)?
+    var onUpdatePromptButton: ((PromptButton) -> Void)?
+    var onDeletePromptButton: ((UUID) -> Void)?
+    var onFocus: (() -> Void)?
+    var skipCloseConfirmation: Bool = false
+    var onSkipCloseConfirmationChanged: ((Bool) -> Void)?
 
     @State private var isHovered = false
     @State private var showCloseConfirmation = false
+    @State private var dontShowAgain = false
 
     var body: some View {
         VStack(spacing: 0) {
             TerminalHeaderView(
                 viewModel: viewModel,
-                onClose: { showCloseConfirmation = true },
-                onAddPromptButton: onAddPromptButton
+                terminalNumber: terminalNumber,
+                onClose: {
+
+                    if skipCloseConfirmation {
+                        onClose()
+                    } else {
+                        showCloseConfirmation = true
+                    }
+                },
+                onAddPromptButton: onAddPromptButton,
+                onUpdatePromptButton: onUpdatePromptButton,
+                onDeletePromptButton: onDeletePromptButton
             )
 
             Divider()
@@ -36,12 +53,42 @@ struct TerminalContainerView: View {
         .onHover { hovering in
             isHovered = hovering
         }
-        .alert(Strings.Terminals.closeTerminalTitle, isPresented: $showCloseConfirmation) {
-            Button(Strings.Terminals.cancel, role: .cancel) {}
-            Button(Strings.Terminals.close, role: .destructive, action: onClose)
-                .keyboardShortcut(.defaultAction)
-        } message: {
-            Text(Strings.Terminals.closeConfirmation(viewModel.session.title))
+        .onTapGesture {
+            onFocus?()
+        }
+        .sheet(isPresented: $showCloseConfirmation) {
+            VStack(spacing: 16) {
+                Text(Strings.Terminals.closeTerminalTitle)
+                    .font(.headline)
+
+                Text(Strings.Terminals.closeConfirmation(viewModel.session.title))
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+
+                Toggle(Strings.Terminals.dontShowAgain, isOn: $dontShowAgain)
+                    .toggleStyle(.checkbox)
+
+                HStack {
+                    Button(Strings.Terminals.cancel) {
+                        showCloseConfirmation = false
+                    }
+                    .keyboardShortcut(.cancelAction)
+
+                    Button(Strings.Terminals.close) {
+                        if dontShowAgain {
+                            onSkipCloseConfirmationChanged?(true)
+                        }
+                        showCloseConfirmation = false
+                        onClose()
+                    }
+                    .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.red)
+                }
+            }
+            .padding(24)
+            .frame(width: 340)
         }
     }
 }
