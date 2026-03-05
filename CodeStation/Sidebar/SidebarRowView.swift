@@ -42,13 +42,15 @@ struct SidebarRowView: View {
 
             Spacer()
 
+            let hasNotification = viewModel.boardViewModel(for: environment).hasUnseenNotification
             Text("\(viewModel.boardViewModel(for: environment).sessions.count)")
                 .font(.system(size: Constants.countFontSize))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(hasNotification ? .white : .secondary)
                 .padding(.horizontal, Constants.countHPadding)
                 .padding(.vertical, Constants.countVPadding)
-                .background(Color.secondary.opacity(Constants.countBgOpacity))
+                .background(hasNotification ? Color.red : Color.secondary.opacity(Constants.countBgOpacity))
                 .clipShape(Capsule())
+                .animation(.easeInOut(duration: 0.3), value: hasNotification)
         }
         .contentShape(Rectangle())
         .contextMenu {

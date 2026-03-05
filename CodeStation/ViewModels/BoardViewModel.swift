@@ -30,6 +30,7 @@ class BoardViewModel {
     var focusedSessionID: UUID?
     var getSkipCloseConfirmation: (() -> Bool)?
     var onSkipCloseConfirmationChanged: ((Bool) -> Void)?
+    var hasUnseenNotification: Bool = false
 
     var canAddSession: Bool {
         sessions.count < Constants.maxSessions
@@ -154,6 +155,9 @@ class BoardViewModel {
         vm.getPromptButtons = getPromptButtons
         vm.onStateChanged = { [weak self] in
             self?.onStateChanged?()
+        }
+        vm.onNotificationFired = { [weak self] in
+            self?.hasUnseenNotification = true
         }
         sessionViewModels[session.id] = vm
         return vm

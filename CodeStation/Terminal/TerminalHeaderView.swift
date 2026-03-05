@@ -45,71 +45,36 @@ struct TerminalHeaderView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Row 1: icon, title, description, status, close
-            HStack(spacing: Constants.hStackSpacing) {
-                Text(viewModel.session.status.emoji)
-                    .font(.system(size: Constants.statusEmojiSize))
+            // Uses ViewThatFits to switch between full and compact layouts
+            ViewThatFits(in: .horizontal) {
+                // Full mode: all elements
+                HStack(spacing: Constants.hStackSpacing) {
+                    statusEmoji
+                    titleView
+                    descriptionView
 
-                if isEditingTitle {
-                    TextField(Strings.Terminals.titlePlaceholder, text: $viewModel.session.title)
-                        .textFieldStyle(.plain)
-                        .font(.system(size: Constants.titleFontSize, weight: .semibold))
-                        .focused($titleFocused)
-                        .onSubmit {
-                            isEditingTitle = false
-                            viewModel.session.isUserEditedTitle = true
-                        }
-                        .onAppear { titleFocused = true }
-                        .frame(maxWidth: Constants.titleMaxWidth)
-                } else {
-                    Text(viewModel.session.title)
-                        .font(.system(size: Constants.titleFontSize, weight: .semibold))
-                        .lineLimit(1)
-                        .onTapGesture(count: 2) { isEditingTitle = true }
+                    Spacer()
+
+                    shortcutBadge
+                    statusCapsule
+                    closeButton
                 }
+                .padding(.horizontal, Constants.horizontalPadding)
+                .padding(.vertical, Constants.verticalPadding)
 
-                if isEditingDescription {
-                    TextField(Strings.Terminals.descriptionPlaceholder, text: $viewModel.session.sessionDescription)
-                        .textFieldStyle(.plain)
-                        .font(.system(size: Constants.descriptionFontSize))
-                        .foregroundStyle(.secondary)
-                        .focused($descriptionFocused)
-                        .onSubmit { isEditingDescription = false }
-                        .onAppear { descriptionFocused = true }
-                        .frame(maxWidth: Constants.descriptionMaxWidth)
-                } else {
-                    Text(viewModel.session.sessionDescription.isEmpty ? Strings.Terminals.descriptionPlaceholder : viewModel.session.sessionDescription)
-                        .font(.system(size: Constants.descriptionFontSize))
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .onTapGesture(count: 2) { isEditingDescription = true }
+                // Compact mode: no description, no status capsule
+                HStack(spacing: Constants.hStackSpacing) {
+                    statusEmoji
+                    titleView
+
+                    Spacer()
+
+                    shortcutBadge
+                    closeButton
                 }
-
-                Spacer()
-
-                if let number = terminalNumber {
-                    Text("⌘\(number)")
-                        .font(.system(size: Constants.badgeFontSize, weight: .bold))
-                        .foregroundStyle(.tertiary)
-                }
-
-                Text(viewModel.session.status.label)
-                    .font(.system(size: Constants.badgeFontSize, weight: .medium))
-                    .padding(.horizontal, Constants.badgeHPadding)
-                    .padding(.vertical, Constants.badgeVPadding)
-                    .background(statusColor.opacity(Constants.badgeBgOpacity))
-                    .foregroundStyle(statusColor)
-                    .clipShape(Capsule())
-
-                Button(action: onClose) {
-                    Image(systemName: Strings.Icons.xmark)
-                        .font(.system(size: Constants.closeButtonSize, weight: .bold))
-                        .foregroundStyle(.secondary)
-                }
-                .buttonStyle(.plain)
-                .help(Strings.Terminals.closeTerminal)
+                .padding(.horizontal, Constants.horizontalPadding)
+                .padding(.vertical, Constants.verticalPadding)
             }
-            .padding(.horizontal, Constants.horizontalPadding)
-            .padding(.vertical, Constants.verticalPadding)
 
             // Row 2: chevron + "Buttons" label (always visible)
             HStack(spacing: 4) {
@@ -144,6 +109,83 @@ struct TerminalHeaderView: View {
         .popover(isPresented: $showingEditPrompt) {
             editPromptPopover
         }
+    }
+
+    // MARK: - Header subviews
+
+    private var statusEmoji: some View {
+        Text(viewModel.session.status.emoji)
+            .font(.system(size: Constants.statusEmojiSize))
+    }
+
+    @ViewBuilder
+    private var titleView: some View {
+        if isEditingTitle {
+            TextField(Strings.Terminals.titlePlaceholder, text: $viewModel.session.title)
+                .textFieldStyle(.plain)
+                .font(.system(size: Constants.titleFontSize, weight: .semibold))
+                .focused($titleFocused)
+                .onSubmit {
+                    isEditingTitle = false
+                    viewModel.session.isUserEditedTitle = true
+                }
+                .onAppear { titleFocused = true }
+                .frame(maxWidth: Constants.titleMaxWidth)
+        } else {
+            Text(viewModel.session.title)
+                .font(.system(size: Constants.titleFontSize, weight: .semibold))
+                .lineLimit(1)
+                .onTapGesture(count: 2) { isEditingTitle = true }
+        }
+    }
+
+    @ViewBuilder
+    private var descriptionView: some View {
+        if isEditingDescription {
+            TextField(Strings.Terminals.descriptionPlaceholder, text: $viewModel.session.sessionDescription)
+                .textFieldStyle(.plain)
+                .font(.system(size: Constants.descriptionFontSize))
+                .foregroundStyle(.secondary)
+                .focused($descriptionFocused)
+                .onSubmit { isEditingDescription = false }
+                .onAppear { descriptionFocused = true }
+                .frame(maxWidth: Constants.descriptionMaxWidth)
+        } else {
+            Text(viewModel.session.sessionDescription.isEmpty ? Strings.Terminals.descriptionPlaceholder : viewModel.session.sessionDescription)
+                .font(.system(size: Constants.descriptionFontSize))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .onTapGesture(count: 2) { isEditingDescription = true }
+        }
+    }
+
+    @ViewBuilder
+    private var shortcutBadge: some View {
+        if let number = terminalNumber {
+            Text("⌘\(number)")
+                .font(.system(size: Constants.badgeFontSize, weight: .bold))
+                .foregroundStyle(.tertiary)
+        }
+    }
+
+    private var statusCapsule: some View {
+        Text(viewModel.session.status.label)
+            .font(.system(size: Constants.badgeFontSize, weight: .medium))
+            .padding(.horizontal, Constants.badgeHPadding)
+            .padding(.vertical, Constants.badgeVPadding)
+            .background(statusColor.opacity(Constants.badgeBgOpacity))
+            .foregroundStyle(statusColor)
+            .clipShape(Capsule())
+    }
+
+    private var closeButton: some View {
+        Button(action: onClose) {
+            Image(systemName: Strings.Icons.xmark)
+                .font(.system(size: Constants.closeButtonSize, weight: .bold))
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+        .help(Strings.Terminals.closeTerminal)
     }
 
     private var isCollapsed: Bool {

@@ -68,7 +68,8 @@ struct TerminalGridView: View {
                         onDragChanged: { offset in
                             resizeColumns(draggingAfter: index, cumulativeOffset: offset, totalWidth: availableWidth, count: count)
                         },
-                        onDragEnded: { endColumnResize() }
+                        onDragEnded: { endColumnResize() },
+                        onDoubleClick: { resetColumnProportions(count: count) }
                     )
                     .frame(width: Constants.dividerThickness)
                 }
@@ -93,7 +94,8 @@ struct TerminalGridView: View {
                 onDragChanged: { offset in
                     resizeRows(cumulativeOffset: offset, totalHeight: availableHeight)
                 },
-                onDragEnded: { endRowResize() }
+                onDragEnded: { endRowResize() },
+                onDoubleClick: { resetRowProportion() }
             )
             .frame(height: Constants.dividerThickness)
 
@@ -120,7 +122,8 @@ struct TerminalGridView: View {
                         onDragChanged: { offset in
                             resizeColumns(draggingAfter: col, cumulativeOffset: offset, totalWidth: availableWidth, count: cols)
                         },
-                        onDragEnded: { endColumnResize() }
+                        onDragEnded: { endColumnResize() },
+                        onDoubleClick: { resetColumnProportions(count: cols) }
                     )
                     .frame(width: Constants.dividerThickness)
                 }
@@ -219,6 +222,19 @@ struct TerminalGridView: View {
         dragStartRowProportion = nil
     }
 
+    private func resetColumnProportions(count: Int) {
+        let equal = 1.0 / CGFloat(count)
+        var props = viewModel.columnProportions
+        for i in 0..<count where i < props.count {
+            props[i] = equal
+        }
+        viewModel.columnProportions = props
+    }
+
+    private func resetRowProportion() {
+        viewModel.rowProportion = 0.5
+    }
+
     // MARK: - Edge Add Button
 
     private var edgeAddButton: some View {
@@ -263,11 +279,13 @@ struct VerticalDividerHandle: View {
     var onDragStart: () -> Void
     var onDragChanged: (CGFloat) -> Void
     var onDragEnded: () -> Void
+    var onDoubleClick: (() -> Void)?
 
     private enum Constants {
         static let hoverOpacity: Double = 0.5
         static let normalOpacity: Double = 0.2
         static let minDragDistance: CGFloat = 1
+        static let resetAnimationDuration: Double = 0.25
     }
 
     @State private var isHovered = false
@@ -284,6 +302,11 @@ struct VerticalDividerHandle: View {
                     NSCursor.resizeLeftRight.push()
                 } else {
                     NSCursor.pop()
+                }
+            }
+            .onTapGesture(count: 2) {
+                withAnimation(.easeInOut(duration: Constants.resetAnimationDuration)) {
+                    onDoubleClick?()
                 }
             }
             .gesture(
@@ -307,11 +330,13 @@ struct HorizontalDividerHandle: View {
     var onDragStart: () -> Void
     var onDragChanged: (CGFloat) -> Void
     var onDragEnded: () -> Void
+    var onDoubleClick: (() -> Void)?
 
     private enum Constants {
         static let hoverOpacity: Double = 0.5
         static let normalOpacity: Double = 0.2
         static let minDragDistance: CGFloat = 1
+        static let resetAnimationDuration: Double = 0.25
     }
 
     @State private var isHovered = false
@@ -328,6 +353,11 @@ struct HorizontalDividerHandle: View {
                     NSCursor.resizeUpDown.push()
                 } else {
                     NSCursor.pop()
+                }
+            }
+            .onTapGesture(count: 2) {
+                withAnimation(.easeInOut(duration: Constants.resetAnimationDuration)) {
+                    onDoubleClick?()
                 }
             }
             .gesture(

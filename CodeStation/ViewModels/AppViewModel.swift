@@ -335,6 +335,7 @@ class AppViewModel {
         // Pre-create board VMs with pending restores
         for envSnapshot in snapshot.environments {
             let vm = BoardViewModel()
+            vm.environmentID = envSnapshot.id
             vm.getNotificationSettings = { [weak self] in self?.notificationSettings }
             vm.getPromptButtons = { [weak self] in self?.promptButtons ?? [] }
             vm.onAddPromptButton = { [weak self] button in

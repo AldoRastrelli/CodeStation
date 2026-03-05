@@ -11,6 +11,7 @@ class TerminalSessionViewModel {
     var session: TerminalSession
     var terminalView: LocalProcessTerminalView?
     var onStateChanged: (() -> Void)?
+    var onNotificationFired: (() -> Void)?
     var environmentID: UUID?
     var getNotificationSettings: (() -> NotificationSettings?)?
     var getPromptButtons: (() -> [PromptButton])?
@@ -37,7 +38,6 @@ class TerminalSessionViewModel {
             if let lastTs = lastProcessedTimestamp, lastTs == state.timestamp {
                 let elapsed = Date().timeIntervalSince(state.timestamp)
                 if session.status == .ready && elapsed > Constants.idleTimeoutSeconds {
-                    print("[Hook] \(session.title): idle timeout, \(session.status.label) -> Asleep")
                     session.status = .asleep
                 }
                 return
@@ -56,12 +56,8 @@ class TerminalSessionViewModel {
 
             checkAndFireNotification(oldStatus: oldStatus, newStatus: session.status)
 
-            print("[Hook] \(session.title): event=\"\(state.event)\" \(oldStatus.label) -> \(session.status.label) (age: \(String(format: "%.1f", elapsed))s)")
         } else if hasReceivedHookEvent {
             if let lastEvent = session.lastHookEventTime, Date().timeIntervalSince(lastEvent) > Constants.idleTimeoutSeconds {
-                if session.status != .asleep {
-                    print("[Hook] \(session.title): no recent events, \(session.status.label) -> Asleep")
-                }
                 session.status = .asleep
             }
         }
@@ -109,8 +105,12 @@ class TerminalSessionViewModel {
     }
 
     private func checkAndFireNotification(oldStatus: SessionStatus, newStatus: SessionStatus) {
-        guard let settings = getNotificationSettings?(), (settings.enabled || settings.soundEnabled) else { return }
         guard oldStatus == .cooking else { return }
+        guard newStatus == .ready || newStatus == .waiting else { return }
+
+        onNotificationFired?()
+
+        guard let settings = getNotificationSettings?(), (settings.enabled || settings.soundEnabled) else { return }
         guard let envID = environmentID else { return }
 
         if newStatus == .ready && settings.notifyWhenDone {

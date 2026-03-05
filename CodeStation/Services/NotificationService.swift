@@ -6,21 +6,19 @@ enum NotificationService {
     static let categoryIdentifier = "statusChange"
 
     static func requestPermission() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
-            if let error = error {
-                print("[Notifications] Permission error: \(error.localizedDescription)")
-            } else {
-                print("[Notifications] Permission granted: \(granted)")
-            }
-        }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 
     static func send(title: String, body: String, environmentID: UUID, sessionID: UUID, settings: NotificationSettings) {
+        // Always play sound independently — UNNotification sound is blocked when permissions are denied
+        if settings.soundEnabled {
+            playSound(named: settings.soundName)
+        }
+
         if settings.enabled {
             let content = UNMutableNotificationContent()
             content.title = title
             content.body = body
-            content.sound = settings.soundEnabled ? UNNotificationSound(named: UNNotificationSoundName(rawValue: settings.soundName + ".aiff")) : nil
             content.categoryIdentifier = categoryIdentifier
             content.userInfo = [
                 "environmentID": environmentID.uuidString,
@@ -33,13 +31,7 @@ enum NotificationService {
                 trigger: nil
             )
 
-            UNUserNotificationCenter.current().add(request) { error in
-                if let error = error {
-                    print("[Notifications] Send error: \(error.localizedDescription)")
-                }
-            }
-        } else if settings.soundEnabled {
-            playSound(named: settings.soundName)
+            UNUserNotificationCenter.current().add(request)
         }
     }
 
