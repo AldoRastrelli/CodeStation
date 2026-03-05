@@ -143,6 +143,8 @@ struct TerminalGridView: View {
                 terminalNumber: (sortedIndex ?? 0) + 1,
                 onClose: { viewModel.removeSession(session) },
                 onAddPromptButton: viewModel.onAddPromptButton,
+                onUpdatePromptButton: viewModel.onUpdatePromptButton,
+                onDeletePromptButton: viewModel.onDeletePromptButton,
                 onFocus: { viewModel.focusedSessionID = session.id },
                 skipCloseConfirmation: viewModel.getSkipCloseConfirmation?() ?? false,
                 onSkipCloseConfirmationChanged: viewModel.onSkipCloseConfirmationChanged

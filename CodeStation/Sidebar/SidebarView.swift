@@ -18,11 +18,6 @@ struct SidebarView: View {
             }
         }
         .listStyle(.sidebar)
-        .onChange(of: viewModel.selectedEnvironmentID) { _, newID in
-            if let id = newID {
-                viewModel.boardViewModels[id]?.hasUnseenNotification = false
-            }
-        }
         .safeAreaInset(edge: .bottom) {
             HStack {
                 Button {

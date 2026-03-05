@@ -43,14 +43,22 @@ struct SidebarRowView: View {
             Spacer()
 
             let hasNotification = viewModel.boardViewModel(for: environment).hasUnseenNotification
-            Text("\(viewModel.boardViewModel(for: environment).sessions.count)")
-                .font(.system(size: Constants.countFontSize))
-                .foregroundStyle(hasNotification ? .white : .secondary)
-                .padding(.horizontal, Constants.countHPadding)
-                .padding(.vertical, Constants.countVPadding)
-                .background(hasNotification ? Color.red : Color.secondary.opacity(Constants.countBgOpacity))
-                .clipShape(Capsule())
-                .animation(.easeInOut(duration: 0.3), value: hasNotification)
+            HStack(spacing: 4) {
+                if hasNotification {
+                    Image(systemName: "bell.fill")
+                        .font(.system(size: Constants.countFontSize))
+                        .foregroundStyle(.red)
+                        .transition(.scale.combined(with: .opacity))
+                }
+                Text("\(viewModel.boardViewModel(for: environment).sessions.count)")
+                    .font(.system(size: Constants.countFontSize))
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, Constants.countHPadding)
+                    .padding(.vertical, Constants.countVPadding)
+                    .background(Color.secondary.opacity(Constants.countBgOpacity))
+                    .clipShape(Capsule())
+            }
+            .animation(.easeInOut(duration: 0.3), value: hasNotification)
         }
         .contentShape(Rectangle())
         .contextMenu {

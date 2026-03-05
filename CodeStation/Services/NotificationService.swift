@@ -15,7 +15,7 @@ enum NotificationService {
             playSound(named: settings.soundName)
         }
 
-        if settings.enabled {
+        if settings.enabled && !NSApp.isActive {
             let content = UNMutableNotificationContent()
             content.title = title
             content.body = body

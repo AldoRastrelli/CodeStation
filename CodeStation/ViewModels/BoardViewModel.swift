@@ -27,10 +27,20 @@ class BoardViewModel {
     var onAddPromptButton: ((PromptButton) -> Void)?
     var onUpdatePromptButton: ((PromptButton) -> Void)?
     var onDeletePromptButton: ((UUID) -> Void)?
-    var focusedSessionID: UUID?
+    var focusedSessionID: UUID? {
+        didSet {
+            if let id = focusedSessionID {
+                unseenNotificationSessionIDs.remove(id)
+            }
+        }
+    }
     var getSkipCloseConfirmation: (() -> Bool)?
     var onSkipCloseConfirmationChanged: ((Bool) -> Void)?
-    var hasUnseenNotification: Bool = false
+    var unseenNotificationSessionIDs: Set<UUID> = []
+
+    var hasUnseenNotification: Bool {
+        !unseenNotificationSessionIDs.isEmpty
+    }
 
     var canAddSession: Bool {
         sessions.count < Constants.maxSessions
@@ -85,6 +95,7 @@ class BoardViewModel {
 
         viewModel(for: session).cleanup()
         sessionViewModels.removeValue(forKey: session.id)
+        unseenNotificationSessionIDs.remove(session.id)
         sessions.removeAll { $0.id == session.id }
         onStateChanged?()
 
@@ -157,7 +168,7 @@ class BoardViewModel {
             self?.onStateChanged?()
         }
         vm.onNotificationFired = { [weak self] in
-            self?.hasUnseenNotification = true
+            self?.unseenNotificationSessionIDs.insert(session.id)
         }
         sessionViewModels[session.id] = vm
         return vm
