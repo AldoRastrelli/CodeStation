@@ -15,7 +15,10 @@ class AppViewModel {
     var selectedEnvironmentID: UUID?
     var notificationSettings = NotificationSettings()
     var promptButtons: [PromptButton] = []
+    var skipCloseConfirmation: Bool = false
     var pendingSessionID: UUID?
+    var closeTerminalRequested = false
+    var isModalOpen = false
 
     static let defaultFontSize: CGFloat = Constants.defaultFontSize
     static let minFontSize: CGFloat = Constants.minFontSize
@@ -145,11 +148,118 @@ class AppViewModel {
             self?.promptButtons.append(button)
             self?.scheduleSave()
         }
+        vm.onUpdatePromptButton = { [weak self] updated in
+            guard let self else { return }
+            if let index = self.promptButtons.firstIndex(where: { $0.id == updated.id }) {
+                self.promptButtons[index] = updated
+                self.scheduleSave()
+            }
+        }
+        vm.onDeletePromptButton = { [weak self] id in
+            self?.promptButtons.removeAll { $0.id == id }
+            self?.scheduleSave()
+        }
         vm.onStateChanged = { [weak self] in
+            self?.scheduleSave()
+        }
+        vm.getSkipCloseConfirmation = { [weak self] in self?.skipCloseConfirmation ?? false }
+        vm.onSkipCloseConfirmationChanged = { [weak self] skip in
+            self?.skipCloseConfirmation = skip
             self?.scheduleSave()
         }
         boardViewModels[env.id] = vm
         return vm
+    }
+
+    // MARK: - Terminal Commands
+
+    func addTerminalOrEnvironment() {
+        guard let envID = selectedEnvironmentID,
+              let boardVM = boardViewModels[envID] else { return }
+        if boardVM.canAddSession {
+            let session = boardVM.addSession()
+            if let session {
+                boardVM.focusedSessionID = session.id
+            }
+        } else {
+            // Max terminals reached — create new environment
+            let currentEnv = environments.first { $0.id == envID }
+            let baseName = currentEnv?.name ?? "Environment"
+            let newEnv = addEnvironment(name: baseName + ".2")
+            let newBoardVM = boardViewModel(for: newEnv)
+            let session = newBoardVM.addSession()
+            if let session {
+                newBoardVM.focusedSessionID = session.id
+            }
+        }
+    }
+
+    func focusEnvironmentUp() {
+        let sorted = sortedEnvironments
+        guard !sorted.isEmpty else { return }
+        let currentIndex = sorted.firstIndex(where: { $0.id == selectedEnvironmentID }) ?? 0
+        let targetIndex = currentIndex == 0 ? sorted.count - 1 : currentIndex - 1
+        selectedEnvironmentID = sorted[targetIndex].id
+    }
+
+    func focusEnvironmentDown() {
+        let sorted = sortedEnvironments
+        guard !sorted.isEmpty else { return }
+        let currentIndex = sorted.firstIndex(where: { $0.id == selectedEnvironmentID }) ?? 0
+        let targetIndex = currentIndex == sorted.count - 1 ? 0 : currentIndex + 1
+        selectedEnvironmentID = sorted[targetIndex].id
+    }
+
+    func focusTerminalLeft() {
+        guard let envID = selectedEnvironmentID,
+              let boardVM = boardViewModels[envID] else { return }
+        let sorted = boardVM.sessions.sorted { $0.gridIndex < $1.gridIndex }
+        guard !sorted.isEmpty else { return }
+        let currentIndex = sorted.firstIndex(where: { $0.id == boardVM.focusedSessionID }) ?? 0
+        let targetIndex = currentIndex == 0 ? sorted.count - 1 : currentIndex - 1
+        let target = sorted[targetIndex]
+        boardVM.focusedSessionID = target.id
+        boardVM.viewModel(for: target).makeFocused()
+    }
+
+    func focusTerminalRight() {
+        guard let envID = selectedEnvironmentID,
+              let boardVM = boardViewModels[envID] else { return }
+        let sorted = boardVM.sessions.sorted { $0.gridIndex < $1.gridIndex }
+        guard !sorted.isEmpty else { return }
+        let currentIndex = sorted.firstIndex(where: { $0.id == boardVM.focusedSessionID }) ?? 0
+        let targetIndex = currentIndex == sorted.count - 1 ? 0 : currentIndex + 1
+        let target = sorted[targetIndex]
+        boardVM.focusedSessionID = target.id
+        boardVM.viewModel(for: target).makeFocused()
+    }
+
+    func focusTerminal(at gridIndex: Int) {
+        guard let envID = selectedEnvironmentID,
+              let boardVM = boardViewModels[envID] else { return }
+        let sorted = boardVM.sessions.sorted { $0.gridIndex < $1.gridIndex }
+        guard gridIndex < sorted.count else { return }
+        let session = sorted[gridIndex]
+        boardVM.focusedSessionID = session.id
+        boardVM.viewModel(for: session).makeFocused()
+    }
+
+    // MARK: - Close Focused Terminal
+
+    var focusedTerminalTitle: String? {
+        guard let envID = selectedEnvironmentID,
+              let boardVM = boardViewModels[envID],
+              let sessionID = boardVM.focusedSessionID,
+              let session = boardVM.sessions.first(where: { $0.id == sessionID }) else { return nil }
+        return session.title
+    }
+
+    func closeFocusedTerminal() {
+        guard let envID = selectedEnvironmentID,
+              let boardVM = boardViewModels[envID],
+              let sessionID = boardVM.focusedSessionID,
+              let session = boardVM.sessions.first(where: { $0.id == sessionID }) else { return }
+        boardVM.removeSession(session)
     }
 
     // MARK: - Navigation
@@ -198,7 +308,8 @@ class AppViewModel {
             selectedEnvironmentID: selectedEnvironmentID,
             fontSize: Double(fontSize),
             notificationSettings: notificationSettings,
-            promptButtons: promptButtons
+            promptButtons: promptButtons,
+            skipCloseConfirmation: skipCloseConfirmation
         )
 
         PersistenceService.save(snapshot: snapshot)
@@ -217,6 +328,9 @@ class AppViewModel {
         if let buttons = snapshot.promptButtons {
             promptButtons = buttons
         }
+        if let skip = snapshot.skipCloseConfirmation {
+            skipCloseConfirmation = skip
+        }
 
         // Pre-create board VMs with pending restores
         for envSnapshot in snapshot.environments {
@@ -227,7 +341,23 @@ class AppViewModel {
                 self?.promptButtons.append(button)
                 self?.scheduleSave()
             }
+            vm.onUpdatePromptButton = { [weak self] updated in
+                guard let self else { return }
+                if let index = self.promptButtons.firstIndex(where: { $0.id == updated.id }) {
+                    self.promptButtons[index] = updated
+                    self.scheduleSave()
+                }
+            }
+            vm.onDeletePromptButton = { [weak self] id in
+                self?.promptButtons.removeAll { $0.id == id }
+                self?.scheduleSave()
+            }
             vm.onStateChanged = { [weak self] in
+                self?.scheduleSave()
+            }
+            vm.getSkipCloseConfirmation = { [weak self] in self?.skipCloseConfirmation ?? false }
+            vm.onSkipCloseConfirmationChanged = { [weak self] skip in
+                self?.skipCloseConfirmation = skip
                 self?.scheduleSave()
             }
             vm.columnProportions = envSnapshot.columnProportions.map { CGFloat($0) }
