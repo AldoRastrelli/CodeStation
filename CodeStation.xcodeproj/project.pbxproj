@@ -34,6 +34,7 @@
 		A10035 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10035; };
 		A10036 /* SettingsPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10036; };
 		A10037 /* PromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10037; };
+		A10038 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10038; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -63,6 +64,7 @@
 		B10035 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		B10036 /* SettingsPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPopoverView.swift; sourceTree = "<group>"; };
 		B10037 /* PromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptButton.swift; sourceTree = "<group>"; };
+		B10038 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
 		C10001 /* CodeStation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodeStation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -170,6 +172,7 @@
 				B10011 /* ShellUtils.swift */,
 				B10013 /* HookManager.swift */,
 				B10021 /* Strings.swift */,
+				B10038 /* SettingsWindowController.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -299,6 +302,7 @@
 				A10035 /* NotificationService.swift in Sources */,
 				A10036 /* SettingsPopoverView.swift in Sources */,
 				A10037 /* PromptButton.swift in Sources */,
+				A10038 /* SettingsWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -3,6 +3,7 @@ import SwiftUI
 enum SettingsTab: String, CaseIterable, Identifiable {
     case notifications
     case customPrompts
+    case keyboardShortcuts
 
     var id: String { rawValue }
 
@@ -10,6 +11,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .notifications: return Strings.Notifications.sectionTitle
         case .customPrompts: return Strings.CustomPrompts.sectionTitle
+        case .keyboardShortcuts: return Strings.Settings.keyboardShortcuts
         }
     }
 
@@ -17,6 +19,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .notifications: return "bell.badge"
         case .customPrompts: return "text.bubble"
+        case .keyboardShortcuts: return "keyboard"
         }
     }
 }
@@ -31,7 +34,6 @@ struct SettingsWindowView: View {
     }
 
     @Bindable var viewModel: AppViewModel
-    @SwiftUI.Environment(\.dismiss) private var dismiss
     @State private var selectedTab: SettingsTab = .notifications
     @State private var selectedButtonIDs: Set<UUID> = []
     @State private var isAddingNew = false
@@ -62,21 +64,13 @@ struct SettingsWindowView: View {
                     } else {
                         customPromptsPane
                     }
+                case .keyboardShortcuts:
+                    keyboardShortcutsPane
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(minWidth: Constants.sidebarWidth + Constants.contentMinWidth, minHeight: Constants.windowHeight)
-        .overlay(alignment: .topTrailing) {
-            Button(action: { dismiss() }) {
-                Image(systemName: Strings.Icons.xmark)
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(.secondary)
-                    .padding(6)
-            }
-            .buttonStyle(.plain)
-            .padding(8)
-        }
         .onChange(of: viewModel.notificationSettings) {
             viewModel.scheduleSave()
         }
@@ -416,6 +410,59 @@ struct SettingsWindowView: View {
         guard !trimmed.isEmpty else { return false }
         return viewModel.promptButtons.contains { button in
             button.id != id && button.title.trimmingCharacters(in: .whitespaces).lowercased() == trimmed.lowercased()
+        }
+    }
+
+    // MARK: - Keyboard Shortcuts
+
+    private var keyboardShortcutsPane: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                shortcutSection("Terminals", shortcuts: [
+                    ("⌘ N", "New terminal (or new environment if environment is full)"),
+                    ("⌘ W", "Close focused terminal"),
+                    ("⌘ 1–8", "Focus terminal by number"),
+                    ("⇧⌘ ←", "Focus previous terminal"),
+                    ("⇧⌘ →", "Focus next terminal"),
+                ])
+
+                shortcutSection("Environments", shortcuts: [
+                    ("⇧⌘ ↑", "Previous environment"),
+                    ("⇧⌘ ↓", "Next environment"),
+                ])
+
+                shortcutSection("View", shortcuts: [
+                    ("⌘ +", "Zoom in"),
+                    ("⌘ −", "Zoom out"),
+                    ("⌘ 0", "Reset zoom"),
+                ])
+
+                shortcutSection("General", shortcuts: [
+                    ("⌘ T", "New terminal (same as ⌘ N)"),
+                ])
+            }
+            .padding(Constants.contentPadding)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private func shortcutSection(_ title: String, shortcuts: [(String, String)]) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.headline)
+
+            ForEach(shortcuts, id: \.0) { shortcut in
+                HStack {
+                    Text(shortcut.0)
+                        .font(.system(size: 12, weight: .semibold, design: .monospaced))
+                        .frame(width: 80, alignment: .trailing)
+                        .foregroundStyle(.primary)
+
+                    Text(shortcut.1)
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
     }
 
