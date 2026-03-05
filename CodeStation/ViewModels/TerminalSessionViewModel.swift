@@ -14,7 +14,7 @@ class TerminalSessionViewModel {
     var environmentID: UUID?
     var getNotificationSettings: (() -> NotificationSettings?)?
     var getPromptButtons: (() -> [PromptButton])?
-    var promptButtonsCollapsed: Bool = false
+    var promptButtonsCollapsed: Bool = true
 
     private var hookMonitorTimer: Timer?
     private var hasReceivedHookEvent = false
@@ -88,6 +88,11 @@ class TerminalSessionViewModel {
 
     func sendPrompt(_ text: String) {
         terminalView?.send(txt: text + "\n")
+    }
+
+    func makeFocused() {
+        guard let tv = terminalView, let window = tv.window else { return }
+        window.makeFirstResponder(tv)
     }
 
     func updateDirectory(_ path: String) {
