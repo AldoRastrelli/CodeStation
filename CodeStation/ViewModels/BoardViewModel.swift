@@ -25,6 +25,11 @@ class BoardViewModel {
     var getNotificationSettings: (() -> NotificationSettings?)?
     var getPromptButtons: (() -> [PromptButton])?
     var onAddPromptButton: ((PromptButton) -> Void)?
+    var onUpdatePromptButton: ((PromptButton) -> Void)?
+    var onDeletePromptButton: ((UUID) -> Void)?
+    var focusedSessionID: UUID?
+    var getSkipCloseConfirmation: (() -> Bool)?
+    var onSkipCloseConfirmationChanged: ((Bool) -> Void)?
 
     var canAddSession: Bool {
         sessions.count < Constants.maxSessions
@@ -74,10 +79,25 @@ class BoardViewModel {
     }
 
     func removeSession(_ session: TerminalSession) {
+        let sorted = sessions.sorted { $0.gridIndex < $1.gridIndex }
+        let sortedIndex = sorted.firstIndex(where: { $0.id == session.id })
+
         viewModel(for: session).cleanup()
         sessionViewModels.removeValue(forKey: session.id)
         sessions.removeAll { $0.id == session.id }
         onStateChanged?()
+
+        // Focus previous terminal
+        let remaining = sessions.sorted { $0.gridIndex < $1.gridIndex }
+        if !remaining.isEmpty {
+            let targetIndex = max(0, (sortedIndex ?? 1) - 1)
+            let clamped = min(targetIndex, remaining.count - 1)
+            let target = remaining[clamped]
+            focusedSessionID = target.id
+            viewModel(for: target).makeFocused()
+        } else {
+            focusedSessionID = nil
+        }
     }
 
     @discardableResult
@@ -88,6 +108,26 @@ class BoardViewModel {
         sessions.append(session)
         onStateChanged?()
         return session
+    }
+
+    // MARK: - Drag & Drop
+
+    func moveSession(sourceID: UUID, toGridIndex target: Int) -> Bool {
+        guard let session = sessions.first(where: { $0.id == sourceID }) else { return false }
+        session.gridIndex = target
+        onStateChanged?()
+        return true
+    }
+
+    func swapSessions(sourceID: UUID, targetGridIndex: Int) -> Bool {
+        guard let source = sessions.first(where: { $0.id == sourceID }),
+              let target = sessions.first(where: { $0.gridIndex == targetGridIndex }),
+              source.id != target.id else { return false }
+        let sourceIndex = source.gridIndex
+        source.gridIndex = target.gridIndex
+        target.gridIndex = sourceIndex
+        onStateChanged?()
+        return true
     }
 
     // MARK: - Grid
