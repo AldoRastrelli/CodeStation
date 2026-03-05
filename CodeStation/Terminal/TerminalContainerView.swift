@@ -15,6 +15,7 @@ struct TerminalContainerView: View {
     var onUpdatePromptButton: ((PromptButton) -> Void)?
     var onDeletePromptButton: ((UUID) -> Void)?
     var onFocus: (() -> Void)?
+    var dragID: String?
     var skipCloseConfirmation: Bool = false
     var onSkipCloseConfirmationChanged: ((Bool) -> Void)?
 
@@ -24,21 +25,7 @@ struct TerminalContainerView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TerminalHeaderView(
-                viewModel: viewModel,
-                terminalNumber: terminalNumber,
-                onClose: {
-
-                    if skipCloseConfirmation {
-                        onClose()
-                    } else {
-                        showCloseConfirmation = true
-                    }
-                },
-                onAddPromptButton: onAddPromptButton,
-                onUpdatePromptButton: onUpdatePromptButton,
-                onDeletePromptButton: onDeletePromptButton
-            )
+            headerView
 
             Divider()
 
@@ -89,6 +76,30 @@ struct TerminalContainerView: View {
             }
             .padding(24)
             .frame(width: 340)
+        }
+    }
+
+    @ViewBuilder
+    private var headerView: some View {
+        let header = TerminalHeaderView(
+            viewModel: viewModel,
+            terminalNumber: terminalNumber,
+            onClose: {
+                if skipCloseConfirmation {
+                    onClose()
+                } else {
+                    showCloseConfirmation = true
+                }
+            },
+            onAddPromptButton: onAddPromptButton,
+            onUpdatePromptButton: onUpdatePromptButton,
+            onDeletePromptButton: onDeletePromptButton
+        )
+
+        if let dragID {
+            header.draggable(dragID)
+        } else {
+            header
         }
     }
 }

@@ -146,10 +146,10 @@ struct TerminalGridView: View {
                 onUpdatePromptButton: viewModel.onUpdatePromptButton,
                 onDeletePromptButton: viewModel.onDeletePromptButton,
                 onFocus: { viewModel.focusedSessionID = session.id },
+                dragID: session.id.uuidString,
                 skipCloseConfirmation: viewModel.getSkipCloseConfirmation?() ?? false,
                 onSkipCloseConfirmationChanged: viewModel.onSkipCloseConfirmationChanged
             )
-            .draggable(session.id.uuidString)
             .dropDestination(for: String.self) { items, _ in
                 guard let idString = items.first,
                       let sourceID = UUID(uuidString: idString) else { return false }
