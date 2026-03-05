@@ -372,6 +372,9 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSDesktopFolderUsageDescription = "CodeStation needs access to open terminals in your Desktop folder.";
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "CodeStation needs access to open terminals in your Documents folder.";
+				INFOPLIST_KEY_NSDownloadsFolderUsageDescription = "CodeStation needs access to open terminals in your Downloads folder.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -399,6 +402,9 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSDesktopFolderUsageDescription = "CodeStation needs access to open terminals in your Desktop folder.";
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "CodeStation needs access to open terminals in your Documents folder.";
+				INFOPLIST_KEY_NSDownloadsFolderUsageDescription = "CodeStation needs access to open terminals in your Downloads folder.";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
