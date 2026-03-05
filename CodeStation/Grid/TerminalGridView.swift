@@ -51,8 +51,14 @@ struct TerminalGridView: View {
 
                 TerminalContainerView(
                     viewModel: viewModel.viewModel(for: session),
+                    terminalNumber: index + 1,
                     onClose: { viewModel.removeSession(session) },
-                    onAddPromptButton: viewModel.onAddPromptButton
+                    onAddPromptButton: viewModel.onAddPromptButton,
+                    onUpdatePromptButton: viewModel.onUpdatePromptButton,
+                    onDeletePromptButton: viewModel.onDeletePromptButton,
+                    onFocus: { viewModel.focusedSessionID = session.id },
+                    skipCloseConfirmation: viewModel.getSkipCloseConfirmation?() ?? false,
+                    onSkipCloseConfirmationChanged: viewModel.onSkipCloseConfirmationChanged
                 )
                 .frame(width: colWidth)
 
@@ -126,15 +132,32 @@ struct TerminalGridView: View {
 
     @ViewBuilder
     private func cellView(row: Int, col: Int) -> some View {
+        let gridIndex = row * viewModel.gridColumns + col
         if let session = viewModel.sessionAt(row: row, col: col) {
+            let sortedIndex = viewModel.sessions.sorted(by: { $0.gridIndex < $1.gridIndex }).firstIndex(where: { $0.id == session.id })
             TerminalContainerView(
                 viewModel: viewModel.viewModel(for: session),
+                terminalNumber: (sortedIndex ?? 0) + 1,
                 onClose: { viewModel.removeSession(session) },
-                onAddPromptButton: viewModel.onAddPromptButton
+                onAddPromptButton: viewModel.onAddPromptButton,
+                onFocus: { viewModel.focusedSessionID = session.id },
+                skipCloseConfirmation: viewModel.getSkipCloseConfirmation?() ?? false,
+                onSkipCloseConfirmationChanged: viewModel.onSkipCloseConfirmationChanged
             )
+            .draggable(session.id.uuidString)
+            .dropDestination(for: String.self) { items, _ in
+                guard let idString = items.first,
+                      let sourceID = UUID(uuidString: idString) else { return false }
+                return viewModel.swapSessions(sourceID: sourceID, targetGridIndex: gridIndex)
+            }
         } else if viewModel.canAddSession {
             EmptyCellView {
                 _ = viewModel.addSessionAt(row: row, col: col)
+            }
+            .dropDestination(for: String.self) { items, _ in
+                guard let idString = items.first,
+                      let sourceID = UUID(uuidString: idString) else { return false }
+                return viewModel.moveSession(sourceID: sourceID, toGridIndex: gridIndex)
             }
         } else {
             Color.clear
