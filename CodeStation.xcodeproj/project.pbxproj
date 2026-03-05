@@ -1,0 +1,455 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10001 /* CodeStationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001; };
+		A10002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002; };
+		A10003 /* TerminalSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003; };
+		A10004 /* TerminalHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004; };
+		A10005 /* TerminalContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005; };
+		A10006 /* TerminalGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10006; };
+		A10007 /* EmptyCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10007; };
+		A10008 /* TerminalSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008; };
+		A10010 /* SessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010; };
+		A10011 /* ShellUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10011; };
+		A10013 /* HookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10013; };
+		A10012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10012; };
+		A10020 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = D10001; };
+		A10014 /* PersistenceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10014; };
+		A10015 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10015; };
+		A10017 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10017; };
+		A10018 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10018; };
+		A10019 /* SidebarRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10019; };
+		A10021 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10021; };
+		A10030 /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10030; };
+		A10031 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10031; };
+		A10032 /* BoardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10032; };
+		A10033 /* TerminalSessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10033; };
+		A10034 /* NotificationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10034; };
+		A10035 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10035; };
+		A10036 /* SettingsPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10036; };
+		A10037 /* PromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10037; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B10001 /* CodeStationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeStationApp.swift; sourceTree = "<group>"; };
+		B10002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B10003 /* TerminalSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalSessionView.swift; sourceTree = "<group>"; };
+		B10004 /* TerminalHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalHeaderView.swift; sourceTree = "<group>"; };
+		B10005 /* TerminalContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalContainerView.swift; sourceTree = "<group>"; };
+		B10006 /* TerminalGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalGridView.swift; sourceTree = "<group>"; };
+		B10007 /* EmptyCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCellView.swift; sourceTree = "<group>"; };
+		B10008 /* TerminalSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalSession.swift; sourceTree = "<group>"; };
+		B10010 /* SessionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStatus.swift; sourceTree = "<group>"; };
+		B10011 /* ShellUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShellUtils.swift; sourceTree = "<group>"; };
+		B10013 /* HookManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookManager.swift; sourceTree = "<group>"; };
+		B10012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10014 /* PersistenceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceModels.swift; sourceTree = "<group>"; };
+		B10015 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
+		B10017 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
+		B10018 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
+		B10019 /* SidebarRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarRowView.swift; sourceTree = "<group>"; };
+		B10021 /* Strings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Strings.swift; sourceTree = "<group>"; };
+		B10030 /* PersistenceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceService.swift; sourceTree = "<group>"; };
+		B10031 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		B10032 /* BoardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewModel.swift; sourceTree = "<group>"; };
+		B10033 /* TerminalSessionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalSessionViewModel.swift; sourceTree = "<group>"; };
+		B10034 /* NotificationSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettings.swift; sourceTree = "<group>"; };
+		B10035 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		B10036 /* SettingsPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPopoverView.swift; sourceTree = "<group>"; };
+		B10037 /* PromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptButton.swift; sourceTree = "<group>"; };
+		C10001 /* CodeStation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodeStation.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E10001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10020 /* SwiftTerm in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		G10001 /* Root */ = {
+			isa = PBXGroup;
+			children = (
+				G10002 /* CodeStation */,
+				G10008 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		G10002 /* CodeStation */ = {
+			isa = PBXGroup;
+			children = (
+				G10003 /* App */,
+				G10004 /* Terminal */,
+				G10005 /* Grid */,
+				G10006 /* Model */,
+				G10011 /* ViewModels */,
+				G10012 /* Services */,
+				G10010 /* Sidebar */,
+				G10007 /* Utilities */,
+				G10009 /* Resources */,
+			);
+			path = CodeStation;
+			sourceTree = "<group>";
+		};
+		G10003 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B10001 /* CodeStationApp.swift */,
+				B10002 /* ContentView.swift */,
+				B10017 /* BoardView.swift */,
+				B10036 /* SettingsPopoverView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		G10004 /* Terminal */ = {
+			isa = PBXGroup;
+			children = (
+				B10003 /* TerminalSessionView.swift */,
+				B10004 /* TerminalHeaderView.swift */,
+				B10005 /* TerminalContainerView.swift */,
+			);
+			path = Terminal;
+			sourceTree = "<group>";
+		};
+		G10005 /* Grid */ = {
+			isa = PBXGroup;
+			children = (
+				B10006 /* TerminalGridView.swift */,
+				B10007 /* EmptyCellView.swift */,
+			);
+			path = Grid;
+			sourceTree = "<group>";
+		};
+		G10006 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				B10008 /* TerminalSession.swift */,
+				B10010 /* SessionStatus.swift */,
+				B10014 /* PersistenceModels.swift */,
+				B10015 /* Environment.swift */,
+				B10034 /* NotificationSettings.swift */,
+				B10037 /* PromptButton.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		G10011 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				B10031 /* AppViewModel.swift */,
+				B10032 /* BoardViewModel.swift */,
+				B10033 /* TerminalSessionViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		G10012 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10030 /* PersistenceService.swift */,
+				B10035 /* NotificationService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		G10007 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				B10011 /* ShellUtils.swift */,
+				B10013 /* HookManager.swift */,
+				B10021 /* Strings.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		G10010 /* Sidebar */ = {
+			isa = PBXGroup;
+			children = (
+				B10018 /* SidebarView.swift */,
+				B10019 /* SidebarRowView.swift */,
+			);
+			path = Sidebar;
+			sourceTree = "<group>";
+		};
+		G10008 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C10001 /* CodeStation.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		G10009 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B10012 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		T10001 /* CodeStation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = L10002;
+			buildPhases = (
+				S10001 /* Sources */,
+				E10001 /* Frameworks */,
+				R10001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CodeStation;
+			packageProductDependencies = (
+				D10001 /* SwiftTerm */,
+			);
+			productName = CodeStation;
+			productReference = C10001 /* CodeStation.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		P10001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					T10001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = L10001;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = G10001;
+			packageReferences = (
+				PKG10001 /* XCRemoteSwiftPackageReference "SwiftTerm" */,
+			);
+			productRefGroup = G10008 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				T10001 /* CodeStation */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		R10001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10012 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		S10001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001 /* CodeStationApp.swift in Sources */,
+				A10002 /* ContentView.swift in Sources */,
+				A10003 /* TerminalSessionView.swift in Sources */,
+				A10004 /* TerminalHeaderView.swift in Sources */,
+				A10005 /* TerminalContainerView.swift in Sources */,
+				A10006 /* TerminalGridView.swift in Sources */,
+				A10007 /* EmptyCellView.swift in Sources */,
+				A10008 /* TerminalSession.swift in Sources */,
+				A10010 /* SessionStatus.swift in Sources */,
+				A10011 /* ShellUtils.swift in Sources */,
+				A10013 /* HookManager.swift in Sources */,
+				A10014 /* PersistenceModels.swift in Sources */,
+				A10015 /* Environment.swift in Sources */,
+				A10017 /* BoardView.swift in Sources */,
+				A10018 /* SidebarView.swift in Sources */,
+				A10019 /* SidebarRowView.swift in Sources */,
+				A10021 /* Strings.swift in Sources */,
+				A10030 /* PersistenceService.swift in Sources */,
+				A10031 /* AppViewModel.swift in Sources */,
+				A10032 /* BoardViewModel.swift in Sources */,
+				A10033 /* TerminalSessionViewModel.swift in Sources */,
+				A10034 /* NotificationSettings.swift in Sources */,
+				A10035 /* NotificationService.swift in Sources */,
+				A10036 /* SettingsPopoverView.swift in Sources */,
+				A10037 /* PromptButton.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		BC10001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		BC10002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		BC10003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CodeStation/CodeStation.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codestation.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		BC10004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = CodeStation/CodeStation.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "";
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codestation.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		L10001 /* Build configuration list for PBXProject */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC10001 /* Debug */,
+				BC10002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		L10002 /* Build configuration list for PBXNativeTarget */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC10003 /* Debug */,
+				BC10004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		PKG10001 /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D10001 /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = PKG10001;
+			productName = SwiftTerm;
+		};
+/* End XCSwiftPackageProductDependency section */
+
+	};
+	rootObject = P10001 /* Project object */;
+}
