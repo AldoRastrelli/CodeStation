@@ -25,8 +25,11 @@ struct TerminalHeaderView: View {
     }
 
     @Bindable var viewModel: TerminalSessionViewModel
+    var terminalNumber: Int?
     var onClose: () -> Void
     var onAddPromptButton: ((PromptButton) -> Void)?
+    var onUpdatePromptButton: ((PromptButton) -> Void)?
+    var onDeletePromptButton: ((UUID) -> Void)?
 
     @State private var isEditingTitle = false
     @State private var isEditingDescription = false
@@ -34,6 +37,8 @@ struct TerminalHeaderView: View {
     @State private var newPromptTitle = ""
     @State private var newPromptColor = "blue"
     @State private var newPromptText = ""
+    @State private var editingButton: PromptButton?
+    @State private var showingEditPrompt = false
     @FocusState private var titleFocused: Bool
     @FocusState private var descriptionFocused: Bool
 
@@ -80,6 +85,12 @@ struct TerminalHeaderView: View {
                 }
 
                 Spacer()
+
+                if let number = terminalNumber {
+                    Text("⌘\(number)")
+                        .font(.system(size: Constants.badgeFontSize, weight: .bold))
+                        .foregroundStyle(.tertiary)
+                }
 
                 Text(viewModel.session.status.label)
                     .font(.system(size: Constants.badgeFontSize, weight: .medium))
@@ -130,6 +141,9 @@ struct TerminalHeaderView: View {
         .popover(isPresented: $showingAddPrompt) {
             addPromptPopover
         }
+        .popover(isPresented: $showingEditPrompt) {
+            editPromptPopover
+        }
     }
 
     private var isCollapsed: Bool {
@@ -155,6 +169,19 @@ struct TerminalHeaderView: View {
                     }
                     .buttonStyle(.plain)
                     .help(button.prompt)
+                    .contextMenu {
+                        Button(Strings.CustomPrompts.editPrompt) {
+                            editingButton = button
+                            newPromptTitle = button.title
+                            newPromptColor = button.color
+                            newPromptText = button.prompt
+                            showingEditPrompt = true
+                        }
+                        Divider()
+                        Button(Strings.CustomPrompts.deletePrompt, role: .destructive) {
+                            onDeletePromptButton?(button.id)
+                        }
+                    }
                 }
 
                 // Add button
@@ -224,6 +251,74 @@ struct TerminalHeaderView: View {
         }
         .padding()
         .frame(width: 300)
+    }
+
+    private var editPromptPopover: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(Strings.CustomPrompts.editPrompt)
+                .font(.headline)
+
+            TextField(Strings.CustomPrompts.titlePlaceholder, text: $newPromptTitle)
+                .textFieldStyle(.roundedBorder)
+
+            HStack {
+                Text(Strings.CustomPrompts.colorLabel)
+                    .font(.subheadline)
+                Spacer()
+                ForEach(PromptButton.availableColors, id: \.self) { color in
+                    Button(action: { newPromptColor = color }) {
+                        Circle()
+                            .fill(colorForName(color))
+                            .frame(width: 20, height: 20)
+                            .overlay(
+                                Circle()
+                                    .strokeBorder(Color.primary, lineWidth: newPromptColor == color ? 2 : 0)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            TextField(Strings.CustomPrompts.promptPlaceholder, text: $newPromptText, axis: .vertical)
+                .textFieldStyle(.roundedBorder)
+                .lineLimit(3...5)
+
+            HStack {
+                Spacer()
+                Button(Strings.Terminals.cancel) {
+                    showingEditPrompt = false
+                    resetAddForm()
+                }
+                Button(Strings.CustomPrompts.editPrompt) {
+                    if var updated = editingButton {
+                        updated.title = newPromptTitle
+                        updated.color = newPromptColor
+                        updated.prompt = newPromptText
+                        onUpdatePromptButton?(updated)
+                    }
+                    showingEditPrompt = false
+                    resetAddForm()
+                }
+                .disabled(newPromptTitle.isEmpty || newPromptText.isEmpty || isDuplicateTitle(newPromptTitle, excludingID: editingButton?.id))
+                .buttonStyle(.borderedProminent)
+            }
+
+            if isDuplicateTitle(newPromptTitle, excludingID: editingButton?.id) {
+                Text(Strings.CustomPrompts.duplicateName)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+            }
+        }
+        .padding()
+        .frame(width: 300)
+    }
+
+    private func isDuplicateTitle(_ title: String, excludingID: UUID?) -> Bool {
+        let trimmed = title.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return false }
+        return promptButtons.contains {
+            $0.id != excludingID && $0.title.trimmingCharacters(in: .whitespaces).lowercased() == trimmed.lowercased()
+        }
     }
 
     private func isDuplicateTitle(_ title: String) -> Bool {
