@@ -8,59 +8,34 @@ A macOS terminal multiplexer built with **SwiftUI** and **SwiftTerm**.
 
 ## Features
 
-- **Multi-terminal grid layout** — Run multiple terminal sessions side by side in a configurable grid
-- **Environments** — Organize terminals into named environments, each with its own set of sessions
-- **Custom Prompt Buttons** — Create reusable command buttons that appear on each terminal header; tap to instantly send commands
-- **Per-terminal collapse** — Expand or collapse the prompt buttons bar independently on each terminal
-- **Notifications** — Get notified when long-running commands finish or when a terminal is waiting for input
-- **Zoom controls** — Adjust terminal font size globally with keyboard shortcuts
+### Environments
 
-## Getting Started
+Organize your work into separate **environments**, each with its own set of up to **8 terminal sessions** displayed in a grid layout. Switch between environments from the sidebar to keep different projects or workflows isolated.
 
-### Requirements
+### Custom Prompt Buttons
 
-- macOS 14.0 (Sonoma) or later
-- Xcode 15+
+Create reusable command buttons that appear on every terminal header. Define a title, pick a color, and set the prompt text — then tap the button to instantly send that command to the terminal. Buttons are saved across sessions and shared across all terminals. Expand or collapse the buttons bar independently on each terminal.
 
-### Build
+### Smart Notifications
 
-```bash
-xcodebuild -project CodeStation.xcodeproj -scheme CodeStation -configuration Release build
-```
+Stay on top of your AI agents and long-running tasks. CodeStation notifies you when:
 
-### Create DMG
+- A **command finishes** running — no need to keep watching the terminal
+- A terminal is **waiting for input** — know immediately when your AI agent needs assistance
 
-```bash
-xcodebuild -project CodeStation.xcodeproj -scheme CodeStation -configuration Release archive -archivePath build/CodeStation.xcarchive \
-  && xcodebuild -exportArchive -archivePath build/CodeStation.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath build/export \
-  && hdiutil create -volname CodeStation -srcfolder build/export/CodeStation.app -ov -format UDZO build/CodeStation.dmg
-```
+Configure notification sounds and toggle individual notification types from Settings.
 
-## Custom Prompt Buttons
+### Drag & Drop
 
-Create buttons via **Settings > Custom Prompts** or the **+** button on any terminal header. Each button has:
+In grid layout (5+ terminals), drag terminals to rearrange them. Drop a terminal onto an empty slot to move it there, or onto another terminal to swap their positions.
 
-- **Title** — Short label displayed on the button
-- **Color** — Choose from blue, red, green, purple, orange, or pink
-- **Prompt** — The command text sent to the terminal when tapped
+### Keyboard Shortcuts
 
-Buttons are shared across all terminals and persisted between sessions.
-
-## Architecture
-
-```
-CodeStation/
-├── App/                    # App entry point, ContentView, BoardView, Settings
-├── Grid/                   # Terminal grid layout
-├── Model/                  # Data models (Environment, TerminalSession, PromptButton)
-├── Resources/              # Asset catalog (icons, images)
-├── Services/               # Persistence, Notifications
-├── Sidebar/                # Sidebar navigation
-├── Terminal/               # Terminal views and headers
-├── Utilities/              # String constants, shell utilities, hooks
-└── ViewModels/             # MVVM view models
-```
-
-## License
-
-MIT
+| Shortcut | Action |
+|----------|--------|
+| ⌘ N | New terminal (new environment if current is full) |
+| ⌘ W | Close focused terminal |
+| ⌘ 1–8 | Focus terminal by number |
+| ⌘ ← / → | Focus previous / next terminal |
+| ⌘ ↑ / ↓ | Switch to previous / next environment |
+| ⌘ + / − / 0 | Zoom in / out / reset |
