@@ -12,7 +12,7 @@ enum Strings {
 
     // MARK: - Environments
     enum Environments {
-        static let defaultName = "Default"
+        static let defaultName = "Environment"
         static func newName(_ count: Int) -> String { "Environment \(count)" }
         static let noEnvironments = "No environments"
         static let selectEnvironment = "Select an environment"
@@ -35,11 +35,12 @@ enum Strings {
         static let cancel = "Cancel"
         static let close = "Close"
         static func closeConfirmation(_ title: String) -> String {
-            "Are you sure you want to close \"\(title)\"? The running process will be terminated and all history on this terminal will be lost."
+            "Are you sure you want to close \"\(title)\" terminal? The running process will be terminated and all history on this terminal will be lost."
         }
         static let titlePlaceholder = "Title"
         static let descriptionPlaceholder = "Description"
         static let namePlaceholder = "Name"
+        static let dontShowAgain = "Don't show again"
     }
 
     // MARK: - Status
@@ -97,6 +98,7 @@ enum Strings {
         static let windowID = "settings"
         static let notifyWhen = "Notify when"
         static let soundSection = "Sound"
+        static let keyboardShortcuts = "Shortcuts"
     }
 
     // MARK: - Notifications
