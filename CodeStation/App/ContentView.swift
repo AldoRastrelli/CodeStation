@@ -13,7 +13,8 @@ struct ContentView: View {
     }
 
     @Bindable var viewModel: AppViewModel
-    @State private var showSettings = false
+    @State private var showCloseTerminalConfirmation = false
+    @State private var dontShowAgain = false
 
     var body: some View {
         NavigationSplitView {
@@ -49,17 +50,63 @@ struct ContentView: View {
         .toolbar {
             ToolbarItem(placement: .automatic) {
                 Button {
-                    showSettings = true
+                    SettingsWindowController.show(viewModel: viewModel)
                 } label: {
                     Image(systemName: Strings.Icons.gear)
                 }
             }
         }
-        .sheet(isPresented: $showSettings) {
-            SettingsWindowView(viewModel: viewModel)
-                .frame(minWidth: 580, minHeight: 400)
-        }
         .frame(minWidth: Constants.minWindowWidth, minHeight: Constants.minWindowHeight)
+        .onChange(of: showCloseTerminalConfirmation) { _, isOpen in
+            viewModel.isModalOpen = isOpen
+        }
+        .sheet(isPresented: $showCloseTerminalConfirmation) {
+            VStack(spacing: 16) {
+                Text(Strings.Terminals.closeTerminalTitle)
+                    .font(.headline)
+
+                Text(Strings.Terminals.closeConfirmation(viewModel.focusedTerminalTitle ?? ""))
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+
+                Toggle(Strings.Terminals.dontShowAgain, isOn: $dontShowAgain)
+                    .toggleStyle(.checkbox)
+
+                HStack {
+                    Button(Strings.Terminals.cancel) {
+                        showCloseTerminalConfirmation = false
+                    }
+                    .keyboardShortcut(.cancelAction)
+
+                    Button(Strings.Terminals.close) {
+                        if dontShowAgain {
+                            viewModel.skipCloseConfirmation = true
+                            viewModel.scheduleSave()
+                        }
+                        showCloseTerminalConfirmation = false
+                        viewModel.closeFocusedTerminal()
+                    }
+                    .keyboardShortcut(.defaultAction)
+                    .buttonStyle(.borderedProminent)
+                    .tint(.red)
+                }
+            }
+            .padding(24)
+            .frame(width: 340)
+        }
+        .onChange(of: viewModel.closeTerminalRequested) { _, requested in
+            if requested {
+                viewModel.closeTerminalRequested = false
+                if viewModel.focusedTerminalTitle != nil {
+                    if viewModel.skipCloseConfirmation {
+                        viewModel.closeFocusedTerminal()
+                    } else {
+                        showCloseTerminalConfirmation = true
+                    }
+                }
+            }
+        }
         .onAppear {
             try? HookManager.install()
         }
