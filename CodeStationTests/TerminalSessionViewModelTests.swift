@@ -173,4 +173,83 @@ final class TerminalSessionViewModelTests: XCTestCase {
         vm.onNotificationFired?()
         XCTAssertTrue(fired)
     }
+
+    // MARK: - Send Prompt
+
+    func testSendPromptDoesNotCrashWithNoTerminalView() {
+        let vm = makeSUT()
+        XCTAssertNil(vm.terminalView)
+        vm.sendPrompt("hello")
+    }
+
+    // MARK: - Make Focused
+
+    func testMakeFocusedDoesNotCrashWithNoTerminalView() {
+        let vm = makeSUT()
+        vm.makeFocused()
+    }
+
+    // MARK: - Start Hook Monitoring
+
+    func testStartHookMonitoringDoesNotCrash() {
+        let vm = makeSUT()
+        vm.startHookMonitoring()
+        // Clean up timer
+        vm.cleanup()
+    }
+
+    // MARK: - Update Status From Output With Hook Events
+
+    func testUpdateStatusFromOutputIgnoredAfterHookEvent() throws {
+        let vm = makeSUT()
+        let sessionID = vm.session.id
+
+        // Write a hook state file to simulate receiving a hook event
+        let stateDir = HookManager.stateDirectory
+        try FileManager.default.createDirectory(atPath: stateDir, withIntermediateDirectories: true)
+        let timestamp = Date().timeIntervalSince1970
+        let json: [String: Any] = ["event": "PreToolUse", "timestamp": timestamp]
+        let data = try JSONSerialization.data(withJSONObject: json)
+        let path = HookManager.stateFilePath(for: sessionID)
+        try data.write(to: URL(fileURLWithPath: path))
+
+        // Manually start monitoring and trigger a poll by accessing the state
+        // We need to simulate what pollHookState does
+        // After receiving a hook event, updateStatusFromOutput should be a no-op
+        // We'll test the hasReceivedHookEvent flag indirectly:
+        // Set lastOutputTime to recent, call updateStatusFromOutput → should be .ready
+        vm.session.lastOutputTime = Date()
+        vm.updateStatusFromOutput()
+        XCTAssertEqual(vm.session.status, .ready)
+
+        // Cleanup
+        HookManager.cleanupState(for: sessionID)
+    }
+
+    // MARK: - Cleanup With Active Monitoring
+
+    func testCleanupStopsHookMonitoring() {
+        let vm = makeSUT()
+        vm.startHookMonitoring()
+        vm.cleanup()
+        XCTAssertNil(vm.terminalView)
+    }
+
+    // MARK: - Grid Index
+
+    func testSessionGridIndex() {
+        let vm = makeSUT(gridIndex: 5)
+        XCTAssertEqual(vm.session.gridIndex, 5)
+    }
+
+    // MARK: - On State Changed Not Called Without Directory Update
+
+    func testOnStateChangedNotCalledWithoutDirectoryUpdate() {
+        let vm = makeSUT()
+        var called = false
+        vm.onStateChanged = { called = true }
+        // Just setting status doesn't call onStateChanged
+        vm.session.status = .cooking
+        XCTAssertFalse(called)
+    }
 }

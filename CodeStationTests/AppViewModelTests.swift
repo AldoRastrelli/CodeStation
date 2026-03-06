@@ -379,6 +379,190 @@ final class AppViewModelTests: XCTestCase {
         XCTAssertFalse(vm.skipCloseConfirmation)
     }
 
+    // MARK: - Selected Environment
+
+    func testSelectedEnvironment() {
+        let vm = makeSUT()
+        let env = vm.environments.first!
+        vm.selectedEnvironmentID = env.id
+        XCTAssertEqual(vm.selectedEnvironment?.id, env.id)
+    }
+
+    func testSelectedEnvironmentNilWhenNoMatch() {
+        let vm = makeSUT()
+        vm.selectedEnvironmentID = UUID()
+        XCTAssertNil(vm.selectedEnvironment)
+    }
+
+    func testSelectedEnvironmentNilWhenNilID() {
+        let vm = makeSUT()
+        vm.selectedEnvironmentID = nil
+        XCTAssertNil(vm.selectedEnvironment)
+    }
+
+    // MARK: - Focus Terminal Left/Right
+
+    func testFocusTerminalRight() {
+        let vm = makeSUT()
+        guard let env = vm.environments.first else { XCTFail(); return }
+        let boardVM = vm.boardViewModel(for: env)
+        let s1 = boardVM.addSession()!
+        let s2 = boardVM.addSession()!
+        boardVM.focusedSessionID = s1.id
+
+        vm.focusTerminalRight()
+        XCTAssertEqual(boardVM.focusedSessionID, s2.id)
+    }
+
+    func testFocusTerminalLeft() {
+        let vm = makeSUT()
+        guard let env = vm.environments.first else { XCTFail(); return }
+        let boardVM = vm.boardViewModel(for: env)
+        let s1 = boardVM.addSession()!
+        let s2 = boardVM.addSession()!
+        boardVM.focusedSessionID = s2.id
+
+        vm.focusTerminalLeft()
+        XCTAssertEqual(boardVM.focusedSessionID, s1.id)
+    }
+
+    func testFocusTerminalRightWrapsAround() {
+        let vm = makeSUT()
+        guard let env = vm.environments.first else { XCTFail(); return }
+        let boardVM = vm.boardViewModel(for: env)
+        let s1 = boardVM.addSession()!
+        let s2 = boardVM.addSession()!
+        boardVM.focusedSessionID = s2.id
+
+        vm.focusTerminalRight()
+        XCTAssertEqual(boardVM.focusedSessionID, s1.id)
+    }
+
+    func testFocusTerminalLeftWrapsAround() {
+        let vm = makeSUT()
+        guard let env = vm.environments.first else { XCTFail(); return }
+        let boardVM = vm.boardViewModel(for: env)
+        let s1 = boardVM.addSession()!
+        let _ = boardVM.addSession()!
+        boardVM.focusedSessionID = s1.id
+
+        vm.focusTerminalLeft()
+        // Should wrap to last
+        XCTAssertNotEqual(boardVM.focusedSessionID, s1.id)
+    }
+
+    func testFocusTerminalAtIndex() {
+        let vm = makeSUT()
+        guard let env = vm.environments.first else { XCTFail(); return }
+        let boardVM = vm.boardViewModel(for: env)
+        let _ = boardVM.addSession()!
+        let s2 = boardVM.addSession()!
+        let _ = boardVM.addSession()!
+
+        vm.focusTerminal(at: 1)
+        XCTAssertEqual(boardVM.focusedSessionID, s2.id)
+    }
+
+    func testFocusTerminalAtOutOfBoundsIndex() {
+        let vm = makeSUT()
+        guard let env = vm.environments.first else { XCTFail(); return }
+        let boardVM = vm.boardViewModel(for: env)
+        let s1 = boardVM.addSession()!
+        boardVM.focusedSessionID = s1.id
+
+        vm.focusTerminal(at: 99)
+        // Should not change
+        XCTAssertEqual(boardVM.focusedSessionID, s1.id)
+    }
+
+    func testFocusTerminalWithNoSelectedEnv() {
+        let vm = makeSUT()
+        vm.selectedEnvironmentID = nil
+        // Should not crash
+        vm.focusTerminalRight()
+        vm.focusTerminalLeft()
+        vm.focusTerminal(at: 0)
+    }
+
+    func testFocusEnvironmentWithEmptyEnvironments() {
+        let vm = makeSUT()
+        for env in vm.environments {
+            vm.removeEnvironment(env)
+        }
+        // Should not crash
+        vm.focusEnvironmentUp()
+        vm.focusEnvironmentDown()
+    }
+
+    // MARK: - Close Terminal Requested
+
+    func testCloseTerminalRequestedDefault() {
+        let vm = makeSUT()
+        XCTAssertFalse(vm.closeTerminalRequested)
+    }
+
+    func testIsModalOpenDefault() {
+        let vm = makeSUT()
+        XCTAssertFalse(vm.isModalOpen)
+    }
+
+    // MARK: - Add Terminal Or Environment With No Selection
+
+    func testAddTerminalOrEnvironmentWithNoSelection() {
+        let vm = makeSUT()
+        vm.selectedEnvironmentID = nil
+        let envCount = vm.environments.count
+        vm.addTerminalOrEnvironment()
+        // Should not add anything
+        XCTAssertEqual(vm.environments.count, envCount)
+    }
+
+    // MARK: - Navigate To Non-Existent Session
+
+    func testNavigateToNonExistentEnvironment() {
+        let vm = makeSUT()
+        let fakeEnvID = UUID()
+        let fakeSessionID = UUID()
+        vm.navigateToSession(environmentID: fakeEnvID, sessionID: fakeSessionID)
+        XCTAssertEqual(vm.selectedEnvironmentID, fakeEnvID)
+    }
+
+    // MARK: - Notification Settings Via Board VM
+
+    func testGetNotificationSettingsViaCallback() {
+        let vm = makeSUT()
+        guard let env = vm.environments.first else { XCTFail(); return }
+        let boardVM = vm.boardViewModel(for: env)
+        let settings = boardVM.getNotificationSettings?()
+        XCTAssertNotNil(settings)
+        XCTAssertEqual(settings, vm.notificationSettings)
+    }
+
+    func testGetPromptButtonsViaCallback() {
+        let vm = makeSUT()
+        vm.promptButtons = [PromptButton(title: "X", color: "red", prompt: "y")]
+        guard let env = vm.environments.first else { XCTFail(); return }
+        let boardVM = vm.boardViewModel(for: env)
+        let buttons = boardVM.getPromptButtons?()
+        XCTAssertEqual(buttons?.count, 1)
+        XCTAssertEqual(buttons?.first?.title, "X")
+    }
+
+    func testGetSkipCloseConfirmationViaCallback() {
+        let vm = makeSUT()
+        vm.skipCloseConfirmation = true
+        guard let env = vm.environments.first else { XCTFail(); return }
+        let boardVM = vm.boardViewModel(for: env)
+        XCTAssertTrue(boardVM.getSkipCloseConfirmation?() ?? false)
+    }
+
+    // MARK: - Schedule Save
+
+    func testScheduleSaveDoesNotCrash() {
+        let vm = makeSUT()
+        vm.scheduleSave()
+    }
+
     // MARK: - Move Environment
 
     func testMoveEnvironment() {
