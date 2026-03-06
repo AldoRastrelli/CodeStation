@@ -20,6 +20,8 @@ enum Strings {
         static let newEnvironment = "New Environment"
         static let rename = "Rename"
         static let delete = "Delete"
+        static let environmentNamePlaceholder = "Environment name"
+        static let create = "Create"
     }
 
     // MARK: - Terminals
