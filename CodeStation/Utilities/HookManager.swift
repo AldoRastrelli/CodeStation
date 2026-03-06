@@ -91,31 +91,6 @@ enum HookManager {
         try writeSettings(settings)
     }
 
-    static func uninstall() throws {
-        guard var settings = readSettings(),
-              var hooks = settings[Strings.Hooks.settingsKey] as? [String: Any] else { return }
-
-        for event in hookEvents {
-            if var entries = hooks[event] as? [[String: Any]] {
-                entries.removeAll { entryContainsMarker($0) }
-                if entries.isEmpty {
-                    hooks.removeValue(forKey: event)
-                } else {
-                    hooks[event] = entries
-                }
-            }
-        }
-
-        if hooks.isEmpty {
-            settings.removeValue(forKey: Strings.Hooks.settingsKey)
-        } else {
-            settings[Strings.Hooks.settingsKey] = hooks
-        }
-
-        try writeSettings(settings)
-        try? FileManager.default.removeItem(atPath: hookScriptPath)
-    }
-
     // MARK: - State file reading
 
     static func stateFilePath(for sessionID: UUID) -> String {

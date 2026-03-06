@@ -99,6 +99,11 @@ enum Strings {
         static let notifyWhen = "Notify when"
         static let soundSection = "Sound"
         static let keyboardShortcuts = "Shortcuts"
+        static let help = "Help"
+        static let helpMessage = "If you're getting a \"UserPromptSubmit operation blocked by hook\" message, it might mean your .claude folder or files got corrupted. You need to reinstall the CodeStation Hook."
+        static let reinstallHook = "Reinstall Hook"
+        static let hookReinstalled = "Hook reinstalled successfully."
+        static let hookReinstallFailed = "Failed to reinstall hook."
     }
 
     // MARK: - Notifications

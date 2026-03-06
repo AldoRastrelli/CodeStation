@@ -4,6 +4,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
     case notifications
     case customPrompts
     case keyboardShortcuts
+    case help
 
     var id: String { rawValue }
 
@@ -12,6 +13,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .notifications: return Strings.Notifications.sectionTitle
         case .customPrompts: return Strings.CustomPrompts.sectionTitle
         case .keyboardShortcuts: return Strings.Settings.keyboardShortcuts
+        case .help: return Strings.Settings.help
         }
     }
 
@@ -20,6 +22,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .notifications: return "bell.badge"
         case .customPrompts: return "text.bubble"
         case .keyboardShortcuts: return "keyboard"
+        case .help: return "questionmark.circle"
         }
     }
 }
@@ -41,6 +44,7 @@ struct SettingsWindowView: View {
     @State private var editColor = "blue"
     @State private var editPrompt = ""
     @State private var detailButtonID: UUID?
+    @State private var hookStatusMessage: String?
 
     var body: some View {
         HStack(spacing: 0) {
@@ -66,6 +70,8 @@ struct SettingsWindowView: View {
                     }
                 case .keyboardShortcuts:
                     keyboardShortcutsPane
+                case .help:
+                    helpPane
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -464,6 +470,36 @@ struct SettingsWindowView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Help
+
+    private var helpPane: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(Strings.Settings.help)
+                .font(.headline)
+
+            Text(Strings.Settings.helpMessage)
+                .foregroundStyle(.secondary)
+
+            Button(Strings.Settings.reinstallHook) {
+                do {
+                    try HookManager.install()
+                    hookStatusMessage = Strings.Settings.hookReinstalled
+                } catch {
+                    hookStatusMessage = Strings.Settings.hookReinstallFailed
+                }
+            }
+            .buttonStyle(.borderedProminent)
+
+            if let hookStatusMessage {
+                Text(hookStatusMessage)
+                    .font(.subheadline)
+                    .foregroundStyle(hookStatusMessage == Strings.Settings.hookReinstalled ? .green : .red)
+            }
+        }
+        .padding(Constants.contentPadding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private func colorForName(_ name: String) -> Color {

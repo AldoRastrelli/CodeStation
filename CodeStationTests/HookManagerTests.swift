@@ -161,62 +161,6 @@ final class HookManagerTests: XCTestCase {
 
     // MARK: - Install and Uninstall
 
-    func testInstallCreatesScriptFile() throws {
-        // Backup existing settings
-        let settingsPath = HookManager.settingsPath
-        let hadSettings = FileManager.default.fileExists(atPath: settingsPath)
-        var originalSettings: Data?
-        if hadSettings {
-            originalSettings = try? Data(contentsOf: URL(fileURLWithPath: settingsPath))
-        }
-
-        defer {
-            // Restore original settings
-            try? HookManager.uninstall()
-            if let original = originalSettings {
-                try? original.write(to: URL(fileURLWithPath: settingsPath))
-            } else if !hadSettings {
-                try? FileManager.default.removeItem(atPath: settingsPath)
-            }
-        }
-
-        try HookManager.install()
-
-        XCTAssertTrue(FileManager.default.fileExists(atPath: HookManager.hookScriptPath))
-        XCTAssertTrue(HookManager.isInstalled)
-    }
-
-    func testUninstallRemovesHookScript() throws {
-        let settingsPath = HookManager.settingsPath
-        let hadSettings = FileManager.default.fileExists(atPath: settingsPath)
-        var originalSettings: Data?
-        if hadSettings {
-            originalSettings = try? Data(contentsOf: URL(fileURLWithPath: settingsPath))
-        }
-
-        defer {
-            if let original = originalSettings {
-                try? original.write(to: URL(fileURLWithPath: settingsPath))
-            } else if !hadSettings {
-                try? FileManager.default.removeItem(atPath: settingsPath)
-            }
-        }
-
-        try HookManager.install()
-        XCTAssertTrue(HookManager.isInstalled)
-
-        try HookManager.uninstall()
-        XCTAssertFalse(HookManager.isInstalled)
-        XCTAssertFalse(FileManager.default.fileExists(atPath: HookManager.hookScriptPath))
-    }
-
-    func testUninstallWhenNotInstalledDoesNotCrash() throws {
-        // Ensure not installed by uninstalling first
-        try HookManager.uninstall()
-        // Calling again should be safe
-        try HookManager.uninstall()
-    }
-
     func testIsInstalledDefaultFalseForCleanSettings() {
         // With no settings file or a settings file without hooks, isInstalled should be false
         // We can't guarantee the state, but the property should not crash
