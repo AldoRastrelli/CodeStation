@@ -60,6 +60,7 @@ Drag the dividers between terminals to resize them. **Double-click** any divider
 ## What's coming up?
 
 - **Custom terminal emulators** — Choose your preferred terminal (e.g. iTerm2, Alacritty, Kitty) instead of the built-in one
+- **Dragging files to the terminals**
 
 ## Buy me a coffee
 
