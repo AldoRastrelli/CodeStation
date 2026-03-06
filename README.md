@@ -16,9 +16,7 @@ Organize your work into separate **environments**, each with its own set of up t
 
 Create reusable command buttons that appear on every terminal header. Define a title, pick a color, and set the prompt text — then tap the button to instantly send that command to the terminal. Buttons are saved across sessions and shared across all terminals. Expand or collapse the buttons bar independently on each terminal.
 
-<p align="center">
-  <img src="assets/custom_prompts.gif" width="1200"/>
-</p>
+https://github.com/user-attachments/assets/6b0bbe8e-02b4-4cd9-802a-24b416dab889
 
 ### Smart Notifications
 
@@ -39,9 +37,7 @@ Configure notification sounds and toggle individual notification types from Sett
 
 In grid layout (5+ terminals), drag terminals to rearrange them. Drop a terminal onto an empty slot to move it there, or onto another terminal to swap their positions.
 
-<p align="center">
-  <img src="assets/drag_terminals.gif" width="1200"/>
-</p>
+https://github.com/user-attachments/assets/48ab2d6c-11be-490b-a160-c6658f9c317d
 
 ### Resizable Panels
 
