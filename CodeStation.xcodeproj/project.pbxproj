@@ -35,7 +35,24 @@
 		A10036 /* SettingsPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10036; };
 		A10037 /* PromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10037; };
 		A10038 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10038; };
+		A20001 /* EmptyCellViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20001; };
+		A20002 /* SidebarRowViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20002; };
+		A20003 /* SidebarViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20003; };
+		A20004 /* BoardViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20004; };
+		A20005 /* TerminalHeaderViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20005; };
+		A20006 /* SettingsWindowViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20006; };
+		A20007 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = D20001; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		PROXY20001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = P10001;
+			proxyType = 1;
+			remoteGlobalIDString = T10001;
+			remoteInfo = CodeStation;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		B10001 /* CodeStationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeStationApp.swift; sourceTree = "<group>"; };
@@ -65,7 +82,14 @@
 		B10036 /* SettingsPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPopoverView.swift; sourceTree = "<group>"; };
 		B10037 /* PromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptButton.swift; sourceTree = "<group>"; };
 		B10038 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		B20001 /* EmptyCellViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCellViewSnapshotTests.swift; sourceTree = "<group>"; };
+		B20002 /* SidebarRowViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarRowViewSnapshotTests.swift; sourceTree = "<group>"; };
+		B20003 /* SidebarViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarViewSnapshotTests.swift; sourceTree = "<group>"; };
+		B20004 /* BoardViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewSnapshotTests.swift; sourceTree = "<group>"; };
+		B20005 /* TerminalHeaderViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalHeaderViewSnapshotTests.swift; sourceTree = "<group>"; };
+		B20006 /* SettingsWindowViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowViewSnapshotTests.swift; sourceTree = "<group>"; };
 		C10001 /* CodeStation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodeStation.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C20001 /* CodeStationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CodeStationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +101,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E20001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A20007 /* SnapshotTesting in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -84,6 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				G10002 /* CodeStation */,
+				G20001 /* CodeStationTests */,
 				G10008 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -190,6 +223,7 @@
 			isa = PBXGroup;
 			children = (
 				C10001 /* CodeStation.app */,
+				C20001 /* CodeStationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -200,6 +234,19 @@
 				B10012 /* Assets.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		G20001 /* CodeStationTests */ = {
+			isa = PBXGroup;
+			children = (
+				B20001 /* EmptyCellViewSnapshotTests.swift */,
+				B20002 /* SidebarRowViewSnapshotTests.swift */,
+				B20003 /* SidebarViewSnapshotTests.swift */,
+				B20004 /* BoardViewSnapshotTests.swift */,
+				B20005 /* TerminalHeaderViewSnapshotTests.swift */,
+				B20006 /* SettingsWindowViewSnapshotTests.swift */,
+			);
+			path = CodeStationTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -225,6 +272,26 @@
 			productReference = C10001 /* CodeStation.app */;
 			productType = "com.apple.product-type.application";
 		};
+		T20001 /* CodeStationTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = L20001;
+			buildPhases = (
+				S20001 /* Sources */,
+				E20001 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DEP20001 /* PBXTargetDependency */,
+			);
+			name = CodeStationTests;
+			packageProductDependencies = (
+				D20001 /* SnapshotTesting */,
+			);
+			productName = CodeStationTests;
+			productReference = C20001 /* CodeStationTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -237,6 +304,10 @@
 				TargetAttributes = {
 					T10001 = {
 						CreatedOnToolsVersion = 15.0;
+					};
+					T20001 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = T10001;
 					};
 				};
 			};
@@ -251,12 +322,14 @@
 			mainGroup = G10001;
 			packageReferences = (
 				PKG10001 /* XCRemoteSwiftPackageReference "SwiftTerm" */,
+				PKG20001 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 			);
 			productRefGroup = G10008 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				T10001 /* CodeStation */,
+				T20001 /* CodeStationTests */,
 			);
 		};
 /* End PBXProject section */
@@ -306,7 +379,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		S20001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A20001 /* EmptyCellViewSnapshotTests.swift in Sources */,
+				A20002 /* SidebarRowViewSnapshotTests.swift in Sources */,
+				A20003 /* SidebarViewSnapshotTests.swift in Sources */,
+				A20004 /* BoardViewSnapshotTests.swift in Sources */,
+				A20005 /* TerminalHeaderViewSnapshotTests.swift in Sources */,
+				A20006 /* SettingsWindowViewSnapshotTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DEP20001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = T10001 /* CodeStation */;
+			targetProxy = PROXY20001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		BC10001 /* Debug */ = {
@@ -418,6 +512,38 @@
 			};
 			name = Release;
 		};
+		BC20001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codestation.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.9;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CodeStation.app/Contents/MacOS/CodeStation";
+			};
+			name = Debug;
+		};
+		BC20002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.codestation.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.9;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CodeStation.app/Contents/MacOS/CodeStation";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -439,12 +565,29 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		L20001 /* Build configuration list for CodeStationTests */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BC20001 /* Debug */,
+				BC20002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		PKG10001 /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		PKG20001 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.0;
@@ -457,6 +600,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = PKG10001;
 			productName = SwiftTerm;
+		};
+		D20001 /* SnapshotTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = PKG20001;
+			productName = SnapshotTesting;
 		};
 /* End XCSwiftPackageProductDependency section */
 
