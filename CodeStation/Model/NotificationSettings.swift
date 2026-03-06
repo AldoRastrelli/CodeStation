@@ -5,7 +5,7 @@ struct NotificationSettings: Codable, Equatable {
     var notifyWhenDone: Bool = true      // cooking → ready
     var notifyWhenWaiting: Bool = true   // cooking → waiting
     var soundEnabled: Bool = true
-    var soundName: String = "Glass"
+    var soundName: String = "Funk"
 
     static let availableSounds = [
         "Basso", "Blow", "Bottle", "Frog", "Funk",
