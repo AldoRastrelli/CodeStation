@@ -16,7 +16,6 @@ class AppViewModel {
     var notificationSettings = NotificationSettings()
     var promptButtons: [PromptButton] = []
     var skipCloseConfirmation: Bool = false
-    var pendingSessionID: UUID?
     var closeTerminalRequested = false
     var isModalOpen = false
 
@@ -266,7 +265,12 @@ class AppViewModel {
 
     func navigateToSession(environmentID: UUID, sessionID: UUID) {
         selectedEnvironmentID = environmentID
-        pendingSessionID = sessionID
+        if let boardVM = boardViewModels[environmentID] {
+            boardVM.focusedSessionID = sessionID
+            if let session = boardVM.sessions.first(where: { $0.id == sessionID }) {
+                boardVM.viewModel(for: session).makeFocused()
+            }
+        }
     }
 
     // MARK: - Persistence
