@@ -29,11 +29,11 @@ struct TerminalSessionView: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
-        if let tv = context.coordinator.terminalView, tv.superview !== nsView {
-            tv.removeFromSuperview()
-            tv.frame = nsView.bounds
-            tv.autoresizingMask = [.width, .height]
-            nsView.addSubview(tv)
+        if let terminalView = context.coordinator.terminalView, terminalView.superview !== nsView {
+            terminalView.removeFromSuperview()
+            terminalView.frame = nsView.bounds
+            terminalView.autoresizingMask = [.width, .height]
+            nsView.addSubview(terminalView)
         }
     }
 

@@ -13,7 +13,7 @@ enum Strings {
     // MARK: - Environments
     enum Environments {
         static let defaultName = "Environment"
-        static func newName(_ count: Int) -> String { "Environment \(count)" }
+        static func newName(_ count: Int) -> String { return "Environment \(count)" }
         static let noEnvironments = "No environments"
         static let selectEnvironment = "Select an environment"
         static let createEnvironment = "Create Environment"
@@ -24,8 +24,8 @@ enum Strings {
 
     // MARK: - Terminals
     enum Terminals {
-        static func defaultTitle(_ index: Int) -> String { "Terminal \(index + 1)" }
-        static func sessionCount(_ count: Int, max: Int) -> String { "\(count)/\(max)" }
+        static func defaultTitle(_ index: Int) -> String { return "Terminal \(index + 1)" }
+        static func sessionCount(_ count: Int, max: Int) -> String { return "\(count)/\(max)" }
         static let noTerminals = "No terminals open"
         static let openTerminal = "Open Terminal"
         static let newTerminal = "New Terminal"
@@ -108,9 +108,9 @@ enum Strings {
         static let whenDoneToggle = "When done"
         static let whenWaitingToggle = "When waiting"
         static let doneTitle = "Task Complete"
-        static func doneBody(_ sessionTitle: String) -> String { "\(sessionTitle) terminal is ready" }
+        static func doneBody(_ sessionTitle: String) -> String { return "\(sessionTitle) terminal is ready" }
         static let waitingTitle = "Action Required"
-        static func waitingBody(_ sessionTitle: String) -> String { "\(sessionTitle) terminal is waiting for input" }
+        static func waitingBody(_ sessionTitle: String) -> String { return "\(sessionTitle) terminal is waiting for input" }
         static let makeSoundToggle = "Make Sound"
         static let soundPicker = "Sound"
     }
@@ -129,6 +129,15 @@ enum Strings {
         static let buttonsLabel = "Buttons"
         static let duplicateName = "A prompt with this name already exists"
         static let duplicatePrompt = "Duplicate"
+    }
+
+    // MARK: - Navigation
+    enum Navigation {
+        static func terminalNumber(_ n: Int) -> String { return "Terminal \(n)" }
+        static let previousTerminal = "Previous Terminal"
+        static let nextTerminal = "Next Terminal"
+        static let previousEnvironment = "Previous Environment"
+        static let nextEnvironment = "Next Environment"
     }
 
     // MARK: - Hooks

@@ -67,7 +67,7 @@ struct CodeStationApp: App {
                 Divider()
 
                 ForEach(1...8, id: \.self) { n in
-                    Button("Terminal \(n)") {
+                    Button(Strings.Navigation.terminalNumber(n)) {
                         viewModel.focusTerminal(at: n - 1)
                     }
                     .keyboardShortcut(KeyEquivalent(Character(String(n))), modifiers: .command)
@@ -76,13 +76,13 @@ struct CodeStationApp: App {
 
                 Divider()
 
-                Button("Previous Terminal") {
+                Button(Strings.Navigation.previousTerminal) {
                     viewModel.focusTerminalLeft()
                 }
                 .keyboardShortcut(.leftArrow, modifiers: [.command, .shift])
                 .disabled(viewModel.isModalOpen)
 
-                Button("Next Terminal") {
+                Button(Strings.Navigation.nextTerminal) {
                     viewModel.focusTerminalRight()
                 }
                 .keyboardShortcut(.rightArrow, modifiers: [.command, .shift])
@@ -90,13 +90,13 @@ struct CodeStationApp: App {
 
                 Divider()
 
-                Button("Previous Environment") {
+                Button(Strings.Navigation.previousEnvironment) {
                     viewModel.focusEnvironmentUp()
                 }
                 .keyboardShortcut(.upArrow, modifiers: [.command, .shift])
                 .disabled(viewModel.isModalOpen)
 
-                Button("Next Environment") {
+                Button(Strings.Navigation.nextEnvironment) {
                     viewModel.focusEnvironmentDown()
                 }
                 .keyboardShortcut(.downArrow, modifiers: [.command, .shift])

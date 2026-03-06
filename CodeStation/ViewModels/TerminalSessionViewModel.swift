@@ -87,8 +87,8 @@ class TerminalSessionViewModel {
     }
 
     func makeFocused() {
-        guard let tv = terminalView, let window = tv.window else { return }
-        window.makeFirstResponder(tv)
+        guard let terminalView = terminalView, let window = terminalView.window else { return }
+        window.makeFirstResponder(terminalView)
     }
 
     func updateDirectory(_ path: String) {
@@ -136,8 +136,8 @@ class TerminalSessionViewModel {
         hookMonitorTimer?.invalidate()
         hookMonitorTimer = nil
         HookManager.cleanupState(for: session.id)
-        if let tv = terminalView {
-            let pid = tv.process.shellPid
+        if let terminalView = terminalView {
+            let pid = terminalView.process.shellPid
             if pid > 0 {
                 kill(pid, SIGHUP)
             }

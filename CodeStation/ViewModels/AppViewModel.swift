@@ -135,39 +135,39 @@ class AppViewModel {
     // MARK: - Board ViewModels
 
     func boardViewModel(for env: Environment) -> BoardViewModel {
-        if let vm = boardViewModels[env.id] {
-            vm.environmentID = env.id
-            return vm
+        if let boardVM = boardViewModels[env.id] {
+            boardVM.environmentID = env.id
+            return boardVM
         }
-        let vm = BoardViewModel()
-        vm.environmentID = env.id
-        vm.getNotificationSettings = { [weak self] in self?.notificationSettings }
-        vm.getPromptButtons = { [weak self] in self?.promptButtons ?? [] }
-        vm.onAddPromptButton = { [weak self] button in
+        let boardVM = BoardViewModel()
+        boardVM.environmentID = env.id
+        boardVM.getNotificationSettings = { [weak self] in self?.notificationSettings }
+        boardVM.getPromptButtons = { [weak self] in self?.promptButtons ?? [] }
+        boardVM.onAddPromptButton = { [weak self] button in
             self?.promptButtons.append(button)
             self?.scheduleSave()
         }
-        vm.onUpdatePromptButton = { [weak self] updated in
+        boardVM.onUpdatePromptButton = { [weak self] updated in
             guard let self else { return }
             if let index = self.promptButtons.firstIndex(where: { $0.id == updated.id }) {
                 self.promptButtons[index] = updated
                 self.scheduleSave()
             }
         }
-        vm.onDeletePromptButton = { [weak self] id in
+        boardVM.onDeletePromptButton = { [weak self] id in
             self?.promptButtons.removeAll { $0.id == id }
             self?.scheduleSave()
         }
-        vm.onStateChanged = { [weak self] in
+        boardVM.onStateChanged = { [weak self] in
             self?.scheduleSave()
         }
-        vm.getSkipCloseConfirmation = { [weak self] in self?.skipCloseConfirmation ?? false }
-        vm.onSkipCloseConfirmationChanged = { [weak self] skip in
+        boardVM.getSkipCloseConfirmation = { [weak self] in self?.skipCloseConfirmation ?? false }
+        boardVM.onSkipCloseConfirmationChanged = { [weak self] skip in
             self?.skipCloseConfirmation = skip
             self?.scheduleSave()
         }
-        boardViewModels[env.id] = vm
-        return vm
+        boardViewModels[env.id] = boardVM
+        return boardVM
     }
 
     // MARK: - Terminal Commands
@@ -338,37 +338,37 @@ class AppViewModel {
 
         // Pre-create board VMs with pending restores
         for envSnapshot in snapshot.environments {
-            let vm = BoardViewModel()
-            vm.environmentID = envSnapshot.id
-            vm.getNotificationSettings = { [weak self] in self?.notificationSettings }
-            vm.getPromptButtons = { [weak self] in self?.promptButtons ?? [] }
-            vm.onAddPromptButton = { [weak self] button in
+            let boardVM = BoardViewModel()
+            boardVM.environmentID = envSnapshot.id
+            boardVM.getNotificationSettings = { [weak self] in self?.notificationSettings }
+            boardVM.getPromptButtons = { [weak self] in self?.promptButtons ?? [] }
+            boardVM.onAddPromptButton = { [weak self] button in
                 self?.promptButtons.append(button)
                 self?.scheduleSave()
             }
-            vm.onUpdatePromptButton = { [weak self] updated in
+            boardVM.onUpdatePromptButton = { [weak self] updated in
                 guard let self else { return }
                 if let index = self.promptButtons.firstIndex(where: { $0.id == updated.id }) {
                     self.promptButtons[index] = updated
                     self.scheduleSave()
                 }
             }
-            vm.onDeletePromptButton = { [weak self] id in
+            boardVM.onDeletePromptButton = { [weak self] id in
                 self?.promptButtons.removeAll { $0.id == id }
                 self?.scheduleSave()
             }
-            vm.onStateChanged = { [weak self] in
+            boardVM.onStateChanged = { [weak self] in
                 self?.scheduleSave()
             }
-            vm.getSkipCloseConfirmation = { [weak self] in self?.skipCloseConfirmation ?? false }
-            vm.onSkipCloseConfirmationChanged = { [weak self] skip in
+            boardVM.getSkipCloseConfirmation = { [weak self] in self?.skipCloseConfirmation ?? false }
+            boardVM.onSkipCloseConfirmationChanged = { [weak self] skip in
                 self?.skipCloseConfirmation = skip
                 self?.scheduleSave()
             }
-            vm.columnProportions = envSnapshot.columnProportions.map { CGFloat($0) }
-            vm.rowProportion = CGFloat(envSnapshot.rowProportion)
-            vm.pendingRestores = envSnapshot.sessions
-            boardViewModels[envSnapshot.id] = vm
+            boardVM.columnProportions = envSnapshot.columnProportions.map { CGFloat($0) }
+            boardVM.rowProportion = CGFloat(envSnapshot.rowProportion)
+            boardVM.pendingRestores = envSnapshot.sessions
+            boardViewModels[envSnapshot.id] = boardVM
         }
     }
 

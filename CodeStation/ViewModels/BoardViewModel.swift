@@ -29,8 +29,8 @@ class BoardViewModel {
     var onDeletePromptButton: ((UUID) -> Void)?
     var focusedSessionID: UUID? {
         didSet {
-            if let id = focusedSessionID {
-                unseenNotificationSessionIDs.remove(id)
+            if let sessionID = focusedSessionID {
+                unseenNotificationSessionIDs.remove(sessionID)
             }
         }
     }
@@ -157,21 +157,21 @@ class BoardViewModel {
     // MARK: - Child ViewModels
 
     func viewModel(for session: TerminalSession) -> TerminalSessionViewModel {
-        if let vm = sessionViewModels[session.id] {
-            return vm
+        if let sessionVM = sessionViewModels[session.id] {
+            return sessionVM
         }
-        let vm = TerminalSessionViewModel(session: session)
-        vm.environmentID = environmentID
-        vm.getNotificationSettings = getNotificationSettings
-        vm.getPromptButtons = getPromptButtons
-        vm.onStateChanged = { [weak self] in
+        let sessionVM = TerminalSessionViewModel(session: session)
+        sessionVM.environmentID = environmentID
+        sessionVM.getNotificationSettings = getNotificationSettings
+        sessionVM.getPromptButtons = getPromptButtons
+        sessionVM.onStateChanged = { [weak self] in
             self?.onStateChanged?()
         }
-        vm.onNotificationFired = { [weak self] in
+        sessionVM.onNotificationFired = { [weak self] in
             self?.unseenNotificationSessionIDs.insert(session.id)
         }
-        sessionViewModels[session.id] = vm
-        return vm
+        sessionViewModels[session.id] = sessionVM
+        return sessionVM
     }
 
     // MARK: - Cleanup
