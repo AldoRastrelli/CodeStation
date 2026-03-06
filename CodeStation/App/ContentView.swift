@@ -21,30 +21,36 @@ struct ContentView: View {
             SidebarView(viewModel: viewModel)
                 .navigationSplitViewColumnWidth(min: Constants.sidebarMinWidth, ideal: Constants.sidebarIdealWidth, max: Constants.sidebarMaxWidth)
         } detail: {
-            if let env = viewModel.selectedEnvironment {
-                let boardVM = viewModel.boardViewModel(for: env)
-                BoardView(viewModel: boardVM, environmentName: env.name, onRename: { newName in
-                    viewModel.renameEnvironment(env, to: newName)
-                })
-                .id(env.id)
-            } else {
+            if viewModel.environments.isEmpty {
                 VStack(spacing: Constants.emptyStateSpacing) {
-                    if viewModel.environments.isEmpty {
-                        Image(systemName: Strings.Icons.grid)
-                            .font(.system(size: Constants.emptyIconSize))
-                            .foregroundStyle(.secondary)
-                        Text(Strings.Environments.noEnvironments)
-                            .font(.system(size: Constants.emptyTextSize))
-                            .foregroundStyle(.secondary)
-                        Button(Strings.Environments.createEnvironment) {
-                            viewModel.addEnvironment()
-                        }
-                    } else {
-                        Text(Strings.Environments.selectEnvironment)
-                            .foregroundStyle(.secondary)
+                    Image(systemName: Strings.Icons.grid)
+                        .font(.system(size: Constants.emptyIconSize))
+                        .foregroundStyle(.secondary)
+                    Text(Strings.Environments.noEnvironments)
+                        .font(.system(size: Constants.emptyTextSize))
+                        .foregroundStyle(.secondary)
+                    Button(Strings.Environments.createEnvironment) {
+                        viewModel.addEnvironment()
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if viewModel.selectedEnvironment == nil {
+                VStack(spacing: Constants.emptyStateSpacing) {
+                    Text(Strings.Environments.selectEnvironment)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ZStack {
+                    ForEach(viewModel.environments) { env in
+                        let boardVM = viewModel.boardViewModel(for: env)
+                        BoardView(viewModel: boardVM, environmentName: env.name, onRename: { newName in
+                            viewModel.renameEnvironment(env, to: newName)
+                        })
+                        .opacity(env.id == viewModel.selectedEnvironmentID ? 1 : 0)
+                        .allowsHitTesting(env.id == viewModel.selectedEnvironmentID)
+                    }
+                }
             }
         }
         .toolbar {
