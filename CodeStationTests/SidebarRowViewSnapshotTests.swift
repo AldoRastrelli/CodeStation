@@ -5,7 +5,13 @@ import SwiftUI
 
 final class SidebarRowViewSnapshotTests: XCTestCase {
     private func makeViewModel() -> AppViewModel {
-        AppViewModel()
+        let vm = AppViewModel()
+        // Clear any persisted environments to get deterministic state
+        for env in vm.environments {
+            vm.removeEnvironment(env)
+        }
+        let _ = vm.addEnvironment(name: "Environment")
+        return vm
     }
 
     func testDefaultRow() {

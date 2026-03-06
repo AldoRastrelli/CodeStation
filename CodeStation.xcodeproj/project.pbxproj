@@ -7,47 +7,60 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A10001 /* CodeStationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001; };
-		A10002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002; };
-		A10003 /* TerminalSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003; };
-		A10004 /* TerminalHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004; };
-		A10005 /* TerminalContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005; };
-		A10006 /* TerminalGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10006; };
-		A10007 /* EmptyCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10007; };
-		A10008 /* TerminalSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008; };
-		A10010 /* SessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010; };
-		A10011 /* ShellUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10011; };
-		A10013 /* HookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10013; };
-		A10012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10012; };
-		A10020 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = D10001; };
-		A10014 /* PersistenceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10014; };
-		A10015 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10015; };
-		A10017 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10017; };
-		A10018 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10018; };
-		A10019 /* SidebarRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10019; };
-		A10021 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10021; };
-		A10030 /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10030; };
-		A10031 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10031; };
-		A10032 /* BoardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10032; };
-		A10033 /* TerminalSessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10033; };
-		A10034 /* NotificationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10034; };
-		A10035 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10035; };
-		A10036 /* SettingsPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10036; };
-		A10037 /* PromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10037; };
-		A10038 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10038; };
-		A20001 /* EmptyCellViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20001; };
-		A20002 /* SidebarRowViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20002; };
-		A20003 /* SidebarViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20003; };
-		A20004 /* BoardViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20004; };
-		A20005 /* TerminalHeaderViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20005; };
-		A20006 /* SettingsWindowViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20006; };
-		A20007 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = D20001; };
+		A10001 /* CodeStationApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001 /* CodeStationApp.swift */; };
+		A10002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002 /* ContentView.swift */; };
+		A10003 /* TerminalSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003 /* TerminalSessionView.swift */; };
+		A10004 /* TerminalHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004 /* TerminalHeaderView.swift */; };
+		A10005 /* TerminalContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005 /* TerminalContainerView.swift */; };
+		A10006 /* TerminalGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10006 /* TerminalGridView.swift */; };
+		A10007 /* EmptyCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10007 /* EmptyCellView.swift */; };
+		A10008 /* TerminalSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008 /* TerminalSession.swift */; };
+		A10010 /* SessionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010 /* SessionStatus.swift */; };
+		A10011 /* ShellUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10011 /* ShellUtils.swift */; };
+		A10012 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10012 /* Assets.xcassets */; };
+		A10013 /* HookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10013 /* HookManager.swift */; };
+		A10014 /* PersistenceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10014 /* PersistenceModels.swift */; };
+		A10015 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10015 /* Environment.swift */; };
+		A10017 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10017 /* BoardView.swift */; };
+		A10018 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10018 /* SidebarView.swift */; };
+		A10019 /* SidebarRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10019 /* SidebarRowView.swift */; };
+		A10020 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = D10001 /* SwiftTerm */; };
+		A10021 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10021 /* Strings.swift */; };
+		A10030 /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10030 /* PersistenceService.swift */; };
+		A10031 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10031 /* AppViewModel.swift */; };
+		A10032 /* BoardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10032 /* BoardViewModel.swift */; };
+		A10033 /* TerminalSessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10033 /* TerminalSessionViewModel.swift */; };
+		A10034 /* NotificationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10034 /* NotificationSettings.swift */; };
+		A10035 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10035 /* NotificationService.swift */; };
+		A10036 /* SettingsPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10036 /* SettingsPopoverView.swift */; };
+		A10037 /* PromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10037 /* PromptButton.swift */; };
+		A10038 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10038 /* SettingsWindowController.swift */; };
+		A20001 /* EmptyCellViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20001 /* EmptyCellViewSnapshotTests.swift */; };
+		A20002 /* SidebarRowViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20002 /* SidebarRowViewSnapshotTests.swift */; };
+		A20003 /* SidebarViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20003 /* SidebarViewSnapshotTests.swift */; };
+		A20004 /* BoardViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20004 /* BoardViewSnapshotTests.swift */; };
+		A20005 /* TerminalHeaderViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20005 /* TerminalHeaderViewSnapshotTests.swift */; };
+		A20006 /* SettingsWindowViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20006 /* SettingsWindowViewSnapshotTests.swift */; };
+		A20007 /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = D20001 /* SnapshotTesting */; };
+		AT0001 /* SessionStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0001 /* SessionStatusTests.swift */; };
+		AT0002 /* TerminalSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0002 /* TerminalSessionTests.swift */; };
+		AT0003 /* EnvironmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0003 /* EnvironmentTests.swift */; };
+		AT0004 /* NotificationSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0004 /* NotificationSettingsTests.swift */; };
+		AT0005 /* PromptButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0005 /* PromptButtonTests.swift */; };
+		AT0006 /* PersistenceModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0006 /* PersistenceModelsTests.swift */; };
+		AT0007 /* PersistenceServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0007 /* PersistenceServiceTests.swift */; };
+		AT0008 /* ShellUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0008 /* ShellUtilsTests.swift */; };
+		AT0009 /* HookManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0009 /* HookManagerTests.swift */; };
+		AT0010 /* StringsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0010 /* StringsTests.swift */; };
+		AT0011 /* BoardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0011 /* BoardViewModelTests.swift */; };
+		AT0012 /* TerminalSessionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0012 /* TerminalSessionViewModelTests.swift */; };
+		AT0013 /* AppViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0013 /* AppViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		PROXY20001 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = P10001;
+			containerPortal = P10001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = T10001;
 			remoteInfo = CodeStation;
@@ -55,6 +68,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6B58B7472F5A6CB800852BA5 /* CodeStation.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CodeStation.xctestplan; sourceTree = "<group>"; };
 		B10001 /* CodeStationApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeStationApp.swift; sourceTree = "<group>"; };
 		B10002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		B10003 /* TerminalSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalSessionView.swift; sourceTree = "<group>"; };
@@ -65,8 +79,8 @@
 		B10008 /* TerminalSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalSession.swift; sourceTree = "<group>"; };
 		B10010 /* SessionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStatus.swift; sourceTree = "<group>"; };
 		B10011 /* ShellUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShellUtils.swift; sourceTree = "<group>"; };
-		B10013 /* HookManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookManager.swift; sourceTree = "<group>"; };
 		B10012 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10013 /* HookManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookManager.swift; sourceTree = "<group>"; };
 		B10014 /* PersistenceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceModels.swift; sourceTree = "<group>"; };
 		B10015 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		B10017 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
@@ -88,6 +102,19 @@
 		B20004 /* BoardViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewSnapshotTests.swift; sourceTree = "<group>"; };
 		B20005 /* TerminalHeaderViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalHeaderViewSnapshotTests.swift; sourceTree = "<group>"; };
 		B20006 /* SettingsWindowViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowViewSnapshotTests.swift; sourceTree = "<group>"; };
+		BT0001 /* SessionStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStatusTests.swift; sourceTree = "<group>"; };
+		BT0002 /* TerminalSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalSessionTests.swift; sourceTree = "<group>"; };
+		BT0003 /* EnvironmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentTests.swift; sourceTree = "<group>"; };
+		BT0004 /* NotificationSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsTests.swift; sourceTree = "<group>"; };
+		BT0005 /* PromptButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptButtonTests.swift; sourceTree = "<group>"; };
+		BT0006 /* PersistenceModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceModelsTests.swift; sourceTree = "<group>"; };
+		BT0007 /* PersistenceServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceServiceTests.swift; sourceTree = "<group>"; };
+		BT0008 /* ShellUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShellUtilsTests.swift; sourceTree = "<group>"; };
+		BT0009 /* HookManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookManagerTests.swift; sourceTree = "<group>"; };
+		BT0010 /* StringsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringsTests.swift; sourceTree = "<group>"; };
+		BT0011 /* BoardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardViewModelTests.swift; sourceTree = "<group>"; };
+		BT0012 /* TerminalSessionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalSessionViewModelTests.swift; sourceTree = "<group>"; };
+		BT0013 /* AppViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModelTests.swift; sourceTree = "<group>"; };
 		C10001 /* CodeStation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodeStation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C20001 /* CodeStationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CodeStationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -112,9 +139,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		G10001 /* Root */ = {
+		G10001 = {
 			isa = PBXGroup;
 			children = (
+				6B58B7472F5A6CB800852BA5 /* CodeStation.xctestplan */,
 				G10002 /* CodeStation */,
 				G20001 /* CodeStationTests */,
 				G10008 /* Products */,
@@ -180,25 +208,6 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		G10011 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				B10031 /* AppViewModel.swift */,
-				B10032 /* BoardViewModel.swift */,
-				B10033 /* TerminalSessionViewModel.swift */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
-		G10012 /* Services */ = {
-			isa = PBXGroup;
-			children = (
-				B10030 /* PersistenceService.swift */,
-				B10035 /* NotificationService.swift */,
-			);
-			path = Services;
-			sourceTree = "<group>";
-		};
 		G10007 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
@@ -208,15 +217,6 @@
 				B10038 /* SettingsWindowController.swift */,
 			);
 			path = Utilities;
-			sourceTree = "<group>";
-		};
-		G10010 /* Sidebar */ = {
-			isa = PBXGroup;
-			children = (
-				B10018 /* SidebarView.swift */,
-				B10019 /* SidebarRowView.swift */,
-			);
-			path = Sidebar;
 			sourceTree = "<group>";
 		};
 		G10008 /* Products */ = {
@@ -236,9 +236,50 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		G10010 /* Sidebar */ = {
+			isa = PBXGroup;
+			children = (
+				B10018 /* SidebarView.swift */,
+				B10019 /* SidebarRowView.swift */,
+			);
+			path = Sidebar;
+			sourceTree = "<group>";
+		};
+		G10011 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				B10031 /* AppViewModel.swift */,
+				B10032 /* BoardViewModel.swift */,
+				B10033 /* TerminalSessionViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		G10012 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10030 /* PersistenceService.swift */,
+				B10035 /* NotificationService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		G20001 /* CodeStationTests */ = {
 			isa = PBXGroup;
 			children = (
+				BT0001 /* SessionStatusTests.swift */,
+				BT0002 /* TerminalSessionTests.swift */,
+				BT0003 /* EnvironmentTests.swift */,
+				BT0004 /* NotificationSettingsTests.swift */,
+				BT0005 /* PromptButtonTests.swift */,
+				BT0006 /* PersistenceModelsTests.swift */,
+				BT0007 /* PersistenceServiceTests.swift */,
+				BT0008 /* ShellUtilsTests.swift */,
+				BT0009 /* HookManagerTests.swift */,
+				BT0010 /* StringsTests.swift */,
+				BT0011 /* BoardViewModelTests.swift */,
+				BT0012 /* TerminalSessionViewModelTests.swift */,
+				BT0013 /* AppViewModelTests.swift */,
 				B20001 /* EmptyCellViewSnapshotTests.swift */,
 				B20002 /* SidebarRowViewSnapshotTests.swift */,
 				B20003 /* SidebarViewSnapshotTests.swift */,
@@ -254,7 +295,7 @@
 /* Begin PBXNativeTarget section */
 		T10001 /* CodeStation */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = L10002;
+			buildConfigurationList = L10002 /* Build configuration list for PBXNativeTarget "CodeStation" */;
 			buildPhases = (
 				S10001 /* Sources */,
 				E10001 /* Frameworks */,
@@ -274,7 +315,7 @@
 		};
 		T20001 /* CodeStationTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = L20001;
+			buildConfigurationList = L20001 /* Build configuration list for PBXNativeTarget "CodeStationTests" */;
 			buildPhases = (
 				S20001 /* Sources */,
 				E20001 /* Frameworks */,
@@ -311,7 +352,7 @@
 					};
 				};
 			};
-			buildConfigurationList = L10001;
+			buildConfigurationList = L10001 /* Build configuration list for PBXProject "CodeStation" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -383,6 +424,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AT0001 /* SessionStatusTests.swift in Sources */,
+				AT0002 /* TerminalSessionTests.swift in Sources */,
+				AT0003 /* EnvironmentTests.swift in Sources */,
+				AT0004 /* NotificationSettingsTests.swift in Sources */,
+				AT0005 /* PromptButtonTests.swift in Sources */,
+				AT0006 /* PersistenceModelsTests.swift in Sources */,
+				AT0007 /* PersistenceServiceTests.swift in Sources */,
+				AT0008 /* ShellUtilsTests.swift in Sources */,
+				AT0009 /* HookManagerTests.swift in Sources */,
+				AT0010 /* StringsTests.swift in Sources */,
+				AT0011 /* BoardViewModelTests.swift in Sources */,
+				AT0012 /* TerminalSessionViewModelTests.swift in Sources */,
+				AT0013 /* AppViewModelTests.swift in Sources */,
 				A20001 /* EmptyCellViewSnapshotTests.swift in Sources */,
 				A20002 /* SidebarRowViewSnapshotTests.swift in Sources */,
 				A20003 /* SidebarViewSnapshotTests.swift in Sources */,
@@ -519,6 +573,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.codestation.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -535,6 +590,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.codestation.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -547,7 +603,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		L10001 /* Build configuration list for PBXProject */ = {
+		L10001 /* Build configuration list for PBXProject "CodeStation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BC10001 /* Debug */,
@@ -556,7 +612,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		L10002 /* Build configuration list for PBXNativeTarget */ = {
+		L10002 /* Build configuration list for PBXNativeTarget "CodeStation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BC10003 /* Debug */,
@@ -565,7 +621,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		L20001 /* Build configuration list for CodeStationTests */ = {
+		L20001 /* Build configuration list for PBXNativeTarget "CodeStationTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BC20001 /* Debug */,
@@ -598,16 +654,15 @@
 /* Begin XCSwiftPackageProductDependency section */
 		D10001 /* SwiftTerm */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = PKG10001;
+			package = PKG10001 /* XCRemoteSwiftPackageReference "SwiftTerm" */;
 			productName = SwiftTerm;
 		};
 		D20001 /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = PKG20001;
+			package = PKG20001 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
 			productName = SnapshotTesting;
 		};
 /* End XCSwiftPackageProductDependency section */
-
 	};
 	rootObject = P10001 /* Project object */;
 }
