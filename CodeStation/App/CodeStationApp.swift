@@ -58,6 +58,12 @@ struct CodeStationApp: App {
                 .keyboardShortcut("n", modifiers: .command)
                 .disabled(viewModel.isModalOpen)
 
+                Button(Strings.Environments.newEnvironment) {
+                    viewModel.addEnvironment()
+                }
+                .keyboardShortcut("e", modifiers: .command)
+                .disabled(viewModel.isModalOpen)
+
                 Button(Strings.Terminals.closeTerminal) {
                     viewModel.closeTerminalRequested = true
                 }

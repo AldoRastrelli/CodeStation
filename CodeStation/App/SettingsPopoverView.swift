@@ -433,6 +433,7 @@ struct SettingsWindowView: View {
                 ])
 
                 shortcutSection("Environments", shortcuts: [
+                    ("⌘ E", "New environment"),
                     ("⇧⌘ ↑", "Previous environment"),
                     ("⇧⌘ ↓", "Next environment"),
                 ])
