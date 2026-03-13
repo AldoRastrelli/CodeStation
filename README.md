@@ -6,6 +6,14 @@
 
 A macOS terminal multiplexer built with **SwiftUI** and **SwiftTerm**.
 
+## How to download
+
+1. Go to the [Releases](../../releases) page
+2. Find the latest release and click on it
+3. Under **Assets**, download the `.zip` file
+4. Unzip the file and drag **CodeStation.app** to your Applications folder
+5. Open CodeStation and enjoy!
+
 ## Features
 
 ### Environments
@@ -51,10 +59,12 @@ Drag the dividers between terminals to resize them. **Double-click** any divider
 | Shortcut | Action |
 |----------|--------|
 | ⌘ N | New terminal (new environment if current is full) |
+| ⌘ E | New environment |
+| ⌘ T | New terminal |
 | ⌘ W | Close focused terminal |
 | ⌘ 1–8 | Focus terminal by number |
-| ⌘ ← / → | Focus previous / next terminal |
-| ⌘ ↑ / ↓ | Switch to previous / next environment |
+| ⇧⌘ ← / → | Focus previous / next terminal |
+| ⇧⌘ ↑ / ↓ | Switch to previous / next environment |
 | ⌘ + / − / 0 | Zoom in / out / reset |
 
 ## What's coming up?
