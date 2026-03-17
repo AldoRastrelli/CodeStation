@@ -52,6 +52,7 @@ struct TerminalGridView: View {
                 TerminalContainerView(
                     viewModel: viewModel.viewModel(for: session),
                     terminalNumber: index + 1,
+                    hasUnseenNotification: viewModel.unseenNotificationSessionIDs.contains(session.id),
                     onClose: { viewModel.removeSession(session) },
                     onAddPromptButton: viewModel.onAddPromptButton,
                     onUpdatePromptButton: viewModel.onUpdatePromptButton,
@@ -141,6 +142,7 @@ struct TerminalGridView: View {
             TerminalContainerView(
                 viewModel: viewModel.viewModel(for: session),
                 terminalNumber: (sortedIndex ?? 0) + 1,
+                hasUnseenNotification: viewModel.unseenNotificationSessionIDs.contains(session.id),
                 onClose: { viewModel.removeSession(session) },
                 onAddPromptButton: viewModel.onAddPromptButton,
                 onUpdatePromptButton: viewModel.onUpdatePromptButton,
