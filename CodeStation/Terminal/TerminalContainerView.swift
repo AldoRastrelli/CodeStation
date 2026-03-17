@@ -10,6 +10,7 @@ struct TerminalContainerView: View {
 
     let viewModel: TerminalSessionViewModel
     var terminalNumber: Int?
+    var hasUnseenNotification: Bool = false
     var onClose: () -> Void
     var onAddPromptButton: ((PromptButton) -> Void)?
     var onUpdatePromptButton: ((PromptButton) -> Void)?
@@ -84,6 +85,7 @@ struct TerminalContainerView: View {
         let header = TerminalHeaderView(
             viewModel: viewModel,
             terminalNumber: terminalNumber,
+            hasUnseenNotification: hasUnseenNotification,
             onClose: {
                 if skipCloseConfirmation {
                     onClose()
