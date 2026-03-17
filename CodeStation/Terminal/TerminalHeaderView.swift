@@ -22,10 +22,12 @@ struct TerminalHeaderView: View {
         static let chevronSize: CGFloat = 10
         static let addButtonSize: CGFloat = 14
         static let subtitleFontSize: CGFloat = 11
+        static let notificationOverlayOpacity: Double = 0.15
     }
 
     @Bindable var viewModel: TerminalSessionViewModel
     var terminalNumber: Int?
+    var hasUnseenNotification: Bool = false
     var onClose: () -> Void
     var onAddPromptButton: ((PromptButton) -> Void)?
     var onUpdatePromptButton: ((PromptButton) -> Void)?
@@ -102,7 +104,15 @@ struct TerminalHeaderView: View {
                     .padding(.bottom, 4)
             }
         }
-        .background(Color(nsColor: .controlBackgroundColor))
+        .background {
+            Color(nsColor: .controlBackgroundColor)
+            if hasUnseenNotification {
+                notificationOverlayColor
+                    .opacity(Constants.notificationOverlayOpacity)
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: hasUnseenNotification)
         .popover(isPresented: $showingAddPrompt) {
             addPromptPopover
         }
@@ -381,6 +391,14 @@ struct TerminalHeaderView: View {
         case .ready: return .green
         case .asleep: return .gray
         case .waiting: return .orange
+        }
+    }
+
+    private var notificationOverlayColor: Color {
+        switch viewModel.session.status {
+        case .ready: return .green
+        case .waiting: return .orange
+        default: return .clear
         }
     }
 
