@@ -10,9 +10,16 @@ A macOS terminal multiplexer built with **SwiftUI** and **SwiftTerm**.
 
 1. Go to the [Releases](../../releases) page
 2. Find the latest release and click on it
-3. Under **Assets**, download the `.zip` file
-4. Unzip the file and drag **CodeStation.app** to your Applications folder
+3. Under **Assets**, download the `.dmg` file
+4. Open the `.dmg` and drag **CodeStation.app** to your Applications folder
 5. Open CodeStation and enjoy!
+
+> **"CodeStation is damaged and can't be opened"?**
+> macOS quarantines apps downloaded from the internet that aren't notarized by Apple. To fix it, run this in Terminal after dragging the app to Applications:
+> ```sh
+> xattr -cr /Applications/CodeStation.app
+> ```
+> Then open the app normally.
 
 ## Features
 
