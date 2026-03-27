@@ -57,6 +57,8 @@
 		AT0014 /* SettingsWindowControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0014 /* SettingsWindowControllerTests.swift */; };
 		AT0015 /* NotificationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0015 /* NotificationServiceTests.swift */; };
 		AT0016 /* NotificationDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0016 /* NotificationDelegateTests.swift */; };
+		AT0017 /* TerminalPTYTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0017 /* TerminalPTYTests.swift */; };
+		AT0018 /* TerminalSessionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0018 /* TerminalSessionViewTests.swift */; };
 		A10060 /* TerminalPTY.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10060 /* TerminalPTY.swift */; };
 		A10061 /* terminal.html in Resources */ = {isa = PBXBuildFile; fileRef = B10061 /* terminal.html */; };
 		A10062 /* xterm.js in Resources */ = {isa = PBXBuildFile; fileRef = B10062 /* xterm.js */; };
@@ -125,6 +127,8 @@
 		BT0014 /* SettingsWindowControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowControllerTests.swift; sourceTree = "<group>"; };
 		BT0015 /* NotificationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceTests.swift; sourceTree = "<group>"; };
 		BT0016 /* NotificationDelegateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDelegateTests.swift; sourceTree = "<group>"; };
+		BT0017 /* TerminalPTYTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPTYTests.swift; sourceTree = "<group>"; };
+		BT0018 /* TerminalSessionViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalSessionViewTests.swift; sourceTree = "<group>"; };
 		C10001 /* CodeStation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodeStation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C20001 /* CodeStationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CodeStationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B10060 /* TerminalPTY.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPTY.swift; sourceTree = "<group>"; };
@@ -302,6 +306,8 @@
 				BT0014 /* SettingsWindowControllerTests.swift */,
 				BT0015 /* NotificationServiceTests.swift */,
 				BT0016 /* NotificationDelegateTests.swift */,
+				BT0017 /* TerminalPTYTests.swift */,
+				BT0018 /* TerminalSessionViewTests.swift */,
 				B20001 /* EmptyCellViewSnapshotTests.swift */,
 				B20002 /* SidebarRowViewSnapshotTests.swift */,
 				B20003 /* SidebarViewSnapshotTests.swift */,
@@ -465,6 +471,8 @@
 				AT0014 /* SettingsWindowControllerTests.swift in Sources */,
 				AT0015 /* NotificationServiceTests.swift in Sources */,
 				AT0016 /* NotificationDelegateTests.swift in Sources */,
+				AT0017 /* TerminalPTYTests.swift in Sources */,
+				AT0018 /* TerminalSessionViewTests.swift in Sources */,
 				A20001 /* EmptyCellViewSnapshotTests.swift in Sources */,
 				A20002 /* SidebarRowViewSnapshotTests.swift in Sources */,
 				A20003 /* SidebarViewSnapshotTests.swift in Sources */,

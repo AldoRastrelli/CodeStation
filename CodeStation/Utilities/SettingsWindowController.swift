@@ -40,4 +40,10 @@ class SettingsWindowController: NSObject, NSWindowDelegate {
         viewModel?.isModalOpen = false
         Self.instance = nil
     }
+
+    static func closeForTesting() {
+        window?.close()
+        window = nil
+        instance = nil
+    }
 }
