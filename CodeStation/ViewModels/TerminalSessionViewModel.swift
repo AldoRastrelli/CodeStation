@@ -1,5 +1,5 @@
 import Foundation
-import SwiftTerm
+import WebKit
 
 @Observable
 class TerminalSessionViewModel {
@@ -9,7 +9,8 @@ class TerminalSessionViewModel {
     }
 
     var session: TerminalSession
-    var terminalView: LocalProcessTerminalView?
+    var pty: TerminalPTY?
+    weak var webView: WKWebView?
     var onStateChanged: (() -> Void)?
     var onNotificationFired: (() -> Void)?
     var environmentID: UUID?
@@ -83,12 +84,16 @@ class TerminalSessionViewModel {
     }
 
     func sendPrompt(_ text: String) {
-        terminalView?.send(txt: text + "\n")
+        pty?.write(Data((text + "\n").utf8))
     }
 
     func makeFocused() {
-        guard let terminalView = terminalView, let window = terminalView.window else { return }
-        window.makeFirstResponder(terminalView)
+        guard let webView = webView, let window = webView.window else { return }
+        window.makeFirstResponder(webView)
+    }
+
+    func setFontSize(_ size: CGFloat) {
+        webView?.evaluateJavaScript("window.setFontSize(\(size))") { _, _ in }
     }
 
     func updateDirectory(_ path: String) {
@@ -136,12 +141,8 @@ class TerminalSessionViewModel {
         hookMonitorTimer?.invalidate()
         hookMonitorTimer = nil
         HookManager.cleanupState(for: session.id)
-        if let terminalView = terminalView {
-            let pid = terminalView.process.shellPid
-            if pid > 0 {
-                kill(pid, SIGHUP)
-            }
-        }
-        terminalView = nil
+        pty?.terminate()
+        pty = nil
+        webView = nil
     }
 }

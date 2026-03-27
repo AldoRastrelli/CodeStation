@@ -84,10 +84,9 @@ class AppViewModel {
     }
 
     private func applyFontToAll() {
-        let font = NSFont.monospacedSystemFont(ofSize: fontSize, weight: .regular)
         for (_, boardVM) in boardViewModels {
             for session in boardVM.sessions {
-                boardVM.viewModel(for: session).terminalView?.font = font
+                boardVM.viewModel(for: session).setFontSize(fontSize)
             }
         }
     }

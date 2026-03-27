@@ -24,7 +24,6 @@
 		A10017 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10017 /* BoardView.swift */; };
 		A10018 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10018 /* SidebarView.swift */; };
 		A10019 /* SidebarRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10019 /* SidebarRowView.swift */; };
-		A10020 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = D10001 /* SwiftTerm */; };
 		A10021 /* Strings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10021 /* Strings.swift */; };
 		A10030 /* PersistenceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10030 /* PersistenceService.swift */; };
 		A10031 /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10031 /* AppViewModel.swift */; };
@@ -58,6 +57,11 @@
 		AT0014 /* SettingsWindowControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0014 /* SettingsWindowControllerTests.swift */; };
 		AT0015 /* NotificationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0015 /* NotificationServiceTests.swift */; };
 		AT0016 /* NotificationDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0016 /* NotificationDelegateTests.swift */; };
+		A10060 /* TerminalPTY.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10060 /* TerminalPTY.swift */; };
+		A10061 /* terminal.html in Resources */ = {isa = PBXBuildFile; fileRef = B10061 /* terminal.html */; };
+		A10062 /* xterm.js in Resources */ = {isa = PBXBuildFile; fileRef = B10062 /* xterm.js */; };
+		A10063 /* xterm.css in Resources */ = {isa = PBXBuildFile; fileRef = B10063 /* xterm.css */; };
+		A10064 /* xterm-addon-fit.js in Resources */ = {isa = PBXBuildFile; fileRef = B10064 /* xterm-addon-fit.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +127,11 @@
 		BT0016 /* NotificationDelegateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDelegateTests.swift; sourceTree = "<group>"; };
 		C10001 /* CodeStation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodeStation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C20001 /* CodeStationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CodeStationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10060 /* TerminalPTY.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPTY.swift; sourceTree = "<group>"; };
+		B10061 /* terminal.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = terminal.html; sourceTree = "<group>"; };
+		B10062 /* xterm.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = xterm.js; sourceTree = "<group>"; };
+		B10063 /* xterm.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = xterm.css; sourceTree = "<group>"; };
+		B10064 /* xterm-addon-fit.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = xterm-addon-fit.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,7 +139,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A10020 /* SwiftTerm in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,6 +196,7 @@
 				B10003 /* TerminalSessionView.swift */,
 				B10004 /* TerminalHeaderView.swift */,
 				B10005 /* TerminalContainerView.swift */,
+				B10060 /* TerminalPTY.swift */,
 			);
 			path = Terminal;
 			sourceTree = "<group>";
@@ -238,6 +247,10 @@
 			isa = PBXGroup;
 			children = (
 				B10012 /* Assets.xcassets */,
+				B10061 /* terminal.html */,
+				B10062 /* xterm.js */,
+				B10063 /* xterm.css */,
+				B10064 /* xterm-addon-fit.js */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -316,7 +329,6 @@
 			);
 			name = CodeStation;
 			packageProductDependencies = (
-				D10001 /* SwiftTerm */,
 			);
 			productName = CodeStation;
 			productReference = C10001 /* CodeStation.app */;
@@ -371,7 +383,6 @@
 			);
 			mainGroup = G10001;
 			packageReferences = (
-				PKG10001 /* XCRemoteSwiftPackageReference "SwiftTerm" */,
 				PKG20001 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
 			);
 			productRefGroup = G10008 /* Products */;
@@ -390,6 +401,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10012 /* Assets.xcassets in Resources */,
+				A10061 /* terminal.html in Resources */,
+				A10062 /* xterm.js in Resources */,
+				A10063 /* xterm.css in Resources */,
+				A10064 /* xterm-addon-fit.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,6 +441,7 @@
 				A10036 /* SettingsPopoverView.swift in Sources */,
 				A10037 /* PromptButton.swift in Sources */,
 				A10038 /* SettingsWindowController.swift in Sources */,
+				A10060 /* TerminalPTY.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -645,14 +661,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		PKG10001 /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		PKG20001 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing.git";
@@ -664,11 +672,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		D10001 /* SwiftTerm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = PKG10001 /* XCRemoteSwiftPackageReference "SwiftTerm" */;
-			productName = SwiftTerm;
-		};
 		D20001 /* SnapshotTesting */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = PKG20001 /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
