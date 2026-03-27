@@ -23,9 +23,7 @@ class AppViewModel {
     static let minFontSize: CGFloat = Constants.minFontSize
     static let maxFontSize: CGFloat = Constants.maxFontSize
 
-    var fontSize: CGFloat = Constants.defaultFontSize {
-        didSet { applyFontToAll() }
-    }
+    var fontSize: CGFloat = Constants.defaultFontSize
 
     static let directoryChangedNotification = Notification.Name(Constants.notificationName)
 
@@ -69,26 +67,27 @@ class AppViewModel {
         }
     }
 
-    // MARK: - Zoom
+    // MARK: - Zoom (per-terminal)
 
     func zoomIn() {
-        fontSize = min(fontSize + 1, Constants.maxFontSize)
+        focusedTerminalViewModel?.zoomIn()
     }
 
     func zoomOut() {
-        fontSize = max(fontSize - 1, Constants.minFontSize)
+        focusedTerminalViewModel?.zoomOut()
     }
 
     func zoomReset() {
-        fontSize = Constants.defaultFontSize
+        focusedTerminalViewModel?.zoomReset()
     }
 
-    private func applyFontToAll() {
-        for (_, boardVM) in boardViewModels {
-            for session in boardVM.sessions {
-                boardVM.viewModel(for: session).setFontSize(fontSize)
-            }
-        }
+    private var focusedTerminalViewModel: TerminalSessionViewModel? {
+        guard let envID = selectedEnvironmentID,
+              let boardVM = boardViewModels[envID] else { return nil }
+        let sessionID = boardVM.focusedSessionID ?? boardVM.sessions.first?.id
+        guard let sessionID,
+              let session = boardVM.sessions.first(where: { $0.id == sessionID }) else { return nil }
+        return boardVM.viewModel(for: session)
     }
 
     // MARK: - Environment CRUD
@@ -198,6 +197,7 @@ class AppViewModel {
         let currentIndex = sorted.firstIndex(where: { $0.id == selectedEnvironmentID }) ?? 0
         let targetIndex = currentIndex == 0 ? sorted.count - 1 : currentIndex - 1
         selectedEnvironmentID = sorted[targetIndex].id
+        focusFocusedTerminalInSelectedEnvironment()
     }
 
     func focusEnvironmentDown() {
@@ -206,6 +206,17 @@ class AppViewModel {
         let currentIndex = sorted.firstIndex(where: { $0.id == selectedEnvironmentID }) ?? 0
         let targetIndex = currentIndex == sorted.count - 1 ? 0 : currentIndex + 1
         selectedEnvironmentID = sorted[targetIndex].id
+        focusFocusedTerminalInSelectedEnvironment()
+    }
+
+    private func focusFocusedTerminalInSelectedEnvironment() {
+        guard let envID = selectedEnvironmentID,
+              let boardVM = boardViewModels[envID] else { return }
+        let sessionID = boardVM.focusedSessionID ?? boardVM.sessions.first?.id
+        guard let sessionID,
+              let session = boardVM.sessions.first(where: { $0.id == sessionID }) else { return }
+        boardVM.focusedSessionID = session.id
+        boardVM.viewModel(for: session).makeFocused()
     }
 
     func focusTerminalLeft() {

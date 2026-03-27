@@ -13,6 +13,7 @@ class TerminalSessionViewModel {
     // Strong reference so the WKWebView survives layout changes (e.g. single-row <-> grid).
     var webView: WKWebView?
     var messageHandlerRelay: MessageHandlerRelay?
+    var fontSize: CGFloat = AppViewModel.defaultFontSize
     var onStateChanged: (() -> Void)?
     var onNotificationFired: (() -> Void)?
     var environmentID: UUID?
@@ -97,7 +98,20 @@ class TerminalSessionViewModel {
     }
 
     func setFontSize(_ size: CGFloat) {
+        fontSize = size
         webView?.evaluateJavaScript("window.setFontSize(\(size))") { _, _ in }
+    }
+
+    func zoomIn() {
+        setFontSize(min(fontSize + 1, AppViewModel.maxFontSize))
+    }
+
+    func zoomOut() {
+        setFontSize(max(fontSize - 1, AppViewModel.minFontSize))
+    }
+
+    func zoomReset() {
+        setFontSize(AppViewModel.defaultFontSize)
     }
 
     func updateDirectory(_ path: String) {

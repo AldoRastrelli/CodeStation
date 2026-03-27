@@ -125,7 +125,10 @@ struct TerminalSessionView: NSViewRepresentable {
                     let rows = dict["rows"] as? Int
                 else { return }
                 startProcess(cols: UInt16(cols), rows: UInt16(rows))
-                // Give xterm.js DOM focus so keyboard input works immediately.
+                // Apply per-terminal font size and give xterm.js DOM focus.
+                if let size = viewModel?.fontSize {
+                    webView?.evaluateJavaScript("window.setFontSize(\(size))") { _, _ in }
+                }
                 webView?.evaluateJavaScript("term.focus()") { _, _ in }
 
             case "input":
