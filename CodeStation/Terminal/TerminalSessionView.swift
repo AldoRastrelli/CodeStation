@@ -2,6 +2,27 @@ import SwiftUI
 import WebKit
 import AppKit
 
+/// WKWebView subclass that prevents WebKit from consuming Cmd+Shift+Arrow shortcuts.
+/// WebKit treats these as text-selection key equivalents (extend selection to
+/// line/document boundary) and handles them internally, so they never reach the
+/// macOS menu bar. Overriding performKeyEquivalent lets the menu take priority.
+class TerminalWebView: WKWebView {
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        if flags == [.command, .shift] {
+            switch event.specialKey {
+            case .leftArrow, .rightArrow, .upArrow, .downArrow:
+                if NSApp.mainMenu?.performKeyEquivalent(with: event) == true {
+                    return true
+                }
+            default:
+                break
+            }
+        }
+        return super.performKeyEquivalent(with: event)
+    }
+}
+
 /// Stable WKScriptMessageHandler that WKWebView holds onto permanently.
 /// It forwards messages to the current coordinator via a weak reference,
 /// so updating the coordinator never requires removing/re-adding handlers.
@@ -45,7 +66,7 @@ struct TerminalSessionView: NSViewRepresentable {
         config.userContentController = contentController
         config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
 
-        let webView = WKWebView(frame: .zero, configuration: config)
+        let webView = TerminalWebView(frame: .zero, configuration: config)
         webView.setValue(false, forKey: "drawsBackground")
 
         coordinator.webView = webView
