@@ -2,6 +2,20 @@ import SwiftUI
 import WebKit
 import AppKit
 
+/// Stable WKScriptMessageHandler that WKWebView holds onto permanently.
+/// It forwards messages to the current coordinator via a weak reference,
+/// so updating the coordinator never requires removing/re-adding handlers.
+class MessageHandlerRelay: NSObject, WKScriptMessageHandler {
+    weak var coordinator: TerminalSessionView.Coordinator?
+
+    func userContentController(
+        _ userContentController: WKUserContentController,
+        didReceive message: WKScriptMessage
+    ) {
+        coordinator?.userContentController(userContentController, didReceive: message)
+    }
+}
+
 struct TerminalSessionView: NSViewRepresentable {
     let viewModel: TerminalSessionViewModel
 
@@ -9,13 +23,26 @@ struct TerminalSessionView: NSViewRepresentable {
         let coordinator = context.coordinator
         coordinator.viewModel = viewModel
 
+        // Reuse the existing WKWebView when the layout changes (e.g. switching between
+        // single-row and grid). Without this, every layout transition destroys the view
+        // and restarts the PTY, losing all terminal history.
+        if let existing = viewModel.webView {
+            viewModel.messageHandlerRelay?.coordinator = coordinator
+            coordinator.webView = existing
+            coordinator.adoptExistingPTY(viewModel.pty)
+            return existing
+        }
+
+        let relay = MessageHandlerRelay()
+        relay.coordinator = coordinator
+        viewModel.messageHandlerRelay = relay
+
         let config = WKWebViewConfiguration()
         let contentController = WKUserContentController()
         for name in ["input", "resize", "osc7", "ready"] {
-            contentController.add(coordinator, name: name)
+            contentController.add(relay, name: name)
         }
         config.userContentController = contentController
-        // Allow the HTML to load sibling JS/CSS files from the same bundle directory.
         config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
 
         let webView = WKWebView(frame: .zero, configuration: config)
@@ -97,6 +124,20 @@ struct TerminalSessionView: NSViewRepresentable {
 
             default:
                 break
+            }
+        }
+
+        // MARK: PTY adoption (layout change reuse path)
+
+        func adoptExistingPTY(_ pty: TerminalPTY?) {
+            guard let pty = pty else { return }
+            self.pty = pty
+            pty.onOutput = { [weak self] data in
+                self?.writeToTerminal(data)
+                self?.viewModel?.recordDataReceived()
+            }
+            pty.onTerminated = { [weak self] _ in
+                DispatchQueue.main.async { self?.viewModel?.markProcessTerminated() }
             }
         }
 

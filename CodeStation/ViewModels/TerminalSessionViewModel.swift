@@ -10,7 +10,9 @@ class TerminalSessionViewModel {
 
     var session: TerminalSession
     var pty: TerminalPTY?
-    weak var webView: WKWebView?
+    // Strong reference so the WKWebView survives layout changes (e.g. single-row <-> grid).
+    var webView: WKWebView?
+    var messageHandlerRelay: MessageHandlerRelay?
     var onStateChanged: (() -> Void)?
     var onNotificationFired: (() -> Void)?
     var environmentID: UUID?
@@ -143,6 +145,7 @@ class TerminalSessionViewModel {
         HookManager.cleanupState(for: session.id)
         pty?.terminate()
         pty = nil
+        messageHandlerRelay = nil
         webView = nil
     }
 }
