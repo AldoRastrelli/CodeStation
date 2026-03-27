@@ -104,6 +104,8 @@ struct TerminalSessionView: NSViewRepresentable {
                     let rows = dict["rows"] as? Int
                 else { return }
                 startProcess(cols: UInt16(cols), rows: UInt16(rows))
+                // Give xterm.js DOM focus so keyboard input works immediately.
+                webView?.evaluateJavaScript("term.focus()") { _, _ in }
 
             case "input":
                 if let text = message.body as? String {

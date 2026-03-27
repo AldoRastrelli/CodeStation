@@ -92,6 +92,8 @@ class TerminalSessionViewModel {
     func makeFocused() {
         guard let webView = webView, let window = webView.window else { return }
         window.makeFirstResponder(webView)
+        // Give xterm.js DOM focus so it captures keyboard input.
+        webView.evaluateJavaScript("term.focus()") { _, _ in }
     }
 
     func setFontSize(_ size: CGFloat) {
