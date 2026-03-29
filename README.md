@@ -67,7 +67,6 @@ Drag the dividers between terminals to resize them. **Double-click** any divider
 |----------|--------|
 | ⌘ N | New terminal (new environment if current is full) |
 | ⌘ E | New environment |
-| ⌘ T | New terminal |
 | ⌘ W | Close focused terminal |
 | ⌘ 1–8 | Focus terminal by number |
 | ⇧⌘ ← / → | Focus previous / next terminal |

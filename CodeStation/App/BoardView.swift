@@ -54,7 +54,6 @@ struct BoardView: View {
                 }
                 .disabled(!viewModel.canAddSession)
                 .help(Strings.Terminals.addTerminal)
-                .keyboardShortcut("t", modifiers: .command)
             }
             .padding(.horizontal, Constants.horizontalPadding)
             .padding(.vertical, Constants.verticalPadding)
