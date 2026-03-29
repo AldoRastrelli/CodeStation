@@ -444,9 +444,6 @@ struct SettingsWindowView: View {
                     ("⌘ 0", "Reset zoom"),
                 ])
 
-                shortcutSection("General", shortcuts: [
-                    ("⌘ T", "New terminal (same as ⌘ N)"),
-                ])
             }
             .padding(Constants.contentPadding)
         }
