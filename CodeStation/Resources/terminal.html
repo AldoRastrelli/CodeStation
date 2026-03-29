@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; background: #1e1e24; overflow: hidden; }
+#terminal { width: 100%; height: 100%; }
+.xterm-viewport { overflow-y: hidden !important; }
+</style>
+<link rel="stylesheet" href="xterm.css">
+</head>
+<body>
+<div id="terminal"></div>
+<script src="xterm.js"></script>
+<script src="xterm-addon-fit.js"></script>
+<script>
+var term = new Terminal({
+    theme: {
+        background:    '#1e1e24',
+        foreground:    '#e5e5e5',
+        cursor:        '#e5e5e5',
+        cursorAccent:  '#1e1e24',
+        selectionBackground: 'rgba(255, 255, 255, 0.25)',
+        black:         '#000000',
+        red:           '#cd3131',
+        green:         '#0dbc79',
+        yellow:        '#e5e510',
+        blue:          '#2472c8',
+        magenta:       '#bc3fbc',
+        cyan:          '#11a8cd',
+        white:         '#e5e5e5',
+        brightBlack:   '#666666',
+        brightRed:     '#f14c4c',
+        brightGreen:   '#23d18b',
+        brightYellow:  '#f5f543',
+        brightBlue:    '#3b8eea',
+        brightMagenta: '#d670d6',
+        brightCyan:    '#29b8db',
+        brightWhite:   '#e5e5e5',
+    },
+    fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+    fontSize: 13,
+    lineHeight: 1.2,
+    cursorBlink: true,
+    scrollback: 5000,
+    allowTransparency: false,
+    convertEol: false,
+    macOptionIsMeta: true,
+});
+
+var fitAddon = new FitAddon.FitAddon();
+term.loadAddon(fitAddon);
+term.open(document.getElementById('terminal'));
+fitAddon.fit();
+
+// User input -> Swift
+term.onData(function(data) {
+    window.webkit.messageHandlers.input.postMessage(data);
+});
+
+// Terminal resize -> Swift (fired after fit)
+term.onResize(function(size) {
+    window.webkit.messageHandlers.resize.postMessage({ cols: size.cols, rows: size.rows });
+});
+
+// OSC 7 - directory tracking
+term.parser.registerOscHandler(7, function(data) {
+    window.webkit.messageHandlers.osc7.postMessage(data);
+    return false;
+});
+
+// Refit when the container resizes
+var ro = new ResizeObserver(function() { fitAddon.fit(); });
+ro.observe(document.getElementById('terminal'));
+
+// Called by Swift: write base64-encoded PTY output to the terminal
+window.termWrite = function(base64) {
+    var binary = atob(base64);
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    term.write(bytes);
+};
+
+// Called by Swift: change font size
+window.setFontSize = function(size) {
+    term.options.fontSize = size;
+    fitAddon.fit();
+};
+
+// Signal ready with initial dimensions
+window.webkit.messageHandlers.ready.postMessage({ cols: term.cols, rows: term.rows });
+</script>
+</body>
+</html>

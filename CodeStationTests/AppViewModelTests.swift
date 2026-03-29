@@ -32,57 +32,79 @@ final class AppViewModelTests: XCTestCase {
     }
 
     // MARK: - Zoom
+    // Zoom operates on the focused terminal's fontSize, not AppViewModel.fontSize.
+
+    private func makeSUTWithFocusedTerminal() -> (AppViewModel, TerminalSessionViewModel) {
+        let vm = AppViewModel()
+        let env = vm.selectedEnvironment!
+        let boardVM = vm.boardViewModel(for: env)
+        let session = boardVM.addSession()!
+        boardVM.focusedSessionID = session.id
+        let terminalVM = boardVM.viewModel(for: session)
+        return (vm, terminalVM)
+    }
 
     func testZoomIn() {
-        let vm = makeSUT()
-        let initial = vm.fontSize
+        let (vm, terminalVM) = makeSUTWithFocusedTerminal()
+        let initial = terminalVM.fontSize
         vm.zoomIn()
-        XCTAssertEqual(vm.fontSize, initial + 1)
+        XCTAssertEqual(terminalVM.fontSize, initial + 1)
     }
 
     func testZoomOut() {
-        let vm = makeSUT()
-        let initial = vm.fontSize
+        let (vm, terminalVM) = makeSUTWithFocusedTerminal()
+        let initial = terminalVM.fontSize
         vm.zoomOut()
-        XCTAssertEqual(vm.fontSize, initial - 1)
+        XCTAssertEqual(terminalVM.fontSize, initial - 1)
     }
 
     func testZoomReset() {
-        let vm = makeSUT()
+        let (vm, terminalVM) = makeSUTWithFocusedTerminal()
         vm.zoomIn()
         vm.zoomIn()
         vm.zoomReset()
-        XCTAssertEqual(vm.fontSize, AppViewModel.defaultFontSize)
+        XCTAssertEqual(terminalVM.fontSize, AppViewModel.defaultFontSize)
     }
 
     func testZoomInDoesNotExceedMax() {
-        let vm = makeSUT()
-        vm.fontSize = AppViewModel.maxFontSize
+        let (vm, terminalVM) = makeSUTWithFocusedTerminal()
+        terminalVM.setFontSize(AppViewModel.maxFontSize)
         vm.zoomIn()
-        XCTAssertEqual(vm.fontSize, AppViewModel.maxFontSize)
+        XCTAssertEqual(terminalVM.fontSize, AppViewModel.maxFontSize)
     }
 
     func testZoomOutDoesNotGoBelowMin() {
-        let vm = makeSUT()
-        vm.fontSize = AppViewModel.minFontSize
+        let (vm, terminalVM) = makeSUTWithFocusedTerminal()
+        terminalVM.setFontSize(AppViewModel.minFontSize)
         vm.zoomOut()
-        XCTAssertEqual(vm.fontSize, AppViewModel.minFontSize)
+        XCTAssertEqual(terminalVM.fontSize, AppViewModel.minFontSize)
     }
 
     func testZoomInRepeatedlyReachesMax() {
-        let vm = makeSUT()
+        let (vm, terminalVM) = makeSUTWithFocusedTerminal()
         for _ in 0..<100 {
             vm.zoomIn()
         }
-        XCTAssertEqual(vm.fontSize, AppViewModel.maxFontSize)
+        XCTAssertEqual(terminalVM.fontSize, AppViewModel.maxFontSize)
     }
 
     func testZoomOutRepeatedlyReachesMin() {
-        let vm = makeSUT()
+        let (vm, terminalVM) = makeSUTWithFocusedTerminal()
         for _ in 0..<100 {
             vm.zoomOut()
         }
-        XCTAssertEqual(vm.fontSize, AppViewModel.minFontSize)
+        XCTAssertEqual(terminalVM.fontSize, AppViewModel.minFontSize)
+    }
+
+    func testZoomNoOpWithoutFocusedTerminal() {
+        let vm = makeSUT()
+        // Remove all environments so there is no focused terminal
+        let envs = vm.environments
+        for env in envs { vm.removeEnvironment(env) }
+        // These should be no-ops without crashing
+        vm.zoomIn()
+        vm.zoomOut()
+        vm.zoomReset()
     }
 
     // MARK: - Environment CRUD

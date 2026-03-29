@@ -1,66 +1,109 @@
 import SwiftUI
-import SwiftTerm
+import WebKit
 import AppKit
 
-/// Custom subclass to intercept data output for status tracking
-class ObservableTerminalView: LocalProcessTerminalView {
-    var onDataReceived: ((ArraySlice<UInt8>) -> Void)?
+/// WKWebView subclass that prevents WebKit from consuming Cmd+Shift+Arrow shortcuts.
+/// WebKit treats these as text-selection key equivalents (extend selection to
+/// line/document boundary) and handles them internally, so they never reach the
+/// macOS menu bar. Overriding performKeyEquivalent lets the menu take priority.
+class TerminalWebView: WKWebView {
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        if flags == [.command, .shift] {
+            switch event.specialKey {
+            case .leftArrow, .rightArrow, .upArrow, .downArrow:
+                if NSApp.mainMenu?.performKeyEquivalent(with: event) == true {
+                    return true
+                }
+            default:
+                break
+            }
+        }
+        return super.performKeyEquivalent(with: event)
+    }
+}
 
-    override func dataReceived(slice: ArraySlice<UInt8>) {
-        super.dataReceived(slice: slice)
-        onDataReceived?(slice)
+/// Stable WKScriptMessageHandler that WKWebView holds onto permanently.
+/// It forwards messages to the current coordinator via a weak reference,
+/// so updating the coordinator never requires removing/re-adding handlers.
+class MessageHandlerRelay: NSObject, WKScriptMessageHandler {
+    weak var coordinator: TerminalSessionView.Coordinator?
+
+    func userContentController(
+        _ userContentController: WKUserContentController,
+        didReceive message: WKScriptMessage
+    ) {
+        coordinator?.userContentController(userContentController, didReceive: message)
     }
 }
 
 struct TerminalSessionView: NSViewRepresentable {
     let viewModel: TerminalSessionViewModel
 
-    func makeNSView(context: Context) -> NSView {
-        let container = NSView()
+    func makeNSView(context: Context) -> WKWebView {
         let coordinator = context.coordinator
         coordinator.viewModel = viewModel
 
-        DispatchQueue.main.async {
-            guard coordinator.terminalView == nil else { return }
-            coordinator.setupTerminal(in: container, viewModel: viewModel)
+        // Reuse the existing WKWebView when the layout changes (e.g. switching between
+        // single-row and grid). Without this, every layout transition destroys the view
+        // and restarts the PTY, losing all terminal history.
+        if let existing = viewModel.webView {
+            viewModel.messageHandlerRelay?.coordinator = coordinator
+            coordinator.webView = existing
+            coordinator.adoptExistingPTY(viewModel.pty)
+            return existing
         }
 
-        return container
+        let relay = MessageHandlerRelay()
+        relay.coordinator = coordinator
+        viewModel.messageHandlerRelay = relay
+
+        let config = WKWebViewConfiguration()
+        let contentController = WKUserContentController()
+        for name in ["input", "resize", "osc7", "ready"] {
+            contentController.add(relay, name: name)
+        }
+        config.userContentController = contentController
+        config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
+
+        let webView = TerminalWebView(frame: .zero, configuration: config)
+        webView.setValue(false, forKey: "drawsBackground")
+
+        coordinator.webView = webView
+        viewModel.webView = webView
+
+        if let htmlURL = Bundle.main.url(forResource: "terminal", withExtension: "html") {
+            webView.loadFileURL(htmlURL, allowingReadAccessTo: htmlURL.deletingLastPathComponent())
+        }
+
+        return webView
     }
 
-    func updateNSView(_ nsView: NSView, context: Context) {
-        if let terminalView = context.coordinator.terminalView, terminalView.superview !== nsView {
-            terminalView.removeFromSuperview()
-            terminalView.frame = nsView.bounds
-            terminalView.autoresizingMask = [.width, .height]
-            nsView.addSubview(terminalView)
-        }
-    }
+    func updateNSView(_ nsView: WKWebView, context: Context) {}
 
     func makeCoordinator() -> Coordinator {
         Coordinator()
     }
 
-    class Coordinator: NSObject, LocalProcessTerminalViewDelegate {
+    // MARK: - Coordinator
+
+    class Coordinator: NSObject, WKScriptMessageHandler {
         private enum Constants {
             static let statusTimerInterval: TimeInterval = 3.0
-            static let defaultFontSize: CGFloat = 13
-            static let foregroundColor = NSColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1.0)
-            static let backgroundColor = NSColor(red: 0.12, green: 0.12, blue: 0.14, alpha: 1.0)
-            static let osc7HookDelay: TimeInterval = 0.5
-            static let filePermissions: Int = 0o755
         }
 
-        var terminalView: ObservableTerminalView?
+        weak var webView: WKWebView?
         var viewModel: TerminalSessionViewModel?
+        private var pty: TerminalPTY?
         private var statusTimer: Timer?
 
         override init() {
             super.init()
-            statusTimer = Timer.scheduledTimer(withTimeInterval: Constants.statusTimerInterval, repeats: true) { [weak self] _ in
-                DispatchQueue.main.async {
-                    self?.viewModel?.updateStatusFromOutput()
-                }
+            statusTimer = Timer.scheduledTimer(
+                withTimeInterval: Constants.statusTimerInterval,
+                repeats: true
+            ) { [weak self] _ in
+                DispatchQueue.main.async { self?.viewModel?.updateStatusFromOutput() }
             }
         }
 
@@ -68,10 +111,66 @@ struct TerminalSessionView: NSViewRepresentable {
             statusTimer?.invalidate()
         }
 
-        func setupTerminal(in container: NSView, viewModel: TerminalSessionViewModel) {
-            let terminalView = ObservableTerminalView(frame: container.bounds)
-            terminalView.autoresizingMask = [.width, .height]
+        // MARK: WKScriptMessageHandler
 
+        func userContentController(
+            _ userContentController: WKUserContentController,
+            didReceive message: WKScriptMessage
+        ) {
+            switch message.name {
+            case "ready":
+                guard
+                    let dict = message.body as? [String: Any],
+                    let cols = dict["cols"] as? Int,
+                    let rows = dict["rows"] as? Int
+                else { return }
+                startProcess(cols: UInt16(cols), rows: UInt16(rows))
+                // Apply per-terminal font size and give xterm.js DOM focus.
+                if let size = viewModel?.fontSize {
+                    webView?.evaluateJavaScript("window.setFontSize(\(size))") { _, _ in }
+                }
+                webView?.evaluateJavaScript("term.focus()") { _, _ in }
+
+            case "input":
+                if let text = message.body as? String {
+                    pty?.write(Data(text.utf8))
+                }
+
+            case "resize":
+                if let dict = message.body as? [String: Any],
+                   let cols = dict["cols"] as? Int,
+                   let rows = dict["rows"] as? Int {
+                    pty?.resize(columns: UInt16(cols), rows: UInt16(rows))
+                }
+
+            case "osc7":
+                if let raw = message.body as? String {
+                    handleOSC7(raw)
+                }
+
+            default:
+                break
+            }
+        }
+
+        // MARK: PTY adoption (layout change reuse path)
+
+        func adoptExistingPTY(_ pty: TerminalPTY?) {
+            guard let pty = pty else { return }
+            self.pty = pty
+            pty.onOutput = { [weak self] data in
+                self?.writeToTerminal(data)
+                self?.viewModel?.recordDataReceived()
+            }
+            pty.onTerminated = { [weak self] _ in
+                DispatchQueue.main.async { self?.viewModel?.markProcessTerminated() }
+            }
+        }
+
+        // MARK: Process startup
+
+        private func startProcess(cols: UInt16, rows: UInt16) {
+            guard let viewModel = viewModel else { return }
             let session = viewModel.session
             let shell = ShellUtils.defaultShell()
             var env = ShellUtils.shellEnvironment()
@@ -81,58 +180,54 @@ struct TerminalSessionView: NSViewRepresentable {
             env.removeAll { $0.hasPrefix(Strings.Shell.colorTermPrefix) }
             env.append("\(Strings.Shell.colorTermPrefix)\(Strings.Shell.colorTermValue)")
 
-            terminalView.font = NSFont.monospacedSystemFont(ofSize: Constants.defaultFontSize, weight: .regular)
-            terminalView.nativeForegroundColor = Constants.foregroundColor
-            terminalView.nativeBackgroundColor = Constants.backgroundColor
-            terminalView.getTerminal().silentLog = true
-
-            terminalView.processDelegate = self
-            self.terminalView = terminalView
-
-            terminalView.onDataReceived = { [weak self] slice in
-                self?.handleDataReceived(slice: slice)
-            }
-
-            container.addSubview(terminalView)
-
-            viewModel.terminalView = terminalView
-            viewModel.startHookMonitoring()
-
             Self.installOSC7Hook(shell: shell, env: &env)
 
             let workingDir = session.currentDirectory ?? ShellUtils.homeDirectory()
-            terminalView.startProcess(
+
+            let newPTY = TerminalPTY()
+            newPTY.onOutput = { [weak self] data in
+                self?.writeToTerminal(data)
+                self?.viewModel?.recordDataReceived()
+            }
+            newPTY.onTerminated = { [weak self] _ in
+                DispatchQueue.main.async { self?.viewModel?.markProcessTerminated() }
+            }
+            newPTY.start(
                 executable: shell,
                 args: [Strings.Shell.loginFlag],
                 environment: env,
-                execName: shell,
-                currentDirectory: workingDir
+                currentDirectory: workingDir,
+                columns: cols,
+                rows: rows
             )
+            pty = newPTY
+            viewModel.pty = newPTY
+            viewModel.startHookMonitoring()
         }
 
-        func handleDataReceived(slice: ArraySlice<UInt8>) {
-            DispatchQueue.main.async { [weak self] in
-                self?.viewModel?.recordDataReceived()
-            }
+        // MARK: Terminal I/O
+
+        private func writeToTerminal(_ data: Data) {
+            let base64 = data.base64EncodedString()
+            webView?.evaluateJavaScript("window.termWrite('\(base64)')") { _, _ in }
         }
 
-        func sizeChanged(source: LocalProcessTerminalView, newCols: Int, newRows: Int) {}
+        // MARK: OSC 7
 
-        func setTerminalTitle(source: LocalProcessTerminalView, title: String) {}
-
-        func hostCurrentDirectoryUpdate(source: TerminalView, directory: String?) {
-            guard let directory = directory else { return }
+        private func handleOSC7(_ raw: String) {
             let path: String
-            if let url = URL(string: directory), url.scheme == "file" {
+            if let url = URL(string: raw), url.scheme == "file" {
                 path = url.path
             } else {
-                path = directory
+                path = raw
             }
             guard !path.isEmpty else { return }
             DispatchQueue.main.async { [weak self] in
                 self?.viewModel?.updateDirectory(path)
             }
         }
+
+        // MARK: OSC 7 shell hook installation
 
         private static func installOSC7Hook(shell: String, env: inout [String]) {
             let tmpDir = FileManager.default.temporaryDirectory
@@ -154,7 +249,6 @@ struct TerminalSessionView: NSViewRepresentable {
                 """
                 let rcPath = tmpDir.appendingPathComponent(Strings.Shell.zshrcFilename)
                 try? rc.write(to: rcPath, atomically: true, encoding: .utf8)
-
                 env.removeAll { $0.hasPrefix(Strings.Shell.zdotdirPrefix) }
                 env.append("\(Strings.Shell.zdotdirPrefix)\(tmpDir.path)")
             } else {
@@ -170,17 +264,10 @@ struct TerminalSessionView: NSViewRepresentable {
                 """
                 let rcPath = tmpDir.appendingPathComponent(Strings.Shell.bashrcFilename)
                 try? rc.write(to: rcPath, atomically: true, encoding: .utf8)
-
                 env.removeAll { $0.hasPrefix(Strings.Shell.bashEnvPrefix) }
                 env.append("\(Strings.Shell.bashEnvPrefix)\(rcPath.path)")
                 env.removeAll { $0.hasPrefix(Strings.Shell.envPrefix) }
                 env.append("\(Strings.Shell.envPrefix)\(rcPath.path)")
-            }
-        }
-
-        func processTerminated(source: TerminalView, exitCode: Int32?) {
-            DispatchQueue.main.async { [weak self] in
-                self?.viewModel?.markProcessTerminated()
             }
         }
     }

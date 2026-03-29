@@ -1,5 +1,5 @@
 import Foundation
-import SwiftTerm
+import WebKit
 
 @Observable
 class TerminalSessionViewModel {
@@ -9,7 +9,11 @@ class TerminalSessionViewModel {
     }
 
     var session: TerminalSession
-    var terminalView: LocalProcessTerminalView?
+    var pty: TerminalPTY?
+    // Strong reference so the WKWebView survives layout changes (e.g. single-row <-> grid).
+    var webView: WKWebView?
+    var messageHandlerRelay: MessageHandlerRelay?
+    var fontSize: CGFloat = AppViewModel.defaultFontSize
     var onStateChanged: (() -> Void)?
     var onNotificationFired: (() -> Void)?
     var environmentID: UUID?
@@ -83,12 +87,31 @@ class TerminalSessionViewModel {
     }
 
     func sendPrompt(_ text: String) {
-        terminalView?.send(txt: text + "\n")
+        pty?.write(Data((text + "\n").utf8))
     }
 
     func makeFocused() {
-        guard let terminalView = terminalView, let window = terminalView.window else { return }
-        window.makeFirstResponder(terminalView)
+        guard let webView = webView, let window = webView.window else { return }
+        window.makeFirstResponder(webView)
+        // Give xterm.js DOM focus so it captures keyboard input.
+        webView.evaluateJavaScript("term.focus()") { _, _ in }
+    }
+
+    func setFontSize(_ size: CGFloat) {
+        fontSize = size
+        webView?.evaluateJavaScript("window.setFontSize(\(size))") { _, _ in }
+    }
+
+    func zoomIn() {
+        setFontSize(min(fontSize + 1, AppViewModel.maxFontSize))
+    }
+
+    func zoomOut() {
+        setFontSize(max(fontSize - 1, AppViewModel.minFontSize))
+    }
+
+    func zoomReset() {
+        setFontSize(AppViewModel.defaultFontSize)
     }
 
     func updateDirectory(_ path: String) {
@@ -136,12 +159,9 @@ class TerminalSessionViewModel {
         hookMonitorTimer?.invalidate()
         hookMonitorTimer = nil
         HookManager.cleanupState(for: session.id)
-        if let terminalView = terminalView {
-            let pid = terminalView.process.shellPid
-            if pid > 0 {
-                kill(pid, SIGHUP)
-            }
-        }
-        terminalView = nil
+        pty?.terminate()
+        pty = nil
+        messageHandlerRelay = nil
+        webView = nil
     }
 }

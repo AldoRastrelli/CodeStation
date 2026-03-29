@@ -1,4 +1,5 @@
 import XCTest
+import WebKit
 @testable import CodeStation
 
 final class TerminalSessionViewModelTests: XCTestCase {
@@ -13,7 +14,7 @@ final class TerminalSessionViewModelTests: XCTestCase {
     func testInitialState() {
         let vm = makeSUT()
         XCTAssertEqual(vm.session.status, .ready)
-        XCTAssertNil(vm.terminalView)
+        XCTAssertNil(vm.pty); XCTAssertNil(vm.webView)
         XCTAssertNil(vm.environmentID)
         XCTAssertTrue(vm.promptButtonsCollapsed)
     }
@@ -137,7 +138,7 @@ final class TerminalSessionViewModelTests: XCTestCase {
         let vm = makeSUT()
         // Just verify cleanup doesn't crash when no terminal view
         vm.cleanup()
-        XCTAssertNil(vm.terminalView)
+        XCTAssertNil(vm.pty)
     }
 
     // MARK: - Environment ID
@@ -178,7 +179,7 @@ final class TerminalSessionViewModelTests: XCTestCase {
 
     func testSendPromptDoesNotCrashWithNoTerminalView() {
         let vm = makeSUT()
-        XCTAssertNil(vm.terminalView)
+        XCTAssertNil(vm.pty)
         vm.sendPrompt("hello")
     }
 
@@ -232,7 +233,7 @@ final class TerminalSessionViewModelTests: XCTestCase {
         let vm = makeSUT()
         vm.startHookMonitoring()
         vm.cleanup()
-        XCTAssertNil(vm.terminalView)
+        XCTAssertNil(vm.pty)
     }
 
     // MARK: - Grid Index
@@ -251,5 +252,175 @@ final class TerminalSessionViewModelTests: XCTestCase {
         // Just setting status doesn't call onStateChanged
         vm.session.status = .cooking
         XCTAssertFalse(called)
+    }
+
+    // MARK: - setFontSize
+
+    func testSetFontSizeWithNilWebViewDoesNotCrash() {
+        let vm = makeSUT()
+        XCTAssertNil(vm.webView)
+        vm.setFontSize(14)
+    }
+
+    // MARK: - cleanup
+
+    func testCleanupNilsPTY() {
+        let vm = makeSUT()
+        vm.startHookMonitoring()
+        vm.cleanup()
+        XCTAssertNil(vm.pty)
+    }
+
+    func testCleanupNilsWebView() {
+        let vm = makeSUT()
+        vm.startHookMonitoring()
+        vm.cleanup()
+        XCTAssertNil(vm.webView)
+    }
+
+    func testCleanupNilsMessageHandlerRelay() {
+        let vm = makeSUT()
+        vm.cleanup()
+        XCTAssertNil(vm.messageHandlerRelay)
+    }
+
+    // MARK: - makeFocused
+
+    func testMakeFocusedWithNilWebViewDoesNotCrash() {
+        let vm = makeSUT()
+        XCTAssertNil(vm.webView)
+        vm.makeFocused() // guard returns early, no crash
+    }
+
+    // MARK: - sendPrompt
+
+    func testSendPromptWithNilPTYDoesNotCrash() {
+        let vm = makeSUT()
+        XCTAssertNil(vm.pty)
+        vm.sendPrompt("hello")
+    }
+
+    // MARK: - Notification firing (cooking -> ready)
+
+    func testNotificationFiredOnCookingToReady() throws {
+        let vm = makeSUT()
+        let sessionID = vm.session.id
+
+        var notificationFired = false
+        vm.onNotificationFired = { notificationFired = true }
+        vm.environmentID = UUID()
+        var settings = NotificationSettings()
+        settings.notifyWhenDone = true
+        vm.getNotificationSettings = { settings }
+
+        // Write a "Stop" hook event (maps to .ready)
+        let stateDir = HookManager.stateDirectory
+        try FileManager.default.createDirectory(atPath: stateDir, withIntermediateDirectories: true)
+        let json: [String: Any] = ["event": "Stop", "timestamp": Date().timeIntervalSince1970]
+        let data = try JSONSerialization.data(withJSONObject: json)
+        let path = HookManager.stateFilePath(for: sessionID)
+        try data.write(to: URL(fileURLWithPath: path))
+
+        vm.session.status = .cooking
+        vm.startHookMonitoring()
+
+        let exp = XCTestExpectation(description: "poll fires")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { exp.fulfill() }
+        wait(for: [exp], timeout: 3.0)
+
+        XCTAssertTrue(notificationFired)
+        XCTAssertEqual(vm.session.status, .ready)
+        vm.cleanup()
+        HookManager.cleanupState(for: sessionID)
+    }
+
+    // MARK: - Notification firing (cooking -> waiting)
+
+    func testNotificationFiredOnCookingToWaiting() throws {
+        let vm = makeSUT()
+        let sessionID = vm.session.id
+
+        var notificationFired = false
+        vm.onNotificationFired = { notificationFired = true }
+        vm.environmentID = UUID()
+        var settings = NotificationSettings()
+        settings.notifyWhenWaiting = true
+        vm.getNotificationSettings = { settings }
+
+        // "Notification" hook event maps to .waiting
+        let stateDir = HookManager.stateDirectory
+        try FileManager.default.createDirectory(atPath: stateDir, withIntermediateDirectories: true)
+        let json: [String: Any] = ["event": "Notification", "timestamp": Date().timeIntervalSince1970]
+        let data = try JSONSerialization.data(withJSONObject: json)
+        let path = HookManager.stateFilePath(for: sessionID)
+        try data.write(to: URL(fileURLWithPath: path))
+
+        vm.session.status = .cooking
+        vm.startHookMonitoring()
+
+        let exp = XCTestExpectation(description: "poll fires")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { exp.fulfill() }
+        wait(for: [exp], timeout: 3.0)
+
+        XCTAssertTrue(notificationFired)
+        XCTAssertEqual(vm.session.status, .waiting)
+        vm.cleanup()
+        HookManager.cleanupState(for: sessionID)
+    }
+
+    // MARK: - Idle timeout via hook event
+
+    func testIdleTimeoutFromHookEvent() throws {
+        let vm = makeSUT()
+        let sessionID = vm.session.id
+
+        // Write a hook state with a timestamp that's > 300s ago
+        let stateDir = HookManager.stateDirectory
+        try FileManager.default.createDirectory(atPath: stateDir, withIntermediateDirectories: true)
+        let oldTimestamp = Date(timeIntervalSinceNow: -400).timeIntervalSince1970
+        let json: [String: Any] = ["event": "Stop", "timestamp": oldTimestamp]
+        let data = try JSONSerialization.data(withJSONObject: json)
+        let path = HookManager.stateFilePath(for: sessionID)
+        try data.write(to: URL(fileURLWithPath: path))
+
+        vm.session.status = .ready
+        vm.startHookMonitoring()
+
+        let exp = XCTestExpectation(description: "poll fires")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { exp.fulfill() }
+        wait(for: [exp], timeout: 3.0)
+
+        XCTAssertEqual(vm.session.status, .asleep)
+        vm.cleanup()
+        HookManager.cleanupState(for: sessionID)
+    }
+
+    // MARK: - updateStatusFromOutput skipped after hook event
+
+    func testUpdateStatusSkippedAfterHookEvent() throws {
+        let vm = makeSUT()
+        let sessionID = vm.session.id
+
+        // Write a hook event so hasReceivedHookEvent becomes true
+        let stateDir = HookManager.stateDirectory
+        try FileManager.default.createDirectory(atPath: stateDir, withIntermediateDirectories: true)
+        let json: [String: Any] = ["event": "PreToolUse", "timestamp": Date().timeIntervalSince1970]
+        let data = try JSONSerialization.data(withJSONObject: json)
+        let path = HookManager.stateFilePath(for: sessionID)
+        try data.write(to: URL(fileURLWithPath: path))
+
+        vm.startHookMonitoring()
+        let exp = XCTestExpectation(description: "poll fires")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { exp.fulfill() }
+        wait(for: [exp], timeout: 3.0)
+
+        // Now updateStatusFromOutput should be a no-op (hasReceivedHookEvent = true)
+        vm.session.lastOutputTime = Date(timeIntervalSinceNow: -400)
+        vm.updateStatusFromOutput()
+        // Status should NOT be .asleep because hook-based tracking takes over
+        XCTAssertNotEqual(vm.session.status, .asleep)
+
+        vm.cleanup()
+        HookManager.cleanupState(for: sessionID)
     }
 }
