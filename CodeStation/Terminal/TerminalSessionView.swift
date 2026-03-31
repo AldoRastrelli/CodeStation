@@ -7,6 +7,13 @@ import AppKit
 /// line/document boundary) and handles them internally, so they never reach the
 /// macOS menu bar. Overriding performKeyEquivalent lets the menu take priority.
 class TerminalWebView: WKWebView {
+    var onMouseDown: (() -> Void)?
+
+    override func mouseDown(with event: NSEvent) {
+        onMouseDown?()
+        super.mouseDown(with: event)
+    }
+
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         if flags == [.command, .shift] {
@@ -51,6 +58,9 @@ struct TerminalSessionView: NSViewRepresentable {
             viewModel.messageHandlerRelay?.coordinator = coordinator
             coordinator.webView = existing
             coordinator.adoptExistingPTY(viewModel.pty)
+            (existing as? TerminalWebView)?.onMouseDown = { [weak viewModel] in
+                viewModel?.onFocused?()
+            }
             return existing
         }
 
@@ -68,6 +78,9 @@ struct TerminalSessionView: NSViewRepresentable {
 
         let webView = TerminalWebView(frame: .zero, configuration: config)
         webView.setValue(false, forKey: "drawsBackground")
+        webView.onMouseDown = { [weak viewModel] in
+            viewModel?.onFocused?()
+        }
 
         coordinator.webView = webView
         viewModel.webView = webView

@@ -32,6 +32,7 @@ struct TerminalContainerView: View {
 
             TerminalSessionView(viewModel: viewModel)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .onAppear { viewModel.onFocused = onFocus }
         }
         .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
         .overlay(

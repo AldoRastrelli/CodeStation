@@ -16,6 +16,7 @@ class TerminalSessionViewModel {
     var fontSize: CGFloat = AppViewModel.defaultFontSize
     var onStateChanged: (() -> Void)?
     var onNotificationFired: (() -> Void)?
+    var onFocused: (() -> Void)?
     var environmentID: UUID?
     var getNotificationSettings: (() -> NotificationSettings?)?
     var getPromptButtons: (() -> [PromptButton])?
