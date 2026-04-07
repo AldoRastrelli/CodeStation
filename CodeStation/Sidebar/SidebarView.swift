@@ -6,8 +6,6 @@ struct SidebarView: View {
     }
 
     @Bindable var viewModel: AppViewModel
-    @State private var isShowingNewEnvironmentAlert = false
-    @State private var newEnvironmentName = ""
 
     var body: some View {
         List(selection: $viewModel.selectedEnvironmentID) {
@@ -23,8 +21,8 @@ struct SidebarView: View {
         .safeAreaInset(edge: .bottom) {
             HStack {
                 Button {
-                    newEnvironmentName = ""
-                    isShowingNewEnvironmentAlert = true
+                    viewModel.newEnvironmentName = ""
+                    viewModel.showNewEnvironmentAlert = true
                 } label: {
                     Label(Strings.Environments.newEnvironment, systemImage: Strings.Icons.plus)
                 }
@@ -33,14 +31,6 @@ struct SidebarView: View {
 
                 Spacer()
             }
-        }
-        .alert(Strings.Environments.newEnvironment, isPresented: $isShowingNewEnvironmentAlert) {
-            TextField(Strings.Environments.environmentNamePlaceholder, text: $newEnvironmentName)
-            Button(Strings.Environments.create) {
-                let name = newEnvironmentName.trimmingCharacters(in: .whitespaces)
-                viewModel.addEnvironment(name: name.isEmpty ? nil : name)
-            }
-            Button(Strings.Terminals.cancel, role: .cancel) {}
         }
     }
 }

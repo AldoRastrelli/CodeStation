@@ -59,7 +59,8 @@ struct CodeStationApp: App {
                 .disabled(viewModel.isModalOpen)
 
                 Button(Strings.Environments.newEnvironment) {
-                    viewModel.addEnvironment()
+                    viewModel.newEnvironmentName = ""
+                    viewModel.showNewEnvironmentAlert = true
                 }
                 .keyboardShortcut("e", modifiers: .command)
                 .disabled(viewModel.isModalOpen)

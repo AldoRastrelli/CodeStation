@@ -18,6 +18,8 @@ class AppViewModel {
     var skipCloseConfirmation: Bool = false
     var closeTerminalRequested = false
     var isModalOpen = false
+    var showNewEnvironmentAlert = false
+    var newEnvironmentName = ""
 
     static let defaultFontSize: CGFloat = Constants.defaultFontSize
     static let minFontSize: CGFloat = Constants.minFontSize

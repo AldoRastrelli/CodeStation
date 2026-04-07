@@ -113,6 +113,14 @@ struct ContentView: View {
                 }
             }
         }
+        .alert(Strings.Environments.newEnvironment, isPresented: $viewModel.showNewEnvironmentAlert) {
+            TextField(Strings.Environments.environmentNamePlaceholder, text: $viewModel.newEnvironmentName)
+            Button(Strings.Environments.create) {
+                let name = viewModel.newEnvironmentName.trimmingCharacters(in: .whitespaces)
+                viewModel.addEnvironment(name: name.isEmpty ? nil : name)
+            }
+            Button(Strings.Terminals.cancel, role: .cancel) {}
+        }
         .onAppear {
             try? HookManager.install()
         }
