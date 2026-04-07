@@ -4,8 +4,8 @@ struct TerminalHeaderView: View {
     private enum Constants {
         static let hStackSpacing: CGFloat = 8
         static let statusEmojiSize: CGFloat = 14
-        static let titleFontSize: CGFloat = 13
-        static let descriptionFontSize: CGFloat = 11
+        static let titleFontSize: CGFloat = 14
+        static let descriptionFontSize: CGFloat = 12
         static let titleMaxWidth: CGFloat = 150
         static let descriptionMaxWidth: CGFloat = 200
         static let badgeFontSize: CGFloat = 10
@@ -46,39 +46,27 @@ struct TerminalHeaderView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Row 1: icon, title, description, status, close
-            // Uses ViewThatFits to switch between full and compact layouts
-            ViewThatFits(in: .horizontal) {
-                // Full mode: all elements
-                HStack(spacing: Constants.hStackSpacing) {
-                    statusEmoji
-                    titleView
-                    descriptionView
+            // Row 1: icon, title, status, close
+            HStack(spacing: Constants.hStackSpacing) {
+                statusEmoji
+                titleView
 
-                    Spacer()
+                Spacer()
 
-                    shortcutBadge
-                    statusCapsule
-                    closeButton
-                }
-                .padding(.horizontal, Constants.horizontalPadding)
-                .padding(.vertical, Constants.verticalPadding)
-
-                // Compact mode: no description, no status capsule
-                HStack(spacing: Constants.hStackSpacing) {
-                    statusEmoji
-                    titleView
-
-                    Spacer()
-
-                    shortcutBadge
-                    closeButton
-                }
-                .padding(.horizontal, Constants.horizontalPadding)
-                .padding(.vertical, Constants.verticalPadding)
+                shortcutBadge
+                statusCapsule
+                closeButton
             }
+            .padding(.horizontal, Constants.horizontalPadding)
+            .padding(.top, Constants.verticalPadding)
+            .padding(.bottom, Constants.verticalPadding + 4)
 
-            // Row 2: chevron + "Buttons" label (always visible)
+            // Row 2: description, aligned with buttons
+            descriptionView
+                .padding(.horizontal, Constants.horizontalPadding)
+                .padding(.bottom, 4)
+
+            // Row 3: chevron + "Buttons" label (always visible)
             HStack(spacing: 4) {
                 Button(action: { viewModel.promptButtonsCollapsed.toggle() }) {
                     HStack(spacing: 4) {
@@ -145,6 +133,8 @@ struct TerminalHeaderView: View {
             Text(viewModel.session.title)
                 .font(.system(size: Constants.titleFontSize, weight: .semibold))
                 .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: Constants.titleMaxWidth, alignment: .leading)
                 .onTapGesture(count: 2) { isEditingTitle = true }
         }
     }
@@ -159,12 +149,13 @@ struct TerminalHeaderView: View {
                 .focused($descriptionFocused)
                 .onSubmit { isEditingDescription = false }
                 .onAppear { descriptionFocused = true }
-                .frame(maxWidth: Constants.descriptionMaxWidth)
         } else {
             Text(viewModel.session.sessionDescription.isEmpty ? Strings.Terminals.descriptionPlaceholder : viewModel.session.sessionDescription)
                 .font(.system(size: Constants.descriptionFontSize))
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .onTapGesture(count: 2) { isEditingDescription = true }
         }
     }
