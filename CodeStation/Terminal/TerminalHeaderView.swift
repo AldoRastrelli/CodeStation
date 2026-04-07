@@ -125,7 +125,12 @@ struct TerminalHeaderView: View {
                 .focused($titleFocused)
                 .onSubmit {
                     isEditingTitle = false
-                    viewModel.session.isUserEditedTitle = true
+                    let trimmed = viewModel.session.title.trimmingCharacters(in: .whitespaces)
+                    if trimmed.isEmpty {
+                        viewModel.resetTitleToDefault()
+                    } else {
+                        viewModel.session.isUserEditedTitle = true
+                    }
                 }
                 .onAppear { titleFocused = true }
                 .frame(maxWidth: Constants.titleMaxWidth)

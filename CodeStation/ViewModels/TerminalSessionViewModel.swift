@@ -114,6 +114,15 @@ class TerminalSessionViewModel {
         setFontSize(AppViewModel.defaultFontSize)
     }
 
+    func resetTitleToDefault() {
+        if let dir = session.currentDirectory {
+            session.title = (dir as NSString).lastPathComponent
+        } else {
+            session.title = Strings.Terminals.defaultTitle(session.gridIndex)
+        }
+        session.isUserEditedTitle = false
+    }
+
     func updateDirectory(_ path: String) {
         session.currentDirectory = path
         if !session.isUserEditedTitle {
