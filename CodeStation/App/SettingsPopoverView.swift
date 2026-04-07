@@ -428,14 +428,10 @@ struct SettingsWindowView: View {
                     ("⌘ N", "New terminal (or new environment if environment is full)"),
                     ("⌘ W", "Close focused terminal"),
                     ("⌘ 1–8", "Focus terminal by number"),
-                    ("⇧⌘ ←", "Focus previous terminal"),
-                    ("⇧⌘ →", "Focus next terminal"),
                 ])
 
                 shortcutSection("Environments", shortcuts: [
                     ("⌘ E", "New environment"),
-                    ("⇧⌘ ↑", "Previous environment"),
-                    ("⇧⌘ ↓", "Next environment"),
                 ])
 
                 shortcutSection("View", shortcuts: [
