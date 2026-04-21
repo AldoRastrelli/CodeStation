@@ -40,12 +40,14 @@ struct CodeStationApp: App {
 
     @State private var viewModel = AppViewModel()
     @State private var notificationDelegate = NotificationDelegate()
+    @State private var shortcutMonitor: Any?
 
     var body: some Scene {
         WindowGroup {
             ContentView(viewModel: viewModel)
                 .onAppear {
                     setupNotifications()
+                    installNavigationShortcutMonitor()
                 }
         }
         .windowStyle(.titleBar)
@@ -131,5 +133,33 @@ struct CodeStationApp: App {
         }
         UNUserNotificationCenter.current().delegate = notificationDelegate
         NotificationService.requestPermission()
+    }
+
+    // Intercept Cmd+Shift+Arrow at the application level so the shortcuts still
+    // fire when a focused WKWebView (xterm.js terminal) would otherwise consume
+    // them via its internal text-selection handler.
+    private func installNavigationShortcutMonitor() {
+        guard shortcutMonitor == nil else { return }
+        shortcutMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            guard !viewModel.isModalOpen else { return event }
+            let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+            guard flags == [.command, .shift] else { return event }
+            switch event.specialKey {
+            case .upArrow:
+                viewModel.focusEnvironmentUp()
+                return nil
+            case .downArrow:
+                viewModel.focusEnvironmentDown()
+                return nil
+            case .leftArrow:
+                viewModel.focusTerminalLeft()
+                return nil
+            case .rightArrow:
+                viewModel.focusTerminalRight()
+                return nil
+            default:
+                return event
+            }
+        }
     }
 }
