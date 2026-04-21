@@ -37,7 +37,7 @@ struct TerminalGridView: View {
         }
     }
 
-    // MARK: - Single Row Layout (1-4 terminals)
+    // MARK: - Single Row Layout (1-3 terminals)
 
     private func singleRowLayout(in size: CGSize) -> some View {
         let sessions = sortedSessions
@@ -78,7 +78,7 @@ struct TerminalGridView: View {
         }
     }
 
-    // MARK: - Grid Layout (5-8 terminals, 2 rows x 4 cols)
+    // MARK: - Grid Layout (4-8 terminals, 2 rows x 2-4 cols)
 
     private func gridLayout(in size: CGSize) -> some View {
         let totalHDivider = Constants.dividerThickness

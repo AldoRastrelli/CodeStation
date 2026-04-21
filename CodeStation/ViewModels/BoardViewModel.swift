@@ -5,8 +5,8 @@ import AppKit
 class BoardViewModel {
     private enum Constants {
         static let maxSessions = 8
-        static let gridColumns = 4
-        static let gridLayoutThreshold = 4
+        static let maxGridColumns = 4
+        static let gridLayoutThreshold = 3
         static let defaultColumnProportion: CGFloat = 0.25
         static let defaultRowProportion: CGFloat = 0.5
     }
@@ -14,7 +14,7 @@ class BoardViewModel {
     var sessions: [TerminalSession] = []
     static let maxSessions = Constants.maxSessions
 
-    var columnProportions: [CGFloat] = Array(repeating: Constants.defaultColumnProportion, count: Constants.gridColumns)
+    var columnProportions: [CGFloat] = Array(repeating: Constants.defaultColumnProportion, count: Constants.maxGridColumns)
     var rowProportion: CGFloat = Constants.defaultRowProportion
 
     var pendingRestores: [SessionSnapshot] = []
@@ -51,11 +51,19 @@ class BoardViewModel {
     }
 
     var gridColumns: Int {
-        Constants.gridColumns
+        Self.gridColumns(forCount: sessions.count)
     }
 
     var gridRows: Int {
         useGridLayout ? 2 : 1
+    }
+
+    private static func gridColumns(forCount count: Int) -> Int {
+        switch count {
+        case 0...4: return 2
+        case 5...6: return 3
+        default: return Constants.maxGridColumns
+        }
     }
 
     // MARK: - Session CRUD
@@ -63,6 +71,18 @@ class BoardViewModel {
     @discardableResult
     func addSession() -> TerminalSession? {
         guard canAddSession else { return nil }
+
+        let willBeGrid = (sessions.count + 1) > Constants.gridLayoutThreshold
+        if !willBeGrid || !useGridLayout {
+            compactGridIndicesInReadingOrder()
+        }
+
+        let oldCols = gridColumns
+        let newCols = Self.gridColumns(forCount: sessions.count + 1)
+        if newCols > oldCols {
+            remapGridIndicesPreservingPositions(from: oldCols, to: newCols)
+        }
+
         let index = nextAvailableIndex()
         let session = TerminalSession(gridIndex: index)
         sessions.append(session)
@@ -93,10 +113,17 @@ class BoardViewModel {
         let sorted = sessions.sorted { $0.gridIndex < $1.gridIndex }
         let sortedIndex = sorted.firstIndex(where: { $0.id == session.id })
 
+        let oldCols = gridColumns
         viewModel(for: session).cleanup()
         sessionViewModels.removeValue(forKey: session.id)
         unseenNotificationSessionIDs.remove(session.id)
         sessions.removeAll { $0.id == session.id }
+
+        let newCols = gridColumns
+        if newCols < oldCols || !useGridLayout {
+            compactGridIndicesInReadingOrder()
+        }
+
         onStateChanged?()
 
         // Focus previous terminal
@@ -192,5 +219,20 @@ class BoardViewModel {
             }
         }
         return sessions.count
+    }
+
+    private func remapGridIndicesPreservingPositions(from oldCols: Int, to newCols: Int) {
+        for session in sessions {
+            let row = session.gridIndex / oldCols
+            let col = session.gridIndex % oldCols
+            session.gridIndex = row * newCols + col
+        }
+    }
+
+    private func compactGridIndicesInReadingOrder() {
+        let sorted = sessions.sorted { $0.gridIndex < $1.gridIndex }
+        for (i, session) in sorted.enumerated() {
+            session.gridIndex = i
+        }
     }
 }

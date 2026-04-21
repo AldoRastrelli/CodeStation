@@ -16,7 +16,7 @@ final class BoardViewModelTests: XCTestCase {
         XCTAssertTrue(vm.sessions.isEmpty)
         XCTAssertTrue(vm.canAddSession)
         XCTAssertFalse(vm.useGridLayout)
-        XCTAssertEqual(vm.gridColumns, 4)
+        XCTAssertEqual(vm.gridColumns, 2)
         XCTAssertEqual(vm.gridRows, 1)
         XCTAssertNil(vm.focusedSessionID)
         XCTAssertFalse(vm.hasUnseenNotification)
@@ -72,9 +72,9 @@ final class BoardViewModelTests: XCTestCase {
 
     func testAddSessionAtPosition() {
         let vm = makeSUT()
-        let session = vm.addSessionAt(row: 1, col: 2)
+        let session = vm.addSessionAt(row: 1, col: 1)
         XCTAssertNotNil(session)
-        XCTAssertEqual(session?.gridIndex, 6) // 1 * 4 + 2
+        XCTAssertEqual(session?.gridIndex, 3) // 1 * 2 + 1 (gridColumns == 2 at count 0)
     }
 
     func testAddSessionAtPositionCallsOnStateChanged() {
@@ -177,22 +177,40 @@ final class BoardViewModelTests: XCTestCase {
 
     // MARK: - Grid Layout
 
-    func testUseGridLayoutFalseFor4OrFewer() {
+    func testUseGridLayoutFalseFor3OrFewer() {
         let vm = makeSUT()
-        for _ in 0..<4 {
+        for _ in 0..<3 {
             _ = vm.addSession()
         }
         XCTAssertFalse(vm.useGridLayout)
         XCTAssertEqual(vm.gridRows, 1)
     }
 
-    func testUseGridLayoutTrueForMoreThan4() {
+    func testUseGridLayoutTrueFor4OrMore() {
         let vm = makeSUT()
-        for _ in 0..<5 {
+        for _ in 0..<4 {
             _ = vm.addSession()
         }
         XCTAssertTrue(vm.useGridLayout)
         XCTAssertEqual(vm.gridRows, 2)
+    }
+
+    func testGridColumnsGrowsWithSessionCount() {
+        let vm = makeSUT()
+        XCTAssertEqual(vm.gridColumns, 2)
+
+        for _ in 0..<4 { _ = vm.addSession() }
+        XCTAssertEqual(vm.gridColumns, 2)
+
+        _ = vm.addSession()
+        XCTAssertEqual(vm.gridColumns, 3)
+        _ = vm.addSession()
+        XCTAssertEqual(vm.gridColumns, 3)
+
+        _ = vm.addSession()
+        XCTAssertEqual(vm.gridColumns, 4)
+        _ = vm.addSession()
+        XCTAssertEqual(vm.gridColumns, 4)
     }
 
     // MARK: - Grid Query
@@ -363,16 +381,16 @@ final class BoardViewModelTests: XCTestCase {
 
     // MARK: - Next Available Index
 
-    func testNextAvailableIndexFillsGaps() {
+    func testAddInSingleRowAlwaysAppendsToRight() {
         let vm = makeSUT()
         _ = vm.addSession() // index 0
         let s2 = vm.addSession()! // index 1
-        _ = vm.addSession() // index 2
+        _ = vm.addSession() // index 2 (now 3 sessions, still single-row)
 
-        vm.removeSession(s2) // frees index 1
+        vm.removeSession(s2) // removal compacts -> {0, 1}
 
         let newSession = vm.addSession()
-        XCTAssertEqual(newSession?.gridIndex, 1) // should fill the gap
+        XCTAssertEqual(newSession?.gridIndex, 2) // appended on the right, no gap-filling
     }
 
     // MARK: - Column / Row Proportions
