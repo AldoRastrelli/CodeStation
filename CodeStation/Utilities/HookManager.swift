@@ -18,6 +18,7 @@ enum HookManager {
         "PostToolUse",
         "PostToolUseFailure",
         "Stop",
+        "StopFailure",
         "UserPromptSubmit",
         "Notification",
         "SubagentStart",
@@ -25,9 +26,15 @@ enum HookManager {
         "SessionStart",
         "SessionEnd",
         "PermissionRequest",
+        "PermissionDenied",
         "TeammateIdle",
+        "TaskCreated",
         "TaskCompleted",
-        "ConfigChange"
+        "ConfigChange",
+        "PreCompact",
+        "PostCompact",
+        "Elicitation",
+        "ElicitationResult"
     ]
 
     static let hookScript = """
@@ -104,11 +111,14 @@ enum HookManager {
         var status: SessionStatus {
             switch event {
             case "UserPromptSubmit", "PreToolUse", "SubagentStart",
-                 "PostToolUse", "PostToolUseFailure", "SubagentStop":
+                 "PostToolUse", "PostToolUseFailure", "SubagentStop",
+                 "PreCompact", "ElicitationResult", "TaskCreated":
                 return .cooking
-            case "Stop", "TaskCompleted", "SessionStart", "ConfigChange":
+            case "Stop", "StopFailure", "TaskCompleted", "SessionStart",
+                 "ConfigChange", "PostCompact":
                 return .ready
-            case "Notification", "PermissionRequest":
+            case "Notification", "PermissionRequest", "PermissionDenied",
+                 "Elicitation":
                 return .waiting
             case "SessionEnd", "TeammateIdle":
                 return .asleep

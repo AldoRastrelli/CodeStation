@@ -6,15 +6,16 @@ final class HookManagerTests: XCTestCase {
     // MARK: - Hook Events
 
     func testHookEventsCount() {
-        XCTAssertEqual(HookManager.hookEvents.count, 14)
+        XCTAssertEqual(HookManager.hookEvents.count, 21)
     }
 
     func testHookEventsContainsExpectedEvents() {
         let expected = [
-            "PreToolUse", "PostToolUse", "PostToolUseFailure", "Stop",
+            "PreToolUse", "PostToolUse", "PostToolUseFailure", "Stop", "StopFailure",
             "UserPromptSubmit", "Notification", "SubagentStart", "SubagentStop",
-            "SessionStart", "SessionEnd", "PermissionRequest", "TeammateIdle",
-            "TaskCompleted", "ConfigChange"
+            "SessionStart", "SessionEnd", "PermissionRequest", "PermissionDenied",
+            "TeammateIdle", "TaskCreated", "TaskCompleted", "ConfigChange",
+            "PreCompact", "PostCompact", "Elicitation", "ElicitationResult"
         ]
         XCTAssertEqual(HookManager.hookEvents, expected)
     }
