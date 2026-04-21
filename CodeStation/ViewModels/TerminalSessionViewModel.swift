@@ -24,6 +24,7 @@ class TerminalSessionViewModel {
     private var hookMonitorTimer: Timer?
     private var hasReceivedHookEvent = false
     private var lastProcessedTimestamp: Date?
+    private var lastNotifiedStatus: SessionStatus?
 
     init(session: TerminalSession) {
         self.session = session
@@ -139,6 +140,11 @@ class TerminalSessionViewModel {
     private func checkAndFireNotification(oldStatus: SessionStatus, newStatus: SessionStatus) {
         guard oldStatus == .cooking else { return }
         guard newStatus == .ready || newStatus == .waiting else { return }
+        // Claude can fire repeated cooking->ready cycles on an idle terminal
+        // (auto-compaction, duplicate Stops). Only notify once per status
+        // until a different notifiable status breaks the streak.
+        guard newStatus != lastNotifiedStatus else { return }
+        lastNotifiedStatus = newStatus
 
         onNotificationFired?()
 

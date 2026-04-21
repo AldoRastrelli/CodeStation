@@ -368,6 +368,101 @@ final class TerminalSessionViewModelTests: XCTestCase {
         HookManager.cleanupState(for: sessionID)
     }
 
+    // MARK: - Notification dedup (no repeat for same status)
+
+    func testRepeatedReadyDoesNotFireNotificationTwice() throws {
+        let vm = makeSUT()
+        let sessionID = vm.session.id
+
+        var fireCount = 0
+        vm.onNotificationFired = { fireCount += 1 }
+        vm.environmentID = UUID()
+        var settings = NotificationSettings()
+        settings.notifyWhenDone = true
+        vm.getNotificationSettings = { settings }
+
+        let stateDir = HookManager.stateDirectory
+        try FileManager.default.createDirectory(atPath: stateDir, withIntermediateDirectories: true)
+        let path = HookManager.stateFilePath(for: sessionID)
+
+        func writeEvent(_ name: String) throws {
+            let json: [String: Any] = ["event": name, "timestamp": Date().timeIntervalSince1970]
+            let data = try JSONSerialization.data(withJSONObject: json)
+            try data.write(to: URL(fileURLWithPath: path))
+        }
+
+        try writeEvent("Stop")
+        vm.session.status = .cooking
+        vm.startHookMonitoring()
+
+        let exp1 = XCTestExpectation(description: "first poll")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { exp1.fulfill() }
+        wait(for: [exp1], timeout: 3.0)
+        XCTAssertEqual(fireCount, 1)
+
+        // Simulate an auto-compaction cycle ending in ready again
+        vm.session.status = .cooking
+        try writeEvent("PostCompact")
+
+        let exp2 = XCTestExpectation(description: "second poll")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { exp2.fulfill() }
+        wait(for: [exp2], timeout: 3.0)
+
+        XCTAssertEqual(fireCount, 1, "ready should not refire without an intermediate different status")
+
+        vm.cleanup()
+        HookManager.cleanupState(for: sessionID)
+    }
+
+    func testReadyRefiresAfterIntermediateWaiting() throws {
+        let vm = makeSUT()
+        let sessionID = vm.session.id
+
+        var fireCount = 0
+        vm.onNotificationFired = { fireCount += 1 }
+        vm.environmentID = UUID()
+        var settings = NotificationSettings()
+        settings.notifyWhenDone = true
+        settings.notifyWhenWaiting = true
+        vm.getNotificationSettings = { settings }
+
+        let stateDir = HookManager.stateDirectory
+        try FileManager.default.createDirectory(atPath: stateDir, withIntermediateDirectories: true)
+        let path = HookManager.stateFilePath(for: sessionID)
+
+        func writeEvent(_ name: String) throws {
+            let json: [String: Any] = ["event": name, "timestamp": Date().timeIntervalSince1970]
+            let data = try JSONSerialization.data(withJSONObject: json)
+            try data.write(to: URL(fileURLWithPath: path))
+        }
+
+        try writeEvent("Stop")
+        vm.session.status = .cooking
+        vm.startHookMonitoring()
+
+        let exp1 = XCTestExpectation(description: "poll 1")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { exp1.fulfill() }
+        wait(for: [exp1], timeout: 3.0)
+        XCTAssertEqual(fireCount, 1)
+
+        vm.session.status = .cooking
+        try writeEvent("Notification")
+        let exp2 = XCTestExpectation(description: "poll 2")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { exp2.fulfill() }
+        wait(for: [exp2], timeout: 3.0)
+        XCTAssertEqual(fireCount, 2)
+
+        vm.session.status = .cooking
+        try writeEvent("Stop")
+        let exp3 = XCTestExpectation(description: "poll 3")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { exp3.fulfill() }
+        wait(for: [exp3], timeout: 3.0)
+        XCTAssertEqual(fireCount, 3, "ready should refire when waiting broke the streak")
+
+        vm.cleanup()
+        HookManager.cleanupState(for: sessionID)
+    }
+
     // MARK: - Idle timeout via hook event
 
     func testIdleTimeoutFromHookEvent() throws {
