@@ -122,6 +122,36 @@ class TerminalSessionViewModel {
             session.title = Strings.Terminals.defaultTitle(session.gridIndex)
         }
         session.isUserEditedTitle = false
+        onStateChanged?()
+    }
+
+    func commitTitleEdit() {
+        let trimmed = session.title.trimmingCharacters(in: .whitespaces)
+        if trimmed.isEmpty {
+            resetTitleToDefault()
+        } else {
+            session.title = trimmed
+            session.isUserEditedTitle = true
+            onStateChanged?()
+        }
+    }
+
+    // Called per-keystroke while the title field is being edited so that the
+    // user's typed value survives an app quit without an explicit Enter press.
+    // Without this, the shell's OSC 7 directory report on relaunch would
+    // overwrite the title because `isUserEditedTitle` had never been set.
+    func markTitleAsUserEdited() {
+        session.isUserEditedTitle = true
+        onStateChanged?()
+    }
+
+    func commitDescriptionEdit() {
+        session.sessionDescription = session.sessionDescription.trimmingCharacters(in: .whitespaces)
+        onStateChanged?()
+    }
+
+    func scheduleSave() {
+        onStateChanged?()
     }
 
     func updateDirectory(_ path: String) {

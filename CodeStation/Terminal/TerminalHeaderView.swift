@@ -123,13 +123,17 @@ struct TerminalHeaderView: View {
                 .textFieldStyle(.plain)
                 .font(.system(size: Constants.titleFontSize, weight: .semibold))
                 .focused($titleFocused)
+                .onChange(of: viewModel.session.title) { _, _ in
+                    viewModel.markTitleAsUserEdited()
+                }
                 .onSubmit {
                     isEditingTitle = false
-                    let trimmed = viewModel.session.title.trimmingCharacters(in: .whitespaces)
-                    if trimmed.isEmpty {
-                        viewModel.resetTitleToDefault()
-                    } else {
-                        viewModel.session.isUserEditedTitle = true
+                    viewModel.commitTitleEdit()
+                }
+                .onChange(of: titleFocused) { _, focused in
+                    if !focused && isEditingTitle {
+                        isEditingTitle = false
+                        viewModel.commitTitleEdit()
                     }
                 }
                 .onAppear { titleFocused = true }
@@ -152,7 +156,19 @@ struct TerminalHeaderView: View {
                 .font(.system(size: Constants.descriptionFontSize))
                 .foregroundStyle(.secondary)
                 .focused($descriptionFocused)
-                .onSubmit { isEditingDescription = false }
+                .onChange(of: viewModel.session.sessionDescription) { _, _ in
+                    viewModel.scheduleSave()
+                }
+                .onSubmit {
+                    isEditingDescription = false
+                    viewModel.commitDescriptionEdit()
+                }
+                .onChange(of: descriptionFocused) { _, focused in
+                    if !focused && isEditingDescription {
+                        isEditingDescription = false
+                        viewModel.commitDescriptionEdit()
+                    }
+                }
                 .onAppear { descriptionFocused = true }
         } else {
             Text(viewModel.session.sessionDescription.isEmpty ? Strings.Terminals.descriptionPlaceholder : viewModel.session.sessionDescription)
