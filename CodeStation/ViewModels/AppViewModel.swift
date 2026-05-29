@@ -12,7 +12,17 @@ class AppViewModel {
     }
 
     var environments: [Environment] = []
-    var selectedEnvironmentID: UUID?
+    var selectedEnvironmentID: UUID? {
+        didSet {
+            // Leaving an environment defocuses its terminals so a terminal that
+            // finished while in the background keeps its notification highlight
+            // until the user actively refocuses it on return.
+            if let previousID = oldValue, previousID != selectedEnvironmentID {
+                boardViewModels[previousID]?.focusedSessionID = nil
+            }
+            markActiveTerminalSeen()
+        }
+    }
     var notificationSettings = NotificationSettings()
     var promptButtons: [PromptButton] = []
     var skipCloseConfirmation: Bool = false
@@ -34,6 +44,7 @@ class AppViewModel {
     private var saveWorkItem: DispatchWorkItem?
     private var terminateObserver: Any?
     private var directoryObserver: Any?
+    private var didBecomeActiveObserver: Any?
 
     var selectedEnvironment: Environment? {
         environments.first { $0.id == selectedEnvironmentID }
@@ -67,6 +78,22 @@ class AppViewModel {
         ) { [weak self] _ in
             self?.scheduleSave()
         }
+
+        didBecomeActiveObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.markActiveTerminalSeen()
+        }
+    }
+
+    // Clears the pending notification on the terminal the user is now actively
+    // viewing (after an app reactivation or an environment switch).
+    private func markActiveTerminalSeen() {
+        guard let envID = selectedEnvironmentID,
+              let boardVM = boardViewModels[envID] else { return }
+        boardVM.markFocusedTerminalSeenIfActive()
     }
 
     // MARK: - Zoom (per-terminal)
@@ -141,6 +168,7 @@ class AppViewModel {
         }
         let boardVM = BoardViewModel()
         boardVM.environmentID = env.id
+        boardVM.isBoardActive = { [weak self] in NSApp.isActive && self?.selectedEnvironmentID == env.id }
         boardVM.getNotificationSettings = { [weak self] in self?.notificationSettings }
         boardVM.getPromptButtons = { [weak self] in self?.promptButtons ?? [] }
         boardVM.onAddPromptButton = { [weak self] button in
@@ -352,6 +380,7 @@ class AppViewModel {
         for envSnapshot in snapshot.environments {
             let boardVM = BoardViewModel()
             boardVM.environmentID = envSnapshot.id
+            boardVM.isBoardActive = { [weak self] in NSApp.isActive && self?.selectedEnvironmentID == envSnapshot.id }
             boardVM.getNotificationSettings = { [weak self] in self?.notificationSettings }
             boardVM.getPromptButtons = { [weak self] in self?.promptButtons ?? [] }
             boardVM.onAddPromptButton = { [weak self] button in

@@ -347,10 +347,11 @@ final class TerminalSessionViewModelTests: XCTestCase {
         settings.notifyWhenWaiting = true
         vm.getNotificationSettings = { settings }
 
-        // "Notification" hook event maps to .waiting
+        // "PermissionRequest" maps to .waiting (bare Notification is a no-op,
+        // since Claude Code also emits it for idle nudges).
         let stateDir = HookManager.stateDirectory
         try FileManager.default.createDirectory(atPath: stateDir, withIntermediateDirectories: true)
-        let json: [String: Any] = ["event": "Notification", "timestamp": Date().timeIntervalSince1970]
+        let json: [String: Any] = ["event": "PermissionRequest", "timestamp": Date().timeIntervalSince1970]
         let data = try JSONSerialization.data(withJSONObject: json)
         let path = HookManager.stateFilePath(for: sessionID)
         try data.write(to: URL(fileURLWithPath: path))
@@ -446,7 +447,7 @@ final class TerminalSessionViewModelTests: XCTestCase {
         XCTAssertEqual(fireCount, 1)
 
         vm.session.status = .cooking
-        try writeEvent("Notification")
+        try writeEvent("PermissionRequest")
         let exp2 = XCTestExpectation(description: "poll 2")
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { exp2.fulfill() }
         wait(for: [exp2], timeout: 3.0)
