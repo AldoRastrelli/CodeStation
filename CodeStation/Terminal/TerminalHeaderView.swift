@@ -23,6 +23,9 @@ struct TerminalHeaderView: View {
         static let addButtonSize: CGFloat = 14
         static let subtitleFontSize: CGFloat = 11
         static let notificationOverlayOpacity: Double = 0.15
+        static let attentionPulsePeakOpacity: Double = 0.35
+        static let attentionPulseFadeIn: Double = 0.25
+        static let attentionPulseFadeOut: Double = 0.6
     }
 
     @Bindable var viewModel: TerminalSessionViewModel
@@ -43,6 +46,7 @@ struct TerminalHeaderView: View {
     @State private var showingEditPrompt = false
     @FocusState private var titleFocused: Bool
     @FocusState private var descriptionFocused: Bool
+    @State private var pulseOpacity: Double = 0
 
     var body: some View {
         VStack(spacing: 0) {
@@ -99,8 +103,18 @@ struct TerminalHeaderView: View {
                     .opacity(Constants.notificationOverlayOpacity)
                     .transition(.opacity)
             }
+            notificationOverlayColor
+                .opacity(pulseOpacity)
         }
         .animation(.easeInOut(duration: 0.3), value: hasUnseenNotification)
+        .onChange(of: viewModel.attentionPulse) { _, _ in
+            withAnimation(.easeIn(duration: Constants.attentionPulseFadeIn)) {
+                pulseOpacity = Constants.attentionPulsePeakOpacity
+            }
+            withAnimation(.easeOut(duration: Constants.attentionPulseFadeOut).delay(Constants.attentionPulseFadeIn)) {
+                pulseOpacity = 0
+            }
+        }
         .popover(isPresented: $showingAddPrompt) {
             addPromptPopover
         }

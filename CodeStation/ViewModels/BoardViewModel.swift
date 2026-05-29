@@ -27,9 +27,13 @@ class BoardViewModel {
     var onAddPromptButton: ((PromptButton) -> Void)?
     var onUpdatePromptButton: ((PromptButton) -> Void)?
     var onDeletePromptButton: ((UUID) -> Void)?
+    // True only when this board's environment is selected and the app is
+    // frontmost, i.e. the user is actually looking at this board.
+    var isBoardActive: (() -> Bool)?
+
     var focusedSessionID: UUID? {
         didSet {
-            if let sessionID = focusedSessionID {
+            if let sessionID = focusedSessionID, isBoardActive?() ?? false {
                 unseenNotificationSessionIDs.remove(sessionID)
             }
         }
@@ -40,6 +44,13 @@ class BoardViewModel {
 
     var hasUnseenNotification: Bool {
         !unseenNotificationSessionIDs.isEmpty
+    }
+
+    // Clears the focused terminal's pending notification when the user returns to
+    // actively viewing this board (app reactivated or environment reselected).
+    func markFocusedTerminalSeenIfActive() {
+        guard isBoardActive?() ?? false, let focused = focusedSessionID else { return }
+        unseenNotificationSessionIDs.remove(focused)
     }
 
     var canAddSession: Bool {
@@ -194,8 +205,18 @@ class BoardViewModel {
         sessionVM.onStateChanged = { [weak self] in
             self?.onStateChanged?()
         }
-        sessionVM.onNotificationFired = { [weak self] in
-            self?.unseenNotificationSessionIDs.insert(session.id)
+        sessionVM.onNotificationFired = { [weak self, weak sessionVM] in
+            guard let self else { return }
+            // The user is actively viewing this terminal when the app is frontmost,
+            // this environment is selected, and this terminal is focused. In that
+            // case pulse the header for attention instead of leaving a persistent
+            // highlight; otherwise mark it unseen.
+            let activelyViewed = (self.isBoardActive?() ?? false) && self.focusedSessionID == session.id
+            if activelyViewed {
+                sessionVM?.triggerAttentionPulse()
+            } else {
+                self.unseenNotificationSessionIDs.insert(session.id)
+            }
         }
         sessionViewModels[session.id] = sessionVM
         return sessionVM

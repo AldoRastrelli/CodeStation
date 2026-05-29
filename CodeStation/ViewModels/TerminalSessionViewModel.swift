@@ -17,6 +17,13 @@ class TerminalSessionViewModel {
     var fontSize: CGFloat = AppViewModel.defaultFontSize
     var onStateChanged: (() -> Void)?
     var onNotificationFired: (() -> Void)?
+    // Bumped to pulse the header when a notification lands while the user is
+    // already viewing this terminal (no persistent highlight in that case).
+    var attentionPulse: Int = 0
+
+    func triggerAttentionPulse() {
+        attentionPulse += 1
+    }
     var environmentID: UUID?
     var getNotificationSettings: (() -> NotificationSettings?)?
     var getPromptButtons: (() -> [PromptButton])?
