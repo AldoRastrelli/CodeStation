@@ -235,15 +235,19 @@ struct TerminalHeaderView: View {
                     .help(button.prompt)
                     .contextMenu {
                         Button(Strings.CustomPrompts.editPrompt) {
-                            editingButton = button
-                            newPromptTitle = button.title
-                            newPromptColor = button.color
-                            newPromptText = button.prompt
-                            showingEditPrompt = true
+                            DispatchQueue.main.async {
+                                editingButton = button
+                                newPromptTitle = button.title
+                                newPromptColor = button.color
+                                newPromptText = button.prompt
+                                showingEditPrompt = true
+                            }
                         }
                         Divider()
                         Button(Strings.CustomPrompts.deletePrompt, role: .destructive) {
-                            onDeletePromptButton?(button.id)
+                            DispatchQueue.main.async {
+                                onDeletePromptButton?(button.id)
+                            }
                         }
                     }
                 }
