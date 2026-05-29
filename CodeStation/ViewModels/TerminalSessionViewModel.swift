@@ -92,6 +92,22 @@ class TerminalSessionViewModel {
         session.lastOutputTime = Date()
     }
 
+    // A waiting badge means Claude asked for input; the user typing is them
+    // answering, so resume cooking now instead of lingering on waiting until the
+    // next hook event, which can arrive many seconds after the keystroke.
+    //
+    // The terminal auto-replies to escape-sequence queries (cursor position,
+    // device attributes, focus reports) on the same channel as keystrokes, and
+    // those replies, like arrow and function keys, all begin with ESC. A real
+    // answer (Enter, "y") never does, so ignore ESC-prefixed input to avoid the
+    // terminal clearing its own waiting state.
+    func recordUserInput(_ data: Data) {
+        guard let first = data.first, first != 0x1b else { return }
+        if session.status == .waiting {
+            session.status = .cooking
+        }
+    }
+
     func sendPrompt(_ text: String) {
         pty?.write(Data((text + "\n").utf8))
     }

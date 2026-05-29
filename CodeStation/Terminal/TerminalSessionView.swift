@@ -151,7 +151,9 @@ struct TerminalSessionView: NSViewRepresentable {
 
             case "input":
                 if let text = message.body as? String {
-                    pty?.write(Data(text.utf8))
+                    let data = Data(text.utf8)
+                    viewModel?.recordUserInput(data)
+                    pty?.write(data)
                 }
 
             case "resize":
