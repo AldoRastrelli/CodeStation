@@ -17,6 +17,7 @@ struct TerminalContainerView: View {
     var onDeletePromptButton: ((UUID) -> Void)?
     var onFocus: (() -> Void)?
     var dragID: String?
+    var onSessionDropped: ((UUID) -> Bool)?
     var skipCloseConfirmation: Bool = false
     var onSkipCloseConfirmationChanged: ((Bool) -> Void)?
 
@@ -99,7 +100,13 @@ struct TerminalContainerView: View {
         )
 
         if let dragID {
-            header.draggable(dragID)
+            header
+                .draggable(dragID)
+                .dropDestination(for: String.self) { items, _ in
+                    guard let idString = items.first,
+                          let sourceID = UUID(uuidString: idString) else { return false }
+                    return onSessionDropped?(sourceID) ?? false
+                }
         } else {
             header
         }

@@ -149,6 +149,9 @@ struct TerminalGridView: View {
                 onDeletePromptButton: viewModel.onDeletePromptButton,
                 onFocus: { viewModel.focusedSessionID = session.id },
                 dragID: session.id.uuidString,
+                onSessionDropped: { sourceID in
+                    viewModel.swapSessions(sourceID: sourceID, targetGridIndex: gridIndex)
+                },
                 skipCloseConfirmation: viewModel.getSkipCloseConfirmation?() ?? false,
                 onSkipCloseConfirmationChanged: viewModel.onSkipCloseConfirmationChanged
             )

@@ -6,7 +6,25 @@ import AppKit
 /// WebKit treats these as text-selection key equivalents (extend selection to
 /// line/document boundary) and handles them internally, so they never reach the
 /// macOS menu bar. Overriding performKeyEquivalent lets the menu take priority.
+///
+/// Also opts out of NSView drag-type registration so that terminal-reorder drags
+/// started on a sibling terminal header propagate up to the enclosing SwiftUI
+/// .dropDestination instead of being swallowed by WKWebView.
 class TerminalWebView: WKWebView {
+    override init(frame frameRect: CGRect, configuration: WKWebViewConfiguration) {
+        super.init(frame: frameRect, configuration: configuration)
+        unregisterDraggedTypes()
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func registerForDraggedTypes(_ newTypes: [NSPasteboard.PasteboardType]) {
+        // No-op: SwiftUI parents own drag-and-drop for terminal reordering.
+    }
+
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         if flags == [.command, .shift] {
