@@ -108,22 +108,42 @@ enum HookManager {
         let event: String
         let timestamp: Date
 
-        var status: SessionStatus {
+        // Only a genuine end-of-turn maps to a "done" notification. Other events
+        // that resolve to .ready (SessionStart, ConfigChange, PostCompact) must
+        // not, or compaction and config writes would notify as completions.
+        var isCompletion: Bool {
             switch event {
-            case "UserPromptSubmit", "PreToolUse", "SubagentStart",
-                 "PostToolUse", "PostToolUseFailure", "SubagentStop",
-                 "PreCompact", "ElicitationResult", "TaskCreated":
+            case "Stop", "StopFailure", "TaskCompleted":
+                return true
+            default:
+                return false
+            }
+        }
+
+        // nil means "leave the current badge unchanged" for events that carry no
+        // reliable status signal.
+        var status: SessionStatus? {
+            switch event {
+            case "UserPromptSubmit", "PreToolUse", "PostToolUse",
+                 "PostToolUseFailure", "PreCompact",
+                 "ElicitationResult", "TaskCreated", "PermissionDenied":
                 return .cooking
             case "Stop", "StopFailure", "TaskCompleted", "SessionStart",
                  "ConfigChange", "PostCompact":
                 return .ready
-            case "Notification", "PermissionRequest", "PermissionDenied",
-                 "Elicitation":
+            case "PermissionRequest", "Elicitation":
                 return .waiting
             case "SessionEnd", "TeammateIdle":
                 return .asleep
+            // Claude Code fires Notification for idle nudges as well as real
+            // prompts, so it is an unreliable waiting signal; PermissionRequest
+            // and Elicitation cover the actionable case. Subagent start/stop say
+            // nothing about the main agent and can arrive after Stop, reviving
+            // cooking on a finished session. Unknown events keep the current badge.
+            case "Notification", "SubagentStart", "SubagentStop":
+                return nil
             default:
-                return .ready
+                return nil
             }
         }
     }
