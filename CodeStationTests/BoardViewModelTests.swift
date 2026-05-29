@@ -309,6 +309,7 @@ final class BoardViewModelTests: XCTestCase {
     func testFocusingSessionClearsItsNotification() {
         let vm = makeSUT()
         let session = vm.addSession()!
+        vm.isBoardActive = { true }
         vm.unseenNotificationSessionIDs.insert(session.id)
         XCTAssertTrue(vm.hasUnseenNotification)
 
@@ -320,6 +321,7 @@ final class BoardViewModelTests: XCTestCase {
         let vm = makeSUT()
         let s1 = vm.addSession()!
         let s2 = vm.addSession()!
+        vm.isBoardActive = { true }
         vm.unseenNotificationSessionIDs.insert(s1.id)
         vm.unseenNotificationSessionIDs.insert(s2.id)
 

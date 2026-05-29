@@ -67,7 +67,7 @@ final class HookManagerTests: XCTestCase {
     // MARK: - HookState Status Mapping
 
     func testHookStateCookingEvents() {
-        let cookingEvents = ["UserPromptSubmit", "PreToolUse", "SubagentStart", "PostToolUse", "PostToolUseFailure", "SubagentStop"]
+        let cookingEvents = ["UserPromptSubmit", "PreToolUse", "PostToolUse", "PostToolUseFailure", "PreCompact", "ElicitationResult", "TaskCreated", "PermissionDenied"]
         for event in cookingEvents {
             let state = HookManager.HookState(event: event, timestamp: Date())
             XCTAssertEqual(state.status, .cooking, "\(event) should map to .cooking")
@@ -83,7 +83,7 @@ final class HookManagerTests: XCTestCase {
     }
 
     func testHookStateWaitingEvents() {
-        let waitingEvents = ["Notification", "PermissionRequest"]
+        let waitingEvents = ["PermissionRequest", "Elicitation"]
         for event in waitingEvents {
             let state = HookManager.HookState(event: event, timestamp: Date())
             XCTAssertEqual(state.status, .waiting, "\(event) should map to .waiting")
@@ -98,9 +98,22 @@ final class HookManagerTests: XCTestCase {
         }
     }
 
-    func testHookStateUnknownEventDefaultsToReady() {
-        let state = HookManager.HookState(event: "SomeFutureEvent", timestamp: Date())
-        XCTAssertEqual(state.status, .ready)
+    func testHookStateNoOpEvents() {
+        // Unknown events and ambiguous signals leave the badge unchanged (nil).
+        let noOpEvents = ["SomeFutureEvent", "Notification", "SubagentStart", "SubagentStop"]
+        for event in noOpEvents {
+            let state = HookManager.HookState(event: event, timestamp: Date())
+            XCTAssertNil(state.status, "\(event) should not change the badge")
+        }
+    }
+
+    func testHookStateCompletionEvents() {
+        for event in ["Stop", "StopFailure", "TaskCompleted"] {
+            XCTAssertTrue(HookManager.HookState(event: event, timestamp: Date()).isCompletion)
+        }
+        for event in ["SessionStart", "ConfigChange", "PostCompact", "PreToolUse"] {
+            XCTAssertFalse(HookManager.HookState(event: event, timestamp: Date()).isCompletion)
+        }
     }
 
     // MARK: - Read / Cleanup State
