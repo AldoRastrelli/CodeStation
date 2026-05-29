@@ -53,6 +53,10 @@ class BoardViewModel {
         unseenNotificationSessionIDs.remove(focused)
     }
 
+    var hasCookingSession: Bool {
+        sessions.contains { $0.status == .cooking }
+    }
+
     var canAddSession: Bool {
         sessions.count < Constants.maxSessions
     }

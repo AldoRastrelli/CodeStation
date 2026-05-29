@@ -42,15 +42,23 @@ struct SidebarRowView: View {
 
             Spacer()
 
-            let hasNotification = viewModel.boardViewModel(for: environment).hasUnseenNotification
+            let boardVM = viewModel.boardViewModel(for: environment)
+            let isCooking = boardVM.hasCookingSession
+            let hasNotification = boardVM.hasUnseenNotification
             HStack(spacing: 4) {
-                if hasNotification {
-                    Image(systemName: "bell.fill")
+                if isCooking {
+                    Image(systemName: "flame.fill")
                         .font(.system(size: Constants.countFontSize))
                         .foregroundStyle(.red)
                         .transition(.scale.combined(with: .opacity))
                 }
-                Text("\(viewModel.boardViewModel(for: environment).sessions.count)")
+                if hasNotification {
+                    Image(systemName: "bell.fill")
+                        .font(.system(size: Constants.countFontSize))
+                        .foregroundStyle(.orange)
+                        .transition(.scale.combined(with: .opacity))
+                }
+                Text("\(boardVM.sessions.count)")
                     .font(.system(size: Constants.countFontSize))
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, Constants.countHPadding)
@@ -58,6 +66,7 @@ struct SidebarRowView: View {
                     .background(Color.secondary.opacity(Constants.countBgOpacity))
                     .clipShape(Capsule())
             }
+            .animation(.easeInOut(duration: 0.3), value: isCooking)
             .animation(.easeInOut(duration: 0.3), value: hasNotification)
         }
         .contentShape(Rectangle())
