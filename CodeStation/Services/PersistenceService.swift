@@ -27,4 +27,18 @@ enum PersistenceService {
             return nil
         }
     }
+
+    // Writes a snapshot to an arbitrary location as human-readable JSON so the
+    // user can keep a portable backup of their configuration.
+    static func exportSnapshot(_ snapshot: StoreSnapshot, to url: URL) throws {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let data = try encoder.encode(snapshot)
+        try data.write(to: url, options: .atomic)
+    }
+
+    static func importSnapshot(from url: URL) throws -> StoreSnapshot {
+        let data = try Data(contentsOf: url)
+        return try JSONDecoder().decode(StoreSnapshot.self, from: data)
+    }
 }

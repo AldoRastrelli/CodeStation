@@ -1,9 +1,11 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 enum SettingsTab: String, CaseIterable, Identifiable {
     case notifications
     case customPrompts
     case keyboardShortcuts
+    case backup
     case help
 
     var id: String { rawValue }
@@ -13,6 +15,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .notifications: return Strings.Notifications.sectionTitle
         case .customPrompts: return Strings.CustomPrompts.sectionTitle
         case .keyboardShortcuts: return Strings.Settings.keyboardShortcuts
+        case .backup: return Strings.Settings.backup
         case .help: return Strings.Settings.help
         }
     }
@@ -22,6 +25,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .notifications: return "bell.badge"
         case .customPrompts: return "text.bubble"
         case .keyboardShortcuts: return "keyboard"
+        case .backup: return "arrow.up.arrow.down.circle"
         case .help: return "questionmark.circle"
         }
     }
@@ -45,6 +49,8 @@ struct SettingsWindowView: View {
     @State private var editPrompt = ""
     @State private var detailButtonID: UUID?
     @State private var hookStatusMessage: String?
+    @State private var backupStatusMessage: String?
+    @State private var backupSucceeded = false
 
     var body: some View {
         HStack(spacing: 0) {
@@ -70,6 +76,8 @@ struct SettingsWindowView: View {
                     }
                 case .keyboardShortcuts:
                     keyboardShortcutsPane
+                case .backup:
+                    backupPane
                 case .help:
                     helpPane
                 }
@@ -464,6 +472,91 @@ struct SettingsWindowView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Backup
+
+    private var backupPane: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(Strings.Backup.sectionTitle)
+                .font(.headline)
+
+            Text(Strings.Backup.description)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: 12) {
+                Button(Strings.Backup.exportButton) {
+                    exportBackup()
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button(Strings.Backup.importButton) {
+                    importBackup()
+                }
+            }
+
+            if let backupStatusMessage {
+                Text(backupStatusMessage)
+                    .font(.subheadline)
+                    .foregroundStyle(backupSucceeded ? .green : .red)
+            }
+
+            Spacer()
+        }
+        .padding(Constants.contentPadding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private func exportBackup() {
+        let panel = NSSavePanel()
+        panel.title = Strings.Backup.exportPanelTitle
+        panel.allowedContentTypes = [.json]
+        panel.canCreateDirectories = true
+        panel.nameFieldStringValue = Strings.Backup.defaultFilename(backupDateStamp())
+
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        do {
+            try viewModel.exportBackup(to: url)
+            backupSucceeded = true
+            backupStatusMessage = Strings.Backup.exportSucceeded
+        } catch {
+            backupSucceeded = false
+            backupStatusMessage = Strings.Backup.exportFailed
+        }
+    }
+
+    private func importBackup() {
+        let panel = NSOpenPanel()
+        panel.title = Strings.Backup.importPanelTitle
+        panel.allowedContentTypes = [.json]
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+
+        let confirm = NSAlert()
+        confirm.messageText = Strings.Backup.importConfirmTitle
+        confirm.informativeText = Strings.Backup.importConfirmMessage
+        confirm.alertStyle = .warning
+        confirm.addButton(withTitle: Strings.Backup.importConfirmButton)
+        confirm.addButton(withTitle: Strings.Terminals.cancel)
+        guard confirm.runModal() == .alertFirstButtonReturn else { return }
+
+        do {
+            try viewModel.importBackup(from: url)
+            backupSucceeded = true
+            backupStatusMessage = Strings.Backup.importSucceeded
+        } catch {
+            backupSucceeded = false
+            backupStatusMessage = Strings.Backup.importFailed
+        }
+    }
+
+    private func backupDateStamp() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: Date())
     }
 
     // MARK: - Help

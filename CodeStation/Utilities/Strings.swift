@@ -116,6 +116,7 @@ enum Strings {
         static let notifyWhen = "Notify when"
         static let soundSection = "Sound"
         static let keyboardShortcuts = "Shortcuts"
+        static let backup = "Backup"
         static let help = "Help"
         static let helpMessage = "If you're getting a \"UserPromptSubmit operation blocked by hook\" message, it might mean your .claude folder or files got corrupted. You need to reinstall the CodeStation Hook."
         static let reinstallHook = "Reinstall Hook"
@@ -151,6 +152,24 @@ enum Strings {
         static let buttonsLabel = "Buttons"
         static let duplicateName = "A prompt with this name already exists"
         static let duplicatePrompt = "Duplicate"
+    }
+
+    // MARK: - Backup
+    enum Backup {
+        static let sectionTitle = "Backup"
+        static let description = "Save all your settings (environments, terminals and their layout, folders, custom prompts, and notification preferences) to a file, or restore them from a previous backup. Use this to carry your setup across reinstalls or app updates."
+        static let exportButton = "Export Settings Backup"
+        static let importButton = "Import Settings Backup"
+        static let exportPanelTitle = "Export CodeStation Backup"
+        static let importPanelTitle = "Import CodeStation Backup"
+        static func defaultFilename(_ dateStamp: String) -> String { return "CodeStation-Backup-\(dateStamp).json" }
+        static let exportSucceeded = "Backup exported successfully."
+        static let exportFailed = "Could not export backup."
+        static let importSucceeded = "Backup imported successfully."
+        static let importFailed = "Could not import backup. The file may be invalid or corrupted."
+        static let importConfirmTitle = "Import Settings Backup?"
+        static let importConfirmMessage = "This replaces your current environments, terminals, folders, and settings with the contents of the backup. Open terminals will be closed. This cannot be undone."
+        static let importConfirmButton = "Import"
     }
 
     // MARK: - Navigation

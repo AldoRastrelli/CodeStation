@@ -46,6 +46,7 @@
 		AT0002 /* TerminalSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0002 /* TerminalSessionTests.swift */; };
 		AT0003 /* EnvironmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0003 /* EnvironmentTests.swift */; };
 		AT0020 /* FolderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0020 /* FolderTests.swift */; };
+		AT0021 /* SettingsBackupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0021 /* SettingsBackupTests.swift */; };
 		AT0004 /* NotificationSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0004 /* NotificationSettingsTests.swift */; };
 		AT0005 /* PromptButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0005 /* PromptButtonTests.swift */; };
 		AT0006 /* PersistenceModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0006 /* PersistenceModelsTests.swift */; };
@@ -118,6 +119,7 @@
 		BT0002 /* TerminalSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalSessionTests.swift; sourceTree = "<group>"; };
 		BT0003 /* EnvironmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentTests.swift; sourceTree = "<group>"; };
 		BT0020 /* FolderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTests.swift; sourceTree = "<group>"; };
+		BT0021 /* SettingsBackupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBackupTests.swift; sourceTree = "<group>"; };
 		BT0004 /* NotificationSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsTests.swift; sourceTree = "<group>"; };
 		BT0005 /* PromptButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptButtonTests.swift; sourceTree = "<group>"; };
 		BT0006 /* PersistenceModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceModelsTests.swift; sourceTree = "<group>"; };
@@ -299,6 +301,7 @@
 				BT0002 /* TerminalSessionTests.swift */,
 				BT0003 /* EnvironmentTests.swift */,
 				BT0020 /* FolderTests.swift */,
+				BT0021 /* SettingsBackupTests.swift */,
 				BT0004 /* NotificationSettingsTests.swift */,
 				BT0005 /* PromptButtonTests.swift */,
 				BT0006 /* PersistenceModelsTests.swift */,
@@ -466,6 +469,7 @@
 				AT0002 /* TerminalSessionTests.swift in Sources */,
 				AT0003 /* EnvironmentTests.swift in Sources */,
 				AT0020 /* FolderTests.swift in Sources */,
+				AT0021 /* SettingsBackupTests.swift in Sources */,
 				AT0004 /* NotificationSettingsTests.swift in Sources */,
 				AT0005 /* PromptButtonTests.swift in Sources */,
 				AT0006 /* PersistenceModelsTests.swift in Sources */,
