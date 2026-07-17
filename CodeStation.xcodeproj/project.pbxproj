@@ -21,6 +21,7 @@
 		A10013 /* HookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10013 /* HookManager.swift */; };
 		A10014 /* PersistenceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10014 /* PersistenceModels.swift */; };
 		A10015 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10015 /* Environment.swift */; };
+		A10040 /* Folder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10040 /* Folder.swift */; };
 		A10017 /* BoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10017 /* BoardView.swift */; };
 		A10018 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10018 /* SidebarView.swift */; };
 		A10019 /* SidebarRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10019 /* SidebarRowView.swift */; };
@@ -44,6 +45,7 @@
 		AT0001 /* SessionStatusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0001 /* SessionStatusTests.swift */; };
 		AT0002 /* TerminalSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0002 /* TerminalSessionTests.swift */; };
 		AT0003 /* EnvironmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0003 /* EnvironmentTests.swift */; };
+		AT0020 /* FolderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0020 /* FolderTests.swift */; };
 		AT0004 /* NotificationSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0004 /* NotificationSettingsTests.swift */; };
 		AT0005 /* PromptButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0005 /* PromptButtonTests.swift */; };
 		AT0006 /* PersistenceModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0006 /* PersistenceModelsTests.swift */; };
@@ -92,6 +94,7 @@
 		B10013 /* HookManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookManager.swift; sourceTree = "<group>"; };
 		B10014 /* PersistenceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceModels.swift; sourceTree = "<group>"; };
 		B10015 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
+		B10040 /* Folder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Folder.swift; sourceTree = "<group>"; };
 		B10017 /* BoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardView.swift; sourceTree = "<group>"; };
 		B10018 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
 		B10019 /* SidebarRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarRowView.swift; sourceTree = "<group>"; };
@@ -114,6 +117,7 @@
 		BT0001 /* SessionStatusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStatusTests.swift; sourceTree = "<group>"; };
 		BT0002 /* TerminalSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalSessionTests.swift; sourceTree = "<group>"; };
 		BT0003 /* EnvironmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentTests.swift; sourceTree = "<group>"; };
+		BT0020 /* FolderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTests.swift; sourceTree = "<group>"; };
 		BT0004 /* NotificationSettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsTests.swift; sourceTree = "<group>"; };
 		BT0005 /* PromptButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptButtonTests.swift; sourceTree = "<group>"; };
 		BT0006 /* PersistenceModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceModelsTests.swift; sourceTree = "<group>"; };
@@ -221,6 +225,7 @@
 				B10010 /* SessionStatus.swift */,
 				B10014 /* PersistenceModels.swift */,
 				B10015 /* Environment.swift */,
+				B10040 /* Folder.swift */,
 				B10034 /* NotificationSettings.swift */,
 				B10037 /* PromptButton.swift */,
 			);
@@ -293,6 +298,7 @@
 				BT0001 /* SessionStatusTests.swift */,
 				BT0002 /* TerminalSessionTests.swift */,
 				BT0003 /* EnvironmentTests.swift */,
+				BT0020 /* FolderTests.swift */,
 				BT0004 /* NotificationSettingsTests.swift */,
 				BT0005 /* PromptButtonTests.swift */,
 				BT0006 /* PersistenceModelsTests.swift */,
@@ -434,6 +440,7 @@
 				A10013 /* HookManager.swift in Sources */,
 				A10014 /* PersistenceModels.swift in Sources */,
 				A10015 /* Environment.swift in Sources */,
+				A10040 /* Folder.swift in Sources */,
 				A10017 /* BoardView.swift in Sources */,
 				A10018 /* SidebarView.swift in Sources */,
 				A10019 /* SidebarRowView.swift in Sources */,
@@ -458,6 +465,7 @@
 				AT0001 /* SessionStatusTests.swift in Sources */,
 				AT0002 /* TerminalSessionTests.swift in Sources */,
 				AT0003 /* EnvironmentTests.swift in Sources */,
+				AT0020 /* FolderTests.swift in Sources */,
 				AT0004 /* NotificationSettingsTests.swift in Sources */,
 				AT0005 /* PromptButtonTests.swift in Sources */,
 				AT0006 /* PersistenceModelsTests.swift in Sources */,

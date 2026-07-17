@@ -606,4 +606,147 @@ final class AppViewModelTests: XCTestCase {
         XCTAssertEqual(sortedAfter.count, 3)
         XCTAssertEqual(sortedAfter[0].name, "C")
     }
+
+    // MARK: - Starring
+
+    func testToggleStar() {
+        let vm = makeSUT()
+        let env = vm.environments.first!
+        XCTAssertFalse(env.isStarred)
+        vm.toggleStar(env)
+        XCTAssertTrue(env.isStarred)
+        vm.toggleStar(env)
+        XCTAssertFalse(env.isStarred)
+    }
+
+    // MARK: - Folders
+
+    private func cleanFolders(_ vm: AppViewModel) {
+        for folder in vm.folders {
+            vm.removeFolder(folder)
+        }
+    }
+
+    func testAddFolder() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let folder = vm.addFolder(name: "Work")
+        XCTAssertTrue(vm.folders.contains { $0.id == folder.id })
+        XCTAssertEqual(folder.name, "Work")
+        XCTAssertTrue(folder.isExpanded)
+    }
+
+    func testAddFolderDefaultName() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let folder = vm.addFolder()
+        XCTAssertEqual(folder.name, Strings.Environments.newFolderName(1))
+    }
+
+    func testMoveEnvironmentIntoFolder() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let env = vm.environments.first!
+        let folder = vm.addFolder(name: "Group")
+
+        vm.moveEnvironment(env, toFolder: folder.id)
+
+        XCTAssertEqual(env.folderID, folder.id)
+        XCTAssertTrue(vm.environments(in: folder).contains { $0.id == env.id })
+        XCTAssertFalse(vm.topLevelEnvironments.contains { $0.id == env.id })
+    }
+
+    func testMoveEnvironmentOutOfFolder() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let env = vm.environments.first!
+        let folder = vm.addFolder(name: "Group")
+        vm.moveEnvironment(env, toFolder: folder.id)
+
+        vm.moveEnvironment(env, toFolder: nil)
+
+        XCTAssertNil(env.folderID)
+        XCTAssertTrue(vm.topLevelEnvironments.contains { $0.id == env.id })
+        XCTAssertTrue(vm.environments(in: folder).isEmpty)
+    }
+
+    func testRemoveFolderKeepsEnvironmentsAtTopLevel() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let env = vm.environments.first!
+        let folder = vm.addFolder(name: "Group")
+        vm.moveEnvironment(env, toFolder: folder.id)
+
+        vm.removeFolder(folder)
+
+        XCTAssertFalse(vm.folders.contains { $0.id == folder.id })
+        XCTAssertNil(env.folderID)
+        XCTAssertTrue(vm.topLevelEnvironments.contains { $0.id == env.id })
+    }
+
+    func testSetFolderExpanded() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let folder = vm.addFolder(name: "Group")
+        vm.setFolderExpanded(folder, expanded: false)
+        XCTAssertFalse(folder.isExpanded)
+        vm.setFolderExpanded(folder, expanded: true)
+        XCTAssertTrue(folder.isExpanded)
+    }
+
+    func testMoveEnvironmentBeforeReorders() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        while vm.environments.count > 1 {
+            vm.removeEnvironment(vm.environments.last!)
+        }
+        vm.environments.first!.folderID = nil
+        let a = vm.environments.first!
+        let b = vm.addEnvironment(name: "B")
+        let c = vm.addEnvironment(name: "C")
+
+        // Put C before A within the top level.
+        vm.moveEnvironment(c, before: a)
+
+        let order = vm.topLevelEnvironments.map(\.id)
+        XCTAssertEqual(order, [c.id, a.id, b.id])
+    }
+
+    func testHandleEnvironmentDropIntoFolder() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let env = vm.environments.first!
+        let folder = vm.addFolder(name: "Group")
+
+        let accepted = vm.handleEnvironmentDrop([env.id.uuidString], toFolder: folder.id)
+
+        XCTAssertTrue(accepted)
+        XCTAssertEqual(env.folderID, folder.id)
+    }
+
+    func testHandleEnvironmentDropRejectsUnknownID() {
+        let vm = makeSUT()
+        let accepted = vm.handleEnvironmentDrop(["not-a-uuid"], toFolder: nil)
+        XCTAssertFalse(accepted)
+    }
+
+    func testVisibleEnvironmentsSkipsCollapsedFolders() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        while vm.environments.count > 1 {
+            vm.removeEnvironment(vm.environments.last!)
+        }
+        let topLevel = vm.environments.first!
+        topLevel.folderID = nil
+        let inFolder = vm.addEnvironment(name: "Inner")
+        let folder = vm.addFolder(name: "Group")
+        vm.moveEnvironment(inFolder, toFolder: folder.id)
+
+        vm.setFolderExpanded(folder, expanded: true)
+        XCTAssertTrue(vm.visibleEnvironmentsInOrder.contains { $0.id == inFolder.id })
+
+        vm.setFolderExpanded(folder, expanded: false)
+        XCTAssertFalse(vm.visibleEnvironmentsInOrder.contains { $0.id == inFolder.id })
+        XCTAssertTrue(vm.visibleEnvironmentsInOrder.contains { $0.id == topLevel.id })
+    }
 }

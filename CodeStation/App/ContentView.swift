@@ -121,6 +121,14 @@ struct ContentView: View {
             }
             Button(Strings.Terminals.cancel, role: .cancel) {}
         }
+        .alert(Strings.Environments.newFolder, isPresented: $viewModel.showNewFolderAlert) {
+            TextField(Strings.Environments.folderNamePlaceholder, text: $viewModel.newFolderName)
+            Button(Strings.Environments.create) {
+                let name = viewModel.newFolderName.trimmingCharacters(in: .whitespaces)
+                viewModel.addFolder(name: name.isEmpty ? nil : name)
+            }
+            Button(Strings.Terminals.cancel, role: .cancel) {}
+        }
         .onAppear {
             try? HookManager.install()
         }

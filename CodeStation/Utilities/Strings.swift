@@ -22,6 +22,16 @@ enum Strings {
         static let delete = "Delete"
         static let environmentNamePlaceholder = "Environment name"
         static let create = "Create"
+        static let star = "Star"
+        static let unstar = "Unstar"
+        static let newFolder = "New Folder"
+        static let folderDefaultName = "Folder"
+        static func newFolderName(_ count: Int) -> String { return "Folder \(count)" }
+        static let renameFolder = "Rename Folder"
+        static let deleteFolder = "Delete Folder"
+        static let folderNamePlaceholder = "Folder name"
+        static let moveOutOfFolder = "Move out of folder"
+        static let add = "Add"
     }
 
     // MARK: - Terminals
@@ -92,6 +102,11 @@ enum Strings {
         static let terminal = "terminal"
         static let grid = "square.grid.2x2"
         static let gear = "gearshape"
+        static let star = "star"
+        static let starFill = "star.fill"
+        static let folder = "folder"
+        static let chevronRight = "chevron.right"
+        static let chevronDown = "chevron.down"
     }
 
     // MARK: - Settings

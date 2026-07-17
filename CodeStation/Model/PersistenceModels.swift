@@ -7,6 +7,14 @@ struct StoreSnapshot: Codable {
     var notificationSettings: NotificationSettings?
     var promptButtons: [PromptButton]?
     var skipCloseConfirmation: Bool?
+    var folders: [FolderSnapshot]?
+}
+
+struct FolderSnapshot: Codable {
+    var id: UUID
+    var name: String
+    var sortOrder: Int
+    var isExpanded: Bool
 }
 
 struct EnvironmentSnapshot: Codable {
@@ -16,6 +24,8 @@ struct EnvironmentSnapshot: Codable {
     var sessions: [SessionSnapshot]
     var columnProportions: [Double]
     var rowProportion: Double
+    var folderID: UUID? = nil
+    var isStarred: Bool? = nil
 }
 
 struct SessionSnapshot: Codable {
