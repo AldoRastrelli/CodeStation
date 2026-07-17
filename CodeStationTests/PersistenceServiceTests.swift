@@ -52,6 +52,85 @@ final class PersistenceServiceTests: XCTestCase {
         XCTAssertEqual(loaded?.skipCloseConfirmation, false)
     }
 
+    // MARK: - Export / Import Round Trip
+
+    func testExportAndImportRoundTrip() throws {
+        let envID = UUID()
+        let folderID = UUID()
+        let snapshot = StoreSnapshot(
+            environments: [
+                EnvironmentSnapshot(
+                    id: envID,
+                    name: "Backed Up",
+                    sortOrder: 0,
+                    sessions: [
+                        SessionSnapshot(gridIndex: 0, title: "T1", userEditedTitle: true, sessionDescription: "build", currentDirectory: "/tmp")
+                    ],
+                    columnProportions: [0.5, 0.5, 0.0, 0.0],
+                    rowProportion: 0.4,
+                    folderID: folderID,
+                    isStarred: true
+                )
+            ],
+            selectedEnvironmentID: envID,
+            fontSize: 18.0,
+            notificationSettings: NotificationSettings(),
+            promptButtons: [PromptButton(title: "Run", color: "green", prompt: "npm run")],
+            skipCloseConfirmation: true,
+            folders: [FolderSnapshot(id: folderID, name: "Work", sortOrder: 0, isExpanded: false)]
+        )
+
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("codestation-backup-\(UUID().uuidString).json")
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        try PersistenceService.exportSnapshot(snapshot, to: url)
+        let decoded = try PersistenceService.importSnapshot(from: url)
+
+        XCTAssertEqual(decoded.environments.count, 1)
+        let env = try XCTUnwrap(decoded.environments.first)
+        XCTAssertEqual(env.name, "Backed Up")
+        XCTAssertEqual(env.folderID, folderID)
+        XCTAssertEqual(env.isStarred, true)
+        XCTAssertEqual(env.sessions.first?.currentDirectory, "/tmp")
+        XCTAssertEqual(decoded.fontSize, 18.0)
+        XCTAssertEqual(decoded.selectedEnvironmentID, envID)
+        XCTAssertEqual(decoded.skipCloseConfirmation, true)
+        XCTAssertEqual(decoded.promptButtons?.first?.title, "Run")
+        XCTAssertEqual(decoded.folders?.first?.name, "Work")
+        XCTAssertEqual(decoded.folders?.first?.isExpanded, false)
+    }
+
+    func testExportWritesReadableJSON() throws {
+        let snapshot = StoreSnapshot(
+            environments: [
+                EnvironmentSnapshot(id: UUID(), name: "Readable", sortOrder: 0, sessions: [], columnProportions: [], rowProportion: 0.5)
+            ],
+            selectedEnvironmentID: nil,
+            fontSize: 13.0
+        )
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("codestation-backup-\(UUID().uuidString).json")
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        try PersistenceService.exportSnapshot(snapshot, to: url)
+        let contents = try String(contentsOf: url, encoding: .utf8)
+
+        // Pretty-printed output spans multiple lines and preserves field names.
+        XCTAssertTrue(contents.contains("\n"))
+        XCTAssertTrue(contents.contains("Readable"))
+    }
+
+    func testImportFromMissingFileThrows() {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("codestation-missing-\(UUID().uuidString).json")
+        XCTAssertThrowsError(try PersistenceService.importSnapshot(from: url))
+    }
+
+    func testImportFromInvalidJSONThrows() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("codestation-invalid-\(UUID().uuidString).json")
+        defer { try? FileManager.default.removeItem(at: url) }
+        try "not valid json".data(using: .utf8)!.write(to: url)
+        XCTAssertThrowsError(try PersistenceService.importSnapshot(from: url))
+    }
+
     // MARK: - Load Non-Existent
 
     func testLoadWhenNoFileReturnsNil() {
