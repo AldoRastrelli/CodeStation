@@ -21,6 +21,18 @@ A macOS terminal multiplexer built with **SwiftUI** and **SwiftTerm**.
 > ```
 > Then open the app normally.
 
+## How to update
+
+CodeStation saves your setup automatically, so most updates keep everything in place. When you want to move to a newer build safely, or carry your setup to another Mac, use a settings backup:
+
+1. In CodeStation, open **Settings > Backup** and click **Export Settings Backup**. Save the `.json` file somewhere safe.
+2. Download the new release `.dmg` from the [Releases](../../releases) page and drag **CodeStation.app** into your Applications folder, replacing the old one.
+3. Open the new version, go to **Settings > Backup**, and click **Import Settings Backup**. Pick the file you exported.
+
+Your environments, terminals (and their layout), folders, custom prompt buttons, and notification preferences are all restored.
+
+> Importing replaces the current configuration and closes any open terminals, so export first if you want to keep what you have.
+
 ## Features
 
 ### Environments
@@ -60,6 +72,10 @@ Drag the dividers between terminals to resize them. **Double-click** any divider
 
 - **Vertical dividers** — double-click to equalize column widths
 - **Horizontal divider** (grid layout) — double-click to reset the 50/50 row split
+
+### Settings Backup
+
+Export your entire configuration to a single file from **Settings > Backup**, and import it later. A backup captures your environments, terminals (and their layout), folders, custom prompt buttons, and notification preferences. Use it to move between machines or to preserve your setup across reinstalls and updates.
 
 ### Keyboard Shortcuts
 
