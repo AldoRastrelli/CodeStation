@@ -19,8 +19,8 @@ struct SidebarRowView: View {
 
     var body: some View {
         HStack(spacing: Constants.hStackSpacing) {
-            Image(systemName: Strings.Icons.grid)
-                .foregroundStyle(.secondary)
+            Image(systemName: environment.isStarred ? Strings.Icons.starFill : Strings.Icons.grid)
+                .foregroundStyle(environment.isStarred ? AnyShapeStyle(.yellow) : AnyShapeStyle(.secondary))
                 .font(.system(size: Constants.iconSize))
 
             if isEditing {
@@ -71,9 +71,17 @@ struct SidebarRowView: View {
         }
         .contentShape(Rectangle())
         .contextMenu {
+            Button(environment.isStarred ? Strings.Environments.unstar : Strings.Environments.star) {
+                viewModel.toggleStar(environment)
+            }
             Button(Strings.Environments.rename) {
                 DispatchQueue.main.async {
                     beginRename()
+                }
+            }
+            if environment.folderID != nil {
+                Button(Strings.Environments.moveOutOfFolder) {
+                    viewModel.moveEnvironment(environment, toFolder: nil)
                 }
             }
             Divider()

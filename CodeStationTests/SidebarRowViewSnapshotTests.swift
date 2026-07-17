@@ -36,6 +36,16 @@ final class SidebarRowViewSnapshotTests: XCTestCase {
         assertSnapshot(of: controller, as: .image)
     }
 
+    func testStarredRow() {
+        let viewModel = makeViewModel()
+        let env = viewModel.sortedEnvironments.first!
+        viewModel.toggleStar(env)
+        let view = SidebarRowView(environment: env, viewModel: viewModel)
+        let controller = NSHostingController(rootView: view)
+        controller.view.frame = NSRect(x: 0, y: 0, width: 220, height: 30)
+        assertSnapshot(of: controller, as: .image)
+    }
+
     func testRowWithNotificationBadge() {
         let viewModel = makeViewModel()
         let env = viewModel.sortedEnvironments.first!
