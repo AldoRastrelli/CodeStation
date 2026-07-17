@@ -136,6 +136,78 @@ final class PersistenceModelsTests: XCTestCase {
         XCTAssertNil(decoded.skipCloseConfirmation)
     }
 
+    // MARK: - Folders & Starring
+
+    func testFolderSnapshotEncodeDecode() throws {
+        let id = UUID()
+        let snapshot = FolderSnapshot(id: id, name: "Work", sortOrder: 2, isExpanded: false)
+        let data = try JSONEncoder().encode(snapshot)
+        let decoded = try JSONDecoder().decode(FolderSnapshot.self, from: data)
+        XCTAssertEqual(decoded.id, id)
+        XCTAssertEqual(decoded.name, "Work")
+        XCTAssertEqual(decoded.sortOrder, 2)
+        XCTAssertFalse(decoded.isExpanded)
+    }
+
+    func testEnvironmentSnapshotPreservesFolderAndStar() throws {
+        let folderID = UUID()
+        let envSnapshot = EnvironmentSnapshot(
+            id: UUID(),
+            name: "Dev",
+            sortOrder: 0,
+            sessions: [],
+            columnProportions: [],
+            rowProportion: 0.5,
+            folderID: folderID,
+            isStarred: true
+        )
+        let data = try JSONEncoder().encode(envSnapshot)
+        let decoded = try JSONDecoder().decode(EnvironmentSnapshot.self, from: data)
+        XCTAssertEqual(decoded.folderID, folderID)
+        XCTAssertEqual(decoded.isStarred, true)
+    }
+
+    func testEnvironmentSnapshotDefaultsFolderAndStarNil() throws {
+        let envSnapshot = EnvironmentSnapshot(
+            id: UUID(),
+            name: "Dev",
+            sortOrder: 0,
+            sessions: [],
+            columnProportions: [],
+            rowProportion: 0.5
+        )
+        XCTAssertNil(envSnapshot.folderID)
+        XCTAssertNil(envSnapshot.isStarred)
+    }
+
+    func testLegacyEnvironmentSnapshotDecodesWithoutFolderFields() throws {
+        // A snapshot saved before folders/starring existed has neither key.
+        let json = """
+        {"id":"\(UUID().uuidString)","name":"Old","sortOrder":0,"sessions":[],"columnProportions":[],"rowProportion":0.5}
+        """
+        let data = Data(json.utf8)
+        let decoded = try JSONDecoder().decode(EnvironmentSnapshot.self, from: data)
+        XCTAssertNil(decoded.folderID)
+        XCTAssertNil(decoded.isStarred)
+    }
+
+    func testStoreSnapshotPreservesFolders() throws {
+        let folderID = UUID()
+        let snapshot = StoreSnapshot(
+            environments: [],
+            selectedEnvironmentID: nil,
+            fontSize: 13.0,
+            notificationSettings: nil,
+            promptButtons: nil,
+            skipCloseConfirmation: nil,
+            folders: [FolderSnapshot(id: folderID, name: "Group", sortOrder: 0, isExpanded: true)]
+        )
+        let data = try JSONEncoder().encode(snapshot)
+        let decoded = try JSONDecoder().decode(StoreSnapshot.self, from: data)
+        XCTAssertEqual(decoded.folders?.count, 1)
+        XCTAssertEqual(decoded.folders?.first?.id, folderID)
+    }
+
     func testStoreSnapshotPreservesEnvironmentID() throws {
         let id = UUID()
         let snapshot = StoreSnapshot(
