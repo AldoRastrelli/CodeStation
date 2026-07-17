@@ -290,9 +290,17 @@ class AppViewModel {
             boardVM.environmentID = env.id
             return boardVM
         }
+        let boardVM = makeBoardViewModel(environmentID: env.id)
+        boardViewModels[env.id] = boardVM
+        return boardVM
+    }
+
+    // Builds a board view model wired to this app view model's state and
+    // callbacks. Shared by on-demand creation and snapshot restore.
+    private func makeBoardViewModel(environmentID: UUID) -> BoardViewModel {
         let boardVM = BoardViewModel()
-        boardVM.environmentID = env.id
-        boardVM.isBoardActive = { [weak self] in NSApp.isActive && self?.selectedEnvironmentID == env.id }
+        boardVM.environmentID = environmentID
+        boardVM.isBoardActive = { [weak self] in NSApp.isActive && self?.selectedEnvironmentID == environmentID }
         boardVM.getNotificationSettings = { [weak self] in self?.notificationSettings }
         boardVM.getPromptButtons = { [weak self] in self?.promptButtons ?? [] }
         boardVM.onAddPromptButton = { [weak self] button in
@@ -318,7 +326,6 @@ class AppViewModel {
             self?.skipCloseConfirmation = skip
             self?.scheduleSave()
         }
-        boardViewModels[env.id] = boardVM
         return boardVM
     }
 
@@ -451,18 +458,32 @@ class AppViewModel {
     private func saveNow() {
         saveWorkItem?.cancel()
         saveWorkItem = nil
+        PersistenceService.save(snapshot: makeSnapshot())
+    }
 
-        let snapshot = StoreSnapshot(
+    // Captures the full app configuration (environments, terminals and their
+    // layout, folders, prompt buttons, notification settings, font size) into a
+    // single serializable value. Used for both autosave and backup export.
+    func makeSnapshot() -> StoreSnapshot {
+        StoreSnapshot(
             environments: sortedEnvironments.map { env in
                 let boardVM = boardViewModels[env.id]
-                let sessionSnapshots = (boardVM?.sessions ?? []).map { session in
-                    SessionSnapshot(
-                        gridIndex: session.gridIndex,
-                        title: session.title,
-                        userEditedTitle: session.isUserEditedTitle,
-                        sessionDescription: session.sessionDescription,
-                        currentDirectory: session.currentDirectory
-                    )
+                // A board whose environment hasn't been viewed yet still holds
+                // its terminals in pendingRestores rather than live sessions, so
+                // fall back to those to avoid dropping them from the snapshot.
+                let sessionSnapshots: [SessionSnapshot]
+                if let boardVM, !boardVM.sessions.isEmpty {
+                    sessionSnapshots = boardVM.sessions.map { session in
+                        SessionSnapshot(
+                            gridIndex: session.gridIndex,
+                            title: session.title,
+                            userEditedTitle: session.isUserEditedTitle,
+                            sessionDescription: session.sessionDescription,
+                            currentDirectory: session.currentDirectory
+                        )
+                    }
+                } else {
+                    sessionSnapshots = boardVM?.pendingRestores ?? []
                 }
                 return EnvironmentSnapshot(
                     id: env.id,
@@ -489,12 +510,19 @@ class AppViewModel {
                 )
             }
         )
-
-        PersistenceService.save(snapshot: snapshot)
     }
 
     private func loadFromDisk() {
         guard let snapshot = PersistenceService.load() else { return }
+        apply(snapshot: snapshot)
+    }
+
+    // Replaces the entire in-memory configuration with a snapshot, tearing down
+    // any live terminal sessions first. Shared by initial load and backup import.
+    private func apply(snapshot: StoreSnapshot) {
+        cleanupAllSessions()
+        boardViewModels.removeAll()
+
         environments = snapshot.environments.map { envSnapshot in
             Environment(
                 id: envSnapshot.id,
@@ -532,39 +560,24 @@ class AppViewModel {
 
         // Pre-create board VMs with pending restores
         for envSnapshot in snapshot.environments {
-            let boardVM = BoardViewModel()
-            boardVM.environmentID = envSnapshot.id
-            boardVM.isBoardActive = { [weak self] in NSApp.isActive && self?.selectedEnvironmentID == envSnapshot.id }
-            boardVM.getNotificationSettings = { [weak self] in self?.notificationSettings }
-            boardVM.getPromptButtons = { [weak self] in self?.promptButtons ?? [] }
-            boardVM.onAddPromptButton = { [weak self] button in
-                self?.promptButtons.append(button)
-                self?.scheduleSave()
-            }
-            boardVM.onUpdatePromptButton = { [weak self] updated in
-                guard let self else { return }
-                if let index = self.promptButtons.firstIndex(where: { $0.id == updated.id }) {
-                    self.promptButtons[index] = updated
-                    self.scheduleSave()
-                }
-            }
-            boardVM.onDeletePromptButton = { [weak self] id in
-                self?.promptButtons.removeAll { $0.id == id }
-                self?.scheduleSave()
-            }
-            boardVM.onStateChanged = { [weak self] in
-                self?.scheduleSave()
-            }
-            boardVM.getSkipCloseConfirmation = { [weak self] in self?.skipCloseConfirmation ?? false }
-            boardVM.onSkipCloseConfirmationChanged = { [weak self] skip in
-                self?.skipCloseConfirmation = skip
-                self?.scheduleSave()
-            }
+            let boardVM = makeBoardViewModel(environmentID: envSnapshot.id)
             boardVM.columnProportions = envSnapshot.columnProportions.map { CGFloat($0) }
             boardVM.rowProportion = CGFloat(envSnapshot.rowProportion)
             boardVM.pendingRestores = envSnapshot.sessions
             boardViewModels[envSnapshot.id] = boardVM
         }
+    }
+
+    // MARK: - Backup Export / Import
+
+    func exportBackup(to url: URL) throws {
+        try PersistenceService.exportSnapshot(makeSnapshot(), to: url)
+    }
+
+    func importBackup(from url: URL) throws {
+        let snapshot = try PersistenceService.importSnapshot(from: url)
+        apply(snapshot: snapshot)
+        saveNow()
     }
 
     private func cleanupAllSessions() {
