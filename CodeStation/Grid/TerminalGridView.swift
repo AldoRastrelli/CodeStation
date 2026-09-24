@@ -4,9 +4,6 @@ struct TerminalGridView: View {
     private enum Constants {
         static let dividerThickness: CGFloat = 6
         static let padding: CGFloat = 6
-        static let minColumnProportion: CGFloat = 0.08
-        static let minRowProportion: CGFloat = 0.15
-        static let minDragDistance: CGFloat = 1
         static let edgeButtonBgOpacity: Double = 0.3
         static let edgeButtonIconSize: CGFloat = 22
         static let edgeButtonWidth: CGFloat = 36
@@ -190,19 +187,13 @@ struct TerminalGridView: View {
     }
 
     private func resizeColumns(draggingAfter index: Int, cumulativeOffset: CGFloat, totalWidth: CGFloat, count: Int) {
-        guard let startProps = dragStartColumnProportions,
-              index + 1 < count, totalWidth > 0 else { return }
-        let proportionDelta = cumulativeOffset / totalWidth
-
-        var props = startProps
-        let newLeft = props[index] + proportionDelta
-        let newRight = props[index + 1] - proportionDelta
-
-        if newLeft >= Constants.minColumnProportion && newRight >= Constants.minColumnProportion {
-            props[index] = newLeft
-            props[index + 1] = newRight
-            viewModel.columnProportions = props
-        }
+        guard let startProps = dragStartColumnProportions, totalWidth > 0 else { return }
+        viewModel.resizeColumns(
+            from: startProps,
+            dividerAfter: index,
+            visibleCount: count,
+            fractionDelta: cumulativeOffset / totalWidth
+        )
     }
 
     private func endColumnResize() {
@@ -215,12 +206,7 @@ struct TerminalGridView: View {
 
     private func resizeRows(cumulativeOffset: CGFloat, totalHeight: CGFloat) {
         guard let startProp = dragStartRowProportion, totalHeight > 0 else { return }
-        let proportionDelta = cumulativeOffset / totalHeight
-
-        let newTop = startProp + proportionDelta
-        if newTop >= Constants.minRowProportion && newTop <= (1 - Constants.minRowProportion) {
-            viewModel.rowProportion = newTop
-        }
+        viewModel.resizeRows(from: startProp, fractionDelta: cumulativeOffset / totalHeight)
     }
 
     private func endRowResize() {
@@ -315,7 +301,7 @@ struct VerticalDividerHandle: View {
                 }
             }
             .gesture(
-                DragGesture(minimumDistance: Constants.minDragDistance)
+                DragGesture(minimumDistance: Constants.minDragDistance, coordinateSpace: .global)
                     .onChanged { value in
                         if !isDragging {
                             isDragging = true
@@ -366,7 +352,7 @@ struct HorizontalDividerHandle: View {
                 }
             }
             .gesture(
-                DragGesture(minimumDistance: Constants.minDragDistance)
+                DragGesture(minimumDistance: Constants.minDragDistance, coordinateSpace: .global)
                     .onChanged { value in
                         if !isDragging {
                             isDragging = true
