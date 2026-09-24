@@ -9,6 +9,8 @@ class BoardViewModel {
         static let gridLayoutThreshold = 3
         static let defaultColumnProportion: CGFloat = 0.25
         static let defaultRowProportion: CGFloat = 0.5
+        static let minColumnProportion: CGFloat = 0.08
+        static let minRowProportion: CGFloat = 0.15
     }
 
     var sessions: [TerminalSession] = []
@@ -79,6 +81,40 @@ class BoardViewModel {
         case 5...6: return 3
         default: return Constants.maxGridColumns
         }
+    }
+
+    // MARK: - Divider Resizing
+
+    /// `fractionDelta` is the pointer travel as a fraction of the visible row width.
+    /// Stored proportions are normalized by the sum of the visible columns when
+    /// laid out, so the delta is scaled by that sum before it is applied.
+    func resizeColumns(from startProportions: [CGFloat], dividerAfter index: Int, visibleCount count: Int, fractionDelta: CGFloat) {
+        guard index >= 0, index + 1 < count else { return }
+        let start = startProportions.count >= count
+            ? startProportions
+            : Array(repeating: 1 / CGFloat(count), count: count)
+        let visibleTotal = start.prefix(count).reduce(0, +)
+        guard visibleTotal > 0 else { return }
+
+        let minRaw = Constants.minColumnProportion * visibleTotal
+        let left = start[index]
+        let right = start[index + 1]
+        let lowerBound = minRaw - left
+        let upperBound = right - minRaw
+        guard lowerBound <= upperBound else { return }
+        let rawDelta = min(max(fractionDelta * visibleTotal, lowerBound), upperBound)
+
+        var props = start
+        props[index] = left + rawDelta
+        props[index + 1] = right - rawDelta
+        columnProportions = props
+    }
+
+    /// `fractionDelta` is the pointer travel as a fraction of the visible grid height.
+    func resizeRows(from startProportion: CGFloat, fractionDelta: CGFloat) {
+        let lower = Constants.minRowProportion
+        let upper = 1 - Constants.minRowProportion
+        rowProportion = min(max(startProportion + fractionDelta, lower), upper)
     }
 
     // MARK: - Session CRUD
