@@ -750,6 +750,34 @@ final class AppViewModelTests: XCTestCase {
         XCTAssertTrue(vm.visibleEnvironmentsInOrder.contains { $0.id == topLevel.id })
     }
 
+    // MARK: - Prompt Button Reordering
+
+    func testMovePromptButtonsReordersArray() {
+        let vm = makeSUT()
+        vm.promptButtons = [
+            PromptButton(title: "A", color: "blue", prompt: "a"),
+            PromptButton(title: "B", color: "red", prompt: "b"),
+            PromptButton(title: "C", color: "green", prompt: "c"),
+        ]
+
+        vm.movePromptButtons(from: IndexSet(integer: 0), to: 3)
+
+        XCTAssertEqual(vm.promptButtons.map(\.title), ["B", "C", "A"])
+    }
+
+    func testMovePromptButtonsPreservesCount() {
+        let vm = makeSUT()
+        vm.promptButtons = [
+            PromptButton(title: "A", color: "blue", prompt: "a"),
+            PromptButton(title: "B", color: "red", prompt: "b"),
+        ]
+
+        vm.movePromptButtons(from: IndexSet(integer: 1), to: 0)
+
+        XCTAssertEqual(vm.promptButtons.count, 2)
+        XCTAssertEqual(vm.promptButtons.map(\.title), ["B", "A"])
+    }
+
     // MARK: - Star Color
 
     func testStarColorDefault() {

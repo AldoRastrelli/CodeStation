@@ -155,6 +155,9 @@ struct SettingsWindowView: View {
                     ForEach(viewModel.promptButtons) { button in
                         promptButtonRow(button)
                     }
+                    .onMove { source, destination in
+                        viewModel.movePromptButtons(from: source, to: destination)
+                    }
 
                     if isAddingNew {
                         newButtonRow
@@ -216,6 +219,11 @@ struct SettingsWindowView: View {
                 .font(.headline)
 
             Spacer()
+
+            Image(systemName: "line.3.horizontal")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.tertiary)
+                .help(Strings.CustomPrompts.reorderHint)
 
             Image(systemName: "chevron.right")
                 .font(.system(size: 10, weight: .medium))

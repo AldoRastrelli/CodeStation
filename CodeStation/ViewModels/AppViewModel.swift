@@ -211,6 +211,13 @@ class AppViewModel {
         scheduleSave()
     }
 
+    // MARK: - Custom Prompt Buttons
+
+    func movePromptButtons(from source: IndexSet, to destination: Int) {
+        promptButtons.move(fromOffsets: source, toOffset: destination)
+        scheduleSave()
+    }
+
     // MARK: - Folder CRUD
 
     @discardableResult

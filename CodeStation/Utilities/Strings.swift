@@ -153,6 +153,7 @@ enum Strings {
         static let buttonsLabel = "Buttons"
         static let duplicateName = "A prompt with this name already exists"
         static let duplicatePrompt = "Duplicate"
+        static let reorderHint = "Drag to reorder"
     }
 
     // MARK: - Color Preferences
