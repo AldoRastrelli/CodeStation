@@ -19,9 +19,15 @@ struct SidebarRowView: View {
 
     var body: some View {
         HStack(spacing: Constants.hStackSpacing) {
-            Image(systemName: environment.isStarred ? Strings.Icons.starFill : Strings.Icons.grid)
-                .foregroundStyle(environment.isStarred ? AnyShapeStyle(AppColors.color(named: viewModel.starColor)) : AnyShapeStyle(.secondary))
-                .font(.system(size: Constants.iconSize))
+            Button {
+                viewModel.toggleStar(environment)
+            } label: {
+                Image(systemName: environment.isStarred ? Strings.Icons.starFill : Strings.Icons.grid)
+                    .foregroundStyle(environment.isStarred ? AnyShapeStyle(AppColors.color(named: viewModel.starColor)) : AnyShapeStyle(.secondary))
+                    .font(.system(size: Constants.iconSize))
+            }
+            .buttonStyle(.plain)
+            .help(environment.isStarred ? Strings.Environments.unstar : Strings.Environments.star)
 
             if isEditing {
                 TextField(Strings.Terminals.namePlaceholder, text: $editedName)
