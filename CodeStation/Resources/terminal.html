@@ -70,8 +70,16 @@ term.parser.registerOscHandler(7, function(data) {
     return false;
 });
 
-// Refit when the container resizes
-var ro = new ResizeObserver(function() { fitAddon.fit(); });
+// Refit when the container resizes. A detached or collapsed container reports
+// zero size while the view moves between grid cells; fitting then would shrink
+// the shell to 2x1 and make it redraw blank.
+function fitIfVisible() {
+    var el = document.getElementById('terminal');
+    if (el.clientWidth > 0 && el.clientHeight > 0) {
+        fitAddon.fit();
+    }
+}
+var ro = new ResizeObserver(fitIfVisible);
 ro.observe(document.getElementById('terminal'));
 
 // Called by Swift: write base64-encoded PTY output to the terminal
@@ -87,7 +95,7 @@ window.termWrite = function(base64) {
 // Called by Swift: change font size
 window.setFontSize = function(size) {
     term.options.fontSize = size;
-    fitAddon.fit();
+    fitIfVisible();
 };
 
 // Signal ready with initial dimensions
