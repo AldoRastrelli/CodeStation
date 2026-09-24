@@ -8,30 +8,56 @@ struct EmptyCellView: View {
         static let bgOpacity: Double = 0.3
         static let cornerRadius: CGFloat = 8
         static let strokeWidth: CGFloat = 1
+        static let targetedStrokeWidth: CGFloat = 2
         static let dashLength: CGFloat = 6
     }
 
     var onAdd: () -> Void
+    var onSessionDropped: ((UUID) -> Bool)?
+
+    @State private var isDropTargeted = false
 
     var body: some View {
-        Button(action: onAdd) {
-            VStack(spacing: Constants.spacing) {
-                Image(systemName: Strings.Icons.plusCircle)
-                    .font(.system(size: Constants.iconSize, weight: .light))
-                    .foregroundStyle(.secondary)
-                Text(Strings.Terminals.newTerminal)
-                    .font(.system(size: Constants.textSize))
-                    .foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(nsColor: .controlBackgroundColor).opacity(Constants.bgOpacity))
-            .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
-            .overlay(
-                RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                    .strokeBorder(style: StrokeStyle(lineWidth: Constants.strokeWidth, dash: [Constants.dashLength]))
-                    .foregroundStyle(.quaternary)
-            )
+        VStack(spacing: Constants.spacing) {
+            Image(systemName: Strings.Icons.plusCircle)
+                .font(.system(size: Constants.iconSize, weight: .light))
+                .foregroundStyle(.secondary)
+            Text(Strings.Terminals.newTerminal)
+                .font(.system(size: Constants.textSize))
+                .foregroundStyle(.secondary)
         }
-        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(nsColor: .controlBackgroundColor).opacity(Constants.bgOpacity))
+        .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
+        .overlay(border)
+        .contentShape(Rectangle())
+        .onTapGesture(perform: onAdd)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(Strings.Terminals.newTerminal)
+        .dropDestination(for: String.self) { items, _ in
+            acceptDrop(items)
+        } isTargeted: { targeted in
+            isDropTargeted = targeted
+        }
+    }
+
+    @ViewBuilder
+    private var border: some View {
+        let shape = RoundedRectangle(cornerRadius: Constants.cornerRadius)
+        if isDropTargeted {
+            shape
+                .strokeBorder(Color.accentColor, lineWidth: Constants.targetedStrokeWidth)
+        } else {
+            shape
+                .strokeBorder(style: StrokeStyle(lineWidth: Constants.strokeWidth, dash: [Constants.dashLength]))
+                .foregroundStyle(.quaternary)
+        }
+    }
+
+    func acceptDrop(_ items: [String]) -> Bool {
+        guard let onSessionDropped,
+              let idString = items.first,
+              let sourceID = UUID(uuidString: idString) else { return false }
+        return onSessionDropped(sourceID)
     }
 }
