@@ -1,6 +1,7 @@
 import XCTest
 import SnapshotTesting
 import SwiftUI
+import WebKit
 @testable import CodeStation
 
 final class BoardViewSnapshotTests: XCTestCase {
@@ -88,5 +89,50 @@ final class BoardViewSnapshotTests: XCTestCase {
             "AppKit finds drop targets from the topmost view down, so the selected board's empty cell must be above the hidden terminal"
         )
         window.orderOut(nil)
+    }
+
+    // MARK: - Swapping terminals moves their web views
+
+    private func hostInWindow<V: View>(_ root: V) -> (NSHostingView<V>, NSWindow) {
+        let hosting = NSHostingView(rootView: root)
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 1200, height: 800),
+            styleMask: [.titled],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentView = hosting
+        window.orderFront(nil)
+        RunLoop.main.run(until: Date().addingTimeInterval(1.5))
+        hosting.layoutSubtreeIfNeeded()
+        return (hosting, window)
+    }
+
+    private func frame(of webView: WKWebView?, in hosting: NSView) -> NSRect? {
+        guard let webView, webView.isDescendant(of: hosting) else { return nil }
+        return webView.convert(webView.bounds, to: hosting)
+    }
+
+    func testSwappingSessionsMovesTheirWebViews() {
+        let board = BoardViewModel()
+        for _ in 0..<4 { board.addSession() }
+        let sessions = board.sessions.sorted { $0.gridIndex < $1.gridIndex }
+        let first = sessions[0]
+        let second = sessions[1]
+        let (hosting, window) = hostInWindow(TerminalGridView(viewModel: board))
+        defer { window.orderOut(nil) }
+
+        let firstFrame = frame(of: board.viewModel(for: first).webView, in: hosting)
+        let secondFrame = frame(of: board.viewModel(for: second).webView, in: hosting)
+        XCTAssertNotNil(firstFrame)
+        XCTAssertNotNil(secondFrame)
+        XCTAssertNotEqual(firstFrame, secondFrame)
+
+        XCTAssertTrue(board.swapSessions(sourceID: first.id, targetGridIndex: second.gridIndex))
+        RunLoop.main.run(until: Date().addingTimeInterval(1.0))
+        hosting.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(frame(of: board.viewModel(for: first).webView, in: hosting), secondFrame)
+        XCTAssertEqual(frame(of: board.viewModel(for: second).webView, in: hosting), firstFrame)
     }
 }
