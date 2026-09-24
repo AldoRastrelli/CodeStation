@@ -135,4 +135,44 @@ final class BoardViewSnapshotTests: XCTestCase {
         XCTAssertEqual(frame(of: board.viewModel(for: first).webView, in: hosting), secondFrame)
         XCTAssertEqual(frame(of: board.viewModel(for: second).webView, in: hosting), firstFrame)
     }
+
+    private func evaluate(_ script: String, in webView: WKWebView) -> Any? {
+        var result: Any?
+        let done = expectation(description: "js")
+        webView.evaluateJavaScript(script) { value, _ in
+            result = value
+            done.fulfill()
+        }
+        wait(for: [done], timeout: 5)
+        return result
+    }
+
+    private func waitForTerminalReady(_ webView: WKWebView) -> Int? {
+        for _ in 0..<40 {
+            if let rows = evaluate("typeof term === 'undefined' ? 0 : term.rows", in: webView) as? Int, rows > 1 {
+                return rows
+            }
+            RunLoop.main.run(until: Date().addingTimeInterval(0.25))
+        }
+        return nil
+    }
+
+    func testSwappingSessionsDoesNotShrinkTheTerminal() throws {
+        let board = BoardViewModel()
+        for _ in 0..<4 { board.addSession() }
+        let sessions = board.sessions.sorted { $0.gridIndex < $1.gridIndex }
+        let (_, window) = hostInWindow(TerminalGridView(viewModel: board))
+        defer { window.orderOut(nil) }
+
+        let webView = try XCTUnwrap(board.viewModel(for: sessions[0]).webView)
+        let rowsBefore = try XCTUnwrap(waitForTerminalReady(webView))
+        _ = evaluate("window.__minRows = term.rows; term.onResize(function(s) { window.__minRows = Math.min(window.__minRows, s.rows); }); 0", in: webView)
+
+        XCTAssertTrue(board.swapSessions(sourceID: sessions[0].id, targetGridIndex: sessions[1].gridIndex))
+        RunLoop.main.run(until: Date().addingTimeInterval(1.5))
+
+        let minRows = evaluate("window.__minRows", in: webView) as? Int
+        XCTAssertEqual(minRows, rowsBefore, "the terminal was resized smaller while its web view moved cells")
+        XCTAssertEqual(evaluate("term.rows", in: webView) as? Int, rowsBefore)
+    }
 }
