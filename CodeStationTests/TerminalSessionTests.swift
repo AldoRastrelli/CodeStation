@@ -93,4 +93,49 @@ final class TerminalSessionTests: XCTestCase {
         session.sessionDescription = "Running tests"
         XCTAssertEqual(session.sessionDescription, "Running tests")
     }
+
+    // MARK: - Drag Payload
+
+    func testDragPayloadRoundTripsSessionID() {
+        let expected = UUID()
+        let provider = TerminalDragPayload.itemProvider(for: expected)
+        let loaded = expectation(description: "session id loaded")
+        var received: UUID?
+
+        let accepted = TerminalDragPayload.loadSessionID(from: [provider]) { id in
+            received = id
+            loaded.fulfill()
+        }
+
+        XCTAssertTrue(accepted)
+        wait(for: [loaded], timeout: 2)
+        XCTAssertEqual(received, expected)
+    }
+
+    func testDragPayloadRejectsNonUUIDString() {
+        let provider = NSItemProvider(object: "not-a-uuid" as NSString)
+        let loaded = expectation(description: "load finished")
+        var received: UUID? = UUID()
+
+        TerminalDragPayload.loadSessionID(from: [provider]) { id in
+            received = id
+            loaded.fulfill()
+        }
+
+        wait(for: [loaded], timeout: 2)
+        XCTAssertNil(received)
+    }
+
+    func testDragPayloadReturnsFalseWithoutStringProvider() {
+        var called = false
+        let accepted = TerminalDragPayload.loadSessionID(from: []) { _ in called = true }
+        XCTAssertFalse(accepted)
+        XCTAssertFalse(called)
+    }
+
+    func testDragPayloadParsesSessionIDString() {
+        let id = UUID()
+        XCTAssertEqual(TerminalDragPayload.sessionID(from: id.uuidString), id)
+        XCTAssertNil(TerminalDragPayload.sessionID(from: ""))
+    }
 }

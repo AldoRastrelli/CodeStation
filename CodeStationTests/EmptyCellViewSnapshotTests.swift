@@ -19,29 +19,17 @@ final class EmptyCellViewSnapshotTests: XCTestCase {
             return true
         })
 
-        XCTAssertTrue(view.acceptDrop([expected.uuidString]))
+        XCTAssertTrue(view.acceptDrop(sessionID: expected))
         XCTAssertEqual(received, expected)
     }
 
     func testAcceptDropReturnsHandlerResult() {
         let view = EmptyCellView(onAdd: {}, onSessionDropped: { _ in false })
-        XCTAssertFalse(view.acceptDrop([UUID().uuidString]))
-    }
-
-    func testAcceptDropRejectsInvalidPayload() {
-        var called = false
-        let view = EmptyCellView(onAdd: {}, onSessionDropped: { _ in
-            called = true
-            return true
-        })
-
-        XCTAssertFalse(view.acceptDrop([]))
-        XCTAssertFalse(view.acceptDrop(["not-a-uuid"]))
-        XCTAssertFalse(called)
+        XCTAssertFalse(view.acceptDrop(sessionID: UUID()))
     }
 
     func testAcceptDropWithoutHandlerReturnsFalse() {
         let view = EmptyCellView(onAdd: {})
-        XCTAssertFalse(view.acceptDrop([UUID().uuidString]))
+        XCTAssertFalse(view.acceptDrop(sessionID: UUID()))
     }
 }
