@@ -418,4 +418,83 @@ final class BoardViewModelTests: XCTestCase {
         vm.rowProportion = 0.7
         XCTAssertEqual(vm.rowProportion, 0.7)
     }
+
+    // MARK: - Divider Resizing
+
+    private func assertProportions(_ actual: [CGFloat], _ expected: [CGFloat], file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertEqual(actual.count, expected.count, file: file, line: line)
+        for (a, e) in zip(actual, expected) {
+            XCTAssertEqual(a, e, accuracy: 0.0001, file: file, line: line)
+        }
+    }
+
+    func testResizeColumnsWithTwoVisibleColumnsScalesDeltaByVisibleTotal() {
+        let vm = makeSUT()
+        vm.resizeColumns(from: [0.25, 0.25, 0.25, 0.25], dividerAfter: 0, visibleCount: 2, fractionDelta: 0.1)
+        // Visible split goes from 50/50 to 60/40, so the stored values move by 0.1 * 0.5.
+        assertProportions(vm.columnProportions, [0.3, 0.2, 0.25, 0.25])
+    }
+
+    func testResizeColumnsWithThreeVisibleColumnsScalesDeltaByVisibleTotal() {
+        let vm = makeSUT()
+        vm.resizeColumns(from: [0.25, 0.25, 0.25, 0.25], dividerAfter: 1, visibleCount: 3, fractionDelta: 0.1)
+        assertProportions(vm.columnProportions, [0.25, 0.325, 0.175, 0.25])
+    }
+
+    func testResizeColumnsWithFourVisibleColumnsAppliesDeltaDirectly() {
+        let vm = makeSUT()
+        vm.resizeColumns(from: [0.25, 0.25, 0.25, 0.25], dividerAfter: 2, visibleCount: 4, fractionDelta: -0.1)
+        assertProportions(vm.columnProportions, [0.25, 0.25, 0.15, 0.35])
+    }
+
+    func testResizeColumnsKeepsVisibleTotalUnchanged() {
+        let vm = makeSUT()
+        let start: [CGFloat] = [0.4, 0.2, 0.3, 0.1]
+        vm.resizeColumns(from: start, dividerAfter: 0, visibleCount: 3, fractionDelta: 0.05)
+        let startTotal = start.prefix(3).reduce(0, +)
+        let newTotal = vm.columnProportions.prefix(3).reduce(0, +)
+        XCTAssertEqual(newTotal, startTotal, accuracy: 0.0001)
+        XCTAssertEqual(vm.columnProportions[3], 0.1)
+    }
+
+    func testResizeColumnsClampsRightColumnToMinimum() {
+        let vm = makeSUT()
+        vm.resizeColumns(from: [0.25, 0.25, 0.25, 0.25], dividerAfter: 0, visibleCount: 2, fractionDelta: 0.9)
+        // Minimum visible proportion is 0.08 of the row; with a visible total of 0.5 that is 0.04 stored.
+        assertProportions(vm.columnProportions, [0.46, 0.04, 0.25, 0.25])
+    }
+
+    func testResizeColumnsClampsLeftColumnToMinimum() {
+        let vm = makeSUT()
+        vm.resizeColumns(from: [0.25, 0.25, 0.25, 0.25], dividerAfter: 0, visibleCount: 4, fractionDelta: -0.9)
+        assertProportions(vm.columnProportions, [0.08, 0.42, 0.25, 0.25])
+    }
+
+    func testResizeColumnsIgnoresDividerOutsideVisibleColumns() {
+        let vm = makeSUT()
+        vm.columnProportions = [0.3, 0.2, 0.3, 0.2]
+        vm.resizeColumns(from: [0.3, 0.2, 0.3, 0.2], dividerAfter: 1, visibleCount: 2, fractionDelta: 0.1)
+        vm.resizeColumns(from: [0.3, 0.2, 0.3, 0.2], dividerAfter: -1, visibleCount: 2, fractionDelta: 0.1)
+        assertProportions(vm.columnProportions, [0.3, 0.2, 0.3, 0.2])
+    }
+
+    func testResizeColumnsStartsFromEqualSplitWhenStoredProportionsAreMissing() {
+        let vm = makeSUT()
+        vm.resizeColumns(from: [], dividerAfter: 0, visibleCount: 2, fractionDelta: 0.1)
+        assertProportions(vm.columnProportions, [0.6, 0.4])
+    }
+
+    func testResizeRowsAppliesDelta() {
+        let vm = makeSUT()
+        vm.resizeRows(from: 0.5, fractionDelta: 0.2)
+        XCTAssertEqual(vm.rowProportion, 0.7, accuracy: 0.0001)
+    }
+
+    func testResizeRowsClampsToMinimumAndMaximum() {
+        let vm = makeSUT()
+        vm.resizeRows(from: 0.5, fractionDelta: -0.9)
+        XCTAssertEqual(vm.rowProportion, 0.15, accuracy: 0.0001)
+        vm.resizeRows(from: 0.5, fractionDelta: 0.9)
+        XCTAssertEqual(vm.rowProportion, 0.85, accuracy: 0.0001)
+    }
 }
