@@ -752,30 +752,68 @@ final class AppViewModelTests: XCTestCase {
 
     // MARK: - Prompt Button Reordering
 
-    func testMovePromptButtonsReordersArray() {
-        let vm = makeSUT()
+    private func makeThreePrompts(_ vm: AppViewModel) -> [PromptButton] {
         vm.promptButtons = [
             PromptButton(title: "A", color: "blue", prompt: "a"),
             PromptButton(title: "B", color: "red", prompt: "b"),
             PromptButton(title: "C", color: "green", prompt: "c"),
         ]
+        return vm.promptButtons
+    }
 
-        vm.movePromptButtons(from: IndexSet(integer: 0), to: 3)
+    func testMovePromptButtonBeforeTargetReorders() {
+        let vm = makeSUT()
+        let prompts = makeThreePrompts(vm)
+
+        vm.movePromptButton(id: prompts[2].id, before: prompts[0].id)
+
+        XCTAssertEqual(vm.promptButtons.map(\.title), ["C", "A", "B"])
+    }
+
+    func testMovePromptButtonDownwardInsertsBeforeTarget() {
+        let vm = makeSUT()
+        let prompts = makeThreePrompts(vm)
+
+        vm.movePromptButton(id: prompts[0].id, before: prompts[2].id)
+
+        XCTAssertEqual(vm.promptButtons.map(\.title), ["B", "A", "C"])
+    }
+
+    func testMovePromptButtonWithoutTargetMovesToEnd() {
+        let vm = makeSUT()
+        let prompts = makeThreePrompts(vm)
+
+        vm.movePromptButton(id: prompts[0].id, before: nil)
 
         XCTAssertEqual(vm.promptButtons.map(\.title), ["B", "C", "A"])
     }
 
-    func testMovePromptButtonsPreservesCount() {
+    func testMovePromptButtonIgnoresUnknownID() {
         let vm = makeSUT()
-        vm.promptButtons = [
-            PromptButton(title: "A", color: "blue", prompt: "a"),
-            PromptButton(title: "B", color: "red", prompt: "b"),
-        ]
+        let prompts = makeThreePrompts(vm)
 
-        vm.movePromptButtons(from: IndexSet(integer: 1), to: 0)
+        vm.movePromptButton(id: UUID(), before: prompts[0].id)
 
-        XCTAssertEqual(vm.promptButtons.count, 2)
-        XCTAssertEqual(vm.promptButtons.map(\.title), ["B", "A"])
+        XCTAssertEqual(vm.promptButtons.map(\.title), ["A", "B", "C"])
+    }
+
+    func testHandlePromptButtonDropMovesDraggedPrompt() {
+        let vm = makeSUT()
+        let prompts = makeThreePrompts(vm)
+
+        XCTAssertTrue(vm.handlePromptButtonDrop([prompts[2].id.uuidString], before: prompts[1]))
+        XCTAssertEqual(vm.promptButtons.map(\.title), ["A", "C", "B"])
+    }
+
+    func testHandlePromptButtonDropRejectsInvalidOrSelfDrop() {
+        let vm = makeSUT()
+        let prompts = makeThreePrompts(vm)
+
+        XCTAssertFalse(vm.handlePromptButtonDrop([], before: prompts[0]))
+        XCTAssertFalse(vm.handlePromptButtonDrop(["not-a-uuid"], before: prompts[0]))
+        XCTAssertFalse(vm.handlePromptButtonDrop([UUID().uuidString], before: prompts[0]))
+        XCTAssertFalse(vm.handlePromptButtonDrop([prompts[1].id.uuidString], before: prompts[1]))
+        XCTAssertEqual(vm.promptButtons.map(\.title), ["A", "B", "C"])
     }
 
     // MARK: - Star Color
