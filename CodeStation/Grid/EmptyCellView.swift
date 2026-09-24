@@ -34,10 +34,13 @@ struct EmptyCellView: View {
         .onTapGesture(perform: onAdd)
         .accessibilityAddTraits(.isButton)
         .accessibilityLabel(Strings.Terminals.newTerminal)
-        .dropDestination(for: String.self) { items, _ in
-            acceptDrop(items)
-        } isTargeted: { targeted in
-            isDropTargeted = targeted
+        .onDrop(of: TerminalDragPayload.contentTypes, isTargeted: $isDropTargeted) { providers in
+            TerminalDragPayload.loadSessionID(from: providers) { sessionID in
+                DispatchQueue.main.async {
+                    guard let sessionID else { return }
+                    _ = acceptDrop(sessionID: sessionID)
+                }
+            }
         }
     }
 
@@ -54,10 +57,7 @@ struct EmptyCellView: View {
         }
     }
 
-    func acceptDrop(_ items: [String]) -> Bool {
-        guard let onSessionDropped,
-              let idString = items.first,
-              let sourceID = UUID(uuidString: idString) else { return false }
-        return onSessionDropped(sourceID)
+    func acceptDrop(sessionID: UUID) -> Bool {
+        onSessionDropped?(sessionID) ?? false
     }
 }

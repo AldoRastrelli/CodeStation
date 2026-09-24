@@ -148,17 +148,20 @@ struct TerminalGridView: View {
                 onUpdatePromptButton: viewModel.onUpdatePromptButton,
                 onDeletePromptButton: viewModel.onDeletePromptButton,
                 onFocus: { viewModel.focusedSessionID = session.id },
-                dragID: session.id.uuidString,
+                dragSessionID: session.id,
                 onSessionDropped: { sourceID in
                     viewModel.swapSessions(sourceID: sourceID, targetGridIndex: gridIndex)
                 },
                 skipCloseConfirmation: viewModel.getSkipCloseConfirmation?() ?? false,
                 onSkipCloseConfirmationChanged: viewModel.onSkipCloseConfirmationChanged
             )
-            .dropDestination(for: String.self) { items, _ in
-                guard let idString = items.first,
-                      let sourceID = UUID(uuidString: idString) else { return false }
-                return viewModel.swapSessions(sourceID: sourceID, targetGridIndex: gridIndex)
+            .onDrop(of: TerminalDragPayload.contentTypes, isTargeted: nil) { providers in
+                TerminalDragPayload.loadSessionID(from: providers) { sourceID in
+                    DispatchQueue.main.async {
+                        guard let sourceID else { return }
+                        _ = viewModel.swapSessions(sourceID: sourceID, targetGridIndex: gridIndex)
+                    }
+                }
             }
         } else if viewModel.canAddSession {
             EmptyCellView(
