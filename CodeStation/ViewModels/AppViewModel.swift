@@ -26,6 +26,7 @@ class AppViewModel {
     }
     var notificationSettings = NotificationSettings()
     var promptButtons: [PromptButton] = []
+    var starColor: String = AppColors.defaultStarColor
     var skipCloseConfirmation: Bool = false
     var closeTerminalRequested = false
     var isModalOpen = false
@@ -201,6 +202,12 @@ class AppViewModel {
 
     func toggleStar(_ env: Environment) {
         env.isStarred.toggle()
+        scheduleSave()
+    }
+
+    func setStarColor(_ color: String) {
+        guard starColor != color else { return }
+        starColor = color
         scheduleSave()
     }
 
@@ -508,7 +515,8 @@ class AppViewModel {
                     sortOrder: folder.sortOrder,
                     isExpanded: folder.isExpanded
                 )
-            }
+            },
+            starColor: starColor
         )
     }
 
@@ -557,6 +565,7 @@ class AppViewModel {
         if let skip = snapshot.skipCloseConfirmation {
             skipCloseConfirmation = skip
         }
+        starColor = snapshot.starColor ?? AppColors.defaultStarColor
 
         // Pre-create board VMs with pending restores
         for envSnapshot in snapshot.environments {

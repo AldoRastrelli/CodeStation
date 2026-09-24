@@ -49,7 +49,8 @@ final class SettingsBackupTests: XCTestCase {
             notificationSettings: NotificationSettings(),
             promptButtons: [PromptButton(title: "Deploy", color: "red", prompt: "make deploy")],
             skipCloseConfirmation: true,
-            folders: [FolderSnapshot(id: folderID, name: "Work", sortOrder: 0, isExpanded: false)]
+            folders: [FolderSnapshot(id: folderID, name: "Work", sortOrder: 0, isExpanded: false)],
+            starColor: "purple"
         )
     }
 
@@ -75,6 +76,7 @@ final class SettingsBackupTests: XCTestCase {
         XCTAssertEqual(vm.selectedEnvironmentID, envID)
         XCTAssertEqual(vm.fontSize, 20.0)
         XCTAssertTrue(vm.skipCloseConfirmation)
+        XCTAssertEqual(vm.starColor, "purple")
         XCTAssertEqual(vm.promptButtons.first?.title, "Deploy")
         // Terminals are queued for restore on the board rather than live yet.
         XCTAssertEqual(vm.boardViewModel(for: env).pendingRestores.count, 2)
@@ -115,6 +117,7 @@ final class SettingsBackupTests: XCTestCase {
         let vm = AppViewModel()
         let env = vm.addEnvironment(name: "Exported Env")
         vm.toggleStar(env)
+        vm.setStarColor("green")
 
         let url = makeBackupURL()
         defer { try? FileManager.default.removeItem(at: url) }
@@ -123,6 +126,7 @@ final class SettingsBackupTests: XCTestCase {
         let decoded = try PersistenceService.importSnapshot(from: url)
         let match = try XCTUnwrap(decoded.environments.first { $0.name == "Exported Env" })
         XCTAssertEqual(match.isStarred, true)
+        XCTAssertEqual(decoded.starColor, "green")
     }
 
     // Round trip through the running view model: import known state, export it

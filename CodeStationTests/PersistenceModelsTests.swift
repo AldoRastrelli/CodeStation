@@ -208,6 +208,29 @@ final class PersistenceModelsTests: XCTestCase {
         XCTAssertEqual(decoded.folders?.first?.id, folderID)
     }
 
+    func testStoreSnapshotPreservesStarColor() throws {
+        let snapshot = StoreSnapshot(
+            environments: [],
+            selectedEnvironmentID: nil,
+            fontSize: 13.0,
+            notificationSettings: nil,
+            promptButtons: nil,
+            skipCloseConfirmation: nil,
+            folders: nil,
+            starColor: "purple"
+        )
+        let data = try JSONEncoder().encode(snapshot)
+        let decoded = try JSONDecoder().decode(StoreSnapshot.self, from: data)
+        XCTAssertEqual(decoded.starColor, "purple")
+    }
+
+    func testLegacyStoreSnapshotDecodesWithoutStarColor() throws {
+        // A snapshot saved before Color Preferences existed has no starColor key.
+        let json = #"{"environments":[],"fontSize":13.0}"#
+        let decoded = try JSONDecoder().decode(StoreSnapshot.self, from: Data(json.utf8))
+        XCTAssertNil(decoded.starColor)
+    }
+
     func testStoreSnapshotPreservesEnvironmentID() throws {
         let id = UUID()
         let snapshot = StoreSnapshot(

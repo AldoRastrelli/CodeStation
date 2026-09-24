@@ -20,7 +20,7 @@ struct SidebarRowView: View {
     var body: some View {
         HStack(spacing: Constants.hStackSpacing) {
             Image(systemName: environment.isStarred ? Strings.Icons.starFill : Strings.Icons.grid)
-                .foregroundStyle(environment.isStarred ? AnyShapeStyle(.yellow) : AnyShapeStyle(.secondary))
+                .foregroundStyle(environment.isStarred ? AnyShapeStyle(AppColors.color(named: viewModel.starColor)) : AnyShapeStyle(.secondary))
                 .font(.system(size: Constants.iconSize))
 
             if isEditing {

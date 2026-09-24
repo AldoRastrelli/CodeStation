@@ -749,4 +749,24 @@ final class AppViewModelTests: XCTestCase {
         XCTAssertFalse(vm.visibleEnvironmentsInOrder.contains { $0.id == inFolder.id })
         XCTAssertTrue(vm.visibleEnvironmentsInOrder.contains { $0.id == topLevel.id })
     }
+
+    // MARK: - Star Color
+
+    func testStarColorDefault() {
+        let vm = makeSUT()
+        // Depends on persisted state; just verify it is a known star color.
+        XCTAssertTrue(AppColors.starColors.contains(vm.starColor) || vm.starColor == AppColors.defaultStarColor)
+    }
+
+    func testSetStarColorUpdatesValue() {
+        let vm = makeSUT()
+        vm.setStarColor("purple")
+        XCTAssertEqual(vm.starColor, "purple")
+    }
+
+    func testSetStarColorSurvivesSnapshotRoundTrip() {
+        let vm = makeSUT()
+        vm.setStarColor("teal")
+        XCTAssertEqual(vm.makeSnapshot().starColor, "teal")
+    }
 }

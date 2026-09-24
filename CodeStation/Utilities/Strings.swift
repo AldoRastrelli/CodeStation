@@ -116,6 +116,7 @@ enum Strings {
         static let notifyWhen = "Notify when"
         static let soundSection = "Sound"
         static let keyboardShortcuts = "Shortcuts"
+        static let colorPreferences = "Color Preferences"
         static let backup = "Backup"
         static let help = "Help"
         static let helpMessage = "If you're getting a \"UserPromptSubmit operation blocked by hook\" message, it might mean your .claude folder or files got corrupted. You need to reinstall the CodeStation Hook."
@@ -152,6 +153,14 @@ enum Strings {
         static let buttonsLabel = "Buttons"
         static let duplicateName = "A prompt with this name already exists"
         static let duplicatePrompt = "Duplicate"
+    }
+
+    // MARK: - Color Preferences
+    enum ColorPreferences {
+        static let sectionTitle = "Color Preferences"
+        static let starSectionTitle = "Environment Star Color"
+        static let starDescription = "Choose the color used for the star icon on starred environments in the sidebar."
+        static let previewName = "Starred environment"
     }
 
     // MARK: - Backup

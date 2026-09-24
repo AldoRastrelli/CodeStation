@@ -35,6 +35,7 @@
 		A10036 /* SettingsPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10036 /* SettingsPopoverView.swift */; };
 		A10037 /* PromptButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10037 /* PromptButton.swift */; };
 		A10038 /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10038 /* SettingsWindowController.swift */; };
+		A10022 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10022 /* AppColors.swift */; };
 		A20001 /* EmptyCellViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20001 /* EmptyCellViewSnapshotTests.swift */; };
 		A20002 /* SidebarRowViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20002 /* SidebarRowViewSnapshotTests.swift */; };
 		A20003 /* SidebarViewSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20003 /* SidebarViewSnapshotTests.swift */; };
@@ -62,6 +63,7 @@
 		AT0016 /* NotificationDelegateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0016 /* NotificationDelegateTests.swift */; };
 		AT0017 /* TerminalPTYTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0017 /* TerminalPTYTests.swift */; };
 		AT0018 /* TerminalSessionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0018 /* TerminalSessionViewTests.swift */; };
+		AT0022 /* AppColorsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BT0022 /* AppColorsTests.swift */; };
 		A10060 /* TerminalPTY.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10060 /* TerminalPTY.swift */; };
 		A10061 /* terminal.html in Resources */ = {isa = PBXBuildFile; fileRef = B10061 /* terminal.html */; };
 		A10062 /* xterm.js in Resources */ = {isa = PBXBuildFile; fileRef = B10062 /* xterm.js */; };
@@ -109,6 +111,7 @@
 		B10036 /* SettingsPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsPopoverView.swift; sourceTree = "<group>"; };
 		B10037 /* PromptButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptButton.swift; sourceTree = "<group>"; };
 		B10038 /* SettingsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
+		B10022 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
 		B20001 /* EmptyCellViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCellViewSnapshotTests.swift; sourceTree = "<group>"; };
 		B20002 /* SidebarRowViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarRowViewSnapshotTests.swift; sourceTree = "<group>"; };
 		B20003 /* SidebarViewSnapshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarViewSnapshotTests.swift; sourceTree = "<group>"; };
@@ -135,6 +138,7 @@
 		BT0016 /* NotificationDelegateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationDelegateTests.swift; sourceTree = "<group>"; };
 		BT0017 /* TerminalPTYTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPTYTests.swift; sourceTree = "<group>"; };
 		BT0018 /* TerminalSessionViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalSessionViewTests.swift; sourceTree = "<group>"; };
+		BT0022 /* AppColorsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColorsTests.swift; sourceTree = "<group>"; };
 		C10001 /* CodeStation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CodeStation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C20001 /* CodeStationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CodeStationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B10060 /* TerminalPTY.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPTY.swift; sourceTree = "<group>"; };
@@ -241,6 +245,7 @@
 				B10013 /* HookManager.swift */,
 				B10021 /* Strings.swift */,
 				B10038 /* SettingsWindowController.swift */,
+				B10022 /* AppColors.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -323,6 +328,7 @@
 				B20004 /* BoardViewSnapshotTests.swift */,
 				B20005 /* TerminalHeaderViewSnapshotTests.swift */,
 				B20006 /* SettingsWindowViewSnapshotTests.swift */,
+				BT0022 /* AppColorsTests.swift */,
 			);
 			path = CodeStationTests;
 			sourceTree = "<group>";
@@ -458,6 +464,7 @@
 				A10037 /* PromptButton.swift in Sources */,
 				A10038 /* SettingsWindowController.swift in Sources */,
 				A10060 /* TerminalPTY.swift in Sources */,
+				A10022 /* AppColors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,6 +498,7 @@
 				A20004 /* BoardViewSnapshotTests.swift in Sources */,
 				A20005 /* TerminalHeaderViewSnapshotTests.swift in Sources */,
 				A20006 /* SettingsWindowViewSnapshotTests.swift in Sources */,
+				AT0022 /* AppColorsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

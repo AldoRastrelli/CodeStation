@@ -4,6 +4,7 @@ import UniformTypeIdentifiers
 enum SettingsTab: String, CaseIterable, Identifiable {
     case notifications
     case customPrompts
+    case colorPreferences
     case keyboardShortcuts
     case backup
     case help
@@ -14,6 +15,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .notifications: return Strings.Notifications.sectionTitle
         case .customPrompts: return Strings.CustomPrompts.sectionTitle
+        case .colorPreferences: return Strings.Settings.colorPreferences
         case .keyboardShortcuts: return Strings.Settings.keyboardShortcuts
         case .backup: return Strings.Settings.backup
         case .help: return Strings.Settings.help
@@ -24,6 +26,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         switch self {
         case .notifications: return "bell.badge"
         case .customPrompts: return "text.bubble"
+        case .colorPreferences: return "paintpalette"
         case .keyboardShortcuts: return "keyboard"
         case .backup: return "arrow.up.arrow.down.circle"
         case .help: return "questionmark.circle"
@@ -74,6 +77,8 @@ struct SettingsWindowView: View {
                     } else {
                         customPromptsPane
                     }
+                case .colorPreferences:
+                    colorPreferencesPane
                 case .keyboardShortcuts:
                     keyboardShortcutsPane
                 case .backup:
@@ -474,6 +479,50 @@ struct SettingsWindowView: View {
         }
     }
 
+    // MARK: - Color Preferences
+
+    private var colorPreferencesPane: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(Strings.ColorPreferences.starSectionTitle)
+                .font(.headline)
+
+            Text(Strings.ColorPreferences.starDescription)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: 8) {
+                Image(systemName: Strings.Icons.starFill)
+                    .foregroundStyle(AppColors.color(named: viewModel.starColor))
+                    .font(.system(size: 16))
+                Text(Strings.ColorPreferences.previewName)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.vertical, 4)
+
+            LazyVGrid(columns: Array(repeating: GridItem(.fixed(36)), count: 6), spacing: 12) {
+                ForEach(AppColors.starColors, id: \.self) { color in
+                    Button(action: {
+                        viewModel.setStarColor(color)
+                    }) {
+                        Circle()
+                            .fill(AppColors.color(named: color))
+                            .frame(width: 28, height: 28)
+                            .overlay(
+                                Circle()
+                                    .strokeBorder(Color.primary, lineWidth: viewModel.starColor == color ? 3 : 0)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .help(color.capitalized)
+                }
+            }
+
+            Spacer()
+        }
+        .padding(Constants.contentPadding)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
     // MARK: - Backup
 
     private var backupPane: some View {
@@ -590,14 +639,6 @@ struct SettingsWindowView: View {
     }
 
     private func colorForName(_ name: String) -> Color {
-        switch name {
-        case "blue": return .blue
-        case "red": return .red
-        case "green": return .green
-        case "purple": return .purple
-        case "orange": return .orange
-        case "pink": return .pink
-        default: return .blue
-        }
+        AppColors.color(named: name, default: .blue)
     }
 }

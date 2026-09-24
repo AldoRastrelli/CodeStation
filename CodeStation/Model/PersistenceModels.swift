@@ -8,6 +8,7 @@ struct StoreSnapshot: Codable {
     var promptButtons: [PromptButton]?
     var skipCloseConfirmation: Bool?
     var folders: [FolderSnapshot]?
+    var starColor: String?
 }
 
 struct FolderSnapshot: Codable {
