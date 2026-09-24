@@ -152,6 +152,9 @@ struct TerminalGridView: View {
                 skipCloseConfirmation: viewModel.getSkipCloseConfirmation?() ?? false,
                 onSkipCloseConfirmationChanged: viewModel.onSkipCloseConfirmationChanged
             )
+            // Cells are keyed by position, so without this the web view of the
+            // previous occupant stays in the cell after a swap.
+            .id(session.id)
             .dropDestination(for: String.self) { items, _ in
                 guard let idString = items.first,
                       let sourceID = UUID(uuidString: idString) else { return false }
