@@ -41,16 +41,12 @@ struct ContentView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                ZStack {
-                    ForEach(viewModel.environments) { env in
-                        let boardVM = viewModel.boardViewModel(for: env)
-                        BoardView(viewModel: boardVM, environmentName: env.name, onRename: { newName in
-                            viewModel.renameEnvironment(env, to: newName)
-                        })
-                        .opacity(env.id == viewModel.selectedEnvironmentID ? 1 : 0)
-                        .allowsHitTesting(env.id == viewModel.selectedEnvironmentID)
-                    }
-                }
+                EnvironmentBoardsStack(
+                    environments: viewModel.environments,
+                    selectedEnvironmentID: viewModel.selectedEnvironmentID,
+                    boardViewModel: { viewModel.boardViewModel(for: $0) },
+                    onRename: { env, newName in viewModel.renameEnvironment(env, to: newName) }
+                )
             }
         }
         .toolbar {
@@ -131,6 +127,33 @@ struct ContentView: View {
         }
         .onAppear {
             try? HookManager.install()
+        }
+    }
+}
+
+/// Keeps every environment's board alive so terminals survive switching, and
+/// shows only the selected one.
+struct EnvironmentBoardsStack: View {
+    var environments: [Environment]
+    var selectedEnvironmentID: UUID?
+    var boardViewModel: (Environment) -> BoardViewModel
+    var onRename: (Environment, String) -> Void
+
+    var body: some View {
+        ZStack {
+            ForEach(environments) { env in
+                let isSelected = env.id == selectedEnvironmentID
+                BoardView(viewModel: boardViewModel(env), environmentName: env.name, onRename: { newName in
+                    onRename(env, newName)
+                })
+                .opacity(isSelected ? 1 : 0)
+                .allowsHitTesting(isSelected)
+                // AppKit resolves a drop by hit testing the deepest view under the
+                // cursor and walking up its superviews. Hidden boards' web views
+                // are still there, so the selected board has to sit on top or the
+                // search ends on an invisible terminal and nothing accepts the drop.
+                .zIndex(isSelected ? 1 : 0)
+            }
         }
     }
 }

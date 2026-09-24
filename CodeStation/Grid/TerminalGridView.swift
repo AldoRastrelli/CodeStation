@@ -148,7 +148,7 @@ struct TerminalGridView: View {
                 onUpdatePromptButton: viewModel.onUpdatePromptButton,
                 onDeletePromptButton: viewModel.onDeletePromptButton,
                 onFocus: { viewModel.focusedSessionID = session.id },
-                dragID: session.id.uuidString,
+                dragSessionID: session.id,
                 onSessionDropped: { sourceID in
                     viewModel.swapSessions(sourceID: sourceID, targetGridIndex: gridIndex)
                 },
@@ -161,14 +161,12 @@ struct TerminalGridView: View {
                 return viewModel.swapSessions(sourceID: sourceID, targetGridIndex: gridIndex)
             }
         } else if viewModel.canAddSession {
-            EmptyCellView {
-                _ = viewModel.addSessionAt(row: row, col: col)
-            }
-            .dropDestination(for: String.self) { items, _ in
-                guard let idString = items.first,
-                      let sourceID = UUID(uuidString: idString) else { return false }
-                return viewModel.moveSession(sourceID: sourceID, toGridIndex: gridIndex)
-            }
+            EmptyCellView(
+                onAdd: { _ = viewModel.addSessionAt(row: row, col: col) },
+                onSessionDropped: { sourceID in
+                    viewModel.moveSession(sourceID: sourceID, toGridIndex: gridIndex)
+                }
+            )
         } else {
             Color.clear
         }
