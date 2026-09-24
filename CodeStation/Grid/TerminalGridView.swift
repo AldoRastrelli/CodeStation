@@ -155,13 +155,10 @@ struct TerminalGridView: View {
                 skipCloseConfirmation: viewModel.getSkipCloseConfirmation?() ?? false,
                 onSkipCloseConfirmationChanged: viewModel.onSkipCloseConfirmationChanged
             )
-            .onDrop(of: TerminalDragPayload.contentTypes, isTargeted: nil) { providers in
-                TerminalDragPayload.loadSessionID(from: providers) { sourceID in
-                    DispatchQueue.main.async {
-                        guard let sourceID else { return }
-                        _ = viewModel.swapSessions(sourceID: sourceID, targetGridIndex: gridIndex)
-                    }
-                }
+            .dropDestination(for: String.self) { items, _ in
+                guard let idString = items.first,
+                      let sourceID = UUID(uuidString: idString) else { return false }
+                return viewModel.swapSessions(sourceID: sourceID, targetGridIndex: gridIndex)
             }
         } else if viewModel.canAddSession {
             EmptyCellView(

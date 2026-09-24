@@ -18,29 +18,25 @@ struct EmptyCellView: View {
     @State private var isDropTargeted = false
 
     var body: some View {
-        VStack(spacing: Constants.spacing) {
-            Image(systemName: Strings.Icons.plusCircle)
-                .font(.system(size: Constants.iconSize, weight: .light))
-                .foregroundStyle(.secondary)
-            Text(Strings.Terminals.newTerminal)
-                .font(.system(size: Constants.textSize))
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(nsColor: .controlBackgroundColor).opacity(Constants.bgOpacity))
-        .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
-        .overlay(border)
-        .contentShape(Rectangle())
-        .onTapGesture(perform: onAdd)
-        .accessibilityAddTraits(.isButton)
-        .accessibilityLabel(Strings.Terminals.newTerminal)
-        .onDrop(of: TerminalDragPayload.contentTypes, isTargeted: $isDropTargeted) { providers in
-            TerminalDragPayload.loadSessionID(from: providers) { sessionID in
-                DispatchQueue.main.async {
-                    guard let sessionID else { return }
-                    _ = acceptDrop(sessionID: sessionID)
-                }
+        Button(action: onAdd) {
+            VStack(spacing: Constants.spacing) {
+                Image(systemName: Strings.Icons.plusCircle)
+                    .font(.system(size: Constants.iconSize, weight: .light))
+                    .foregroundStyle(.secondary)
+                Text(Strings.Terminals.newTerminal)
+                    .font(.system(size: Constants.textSize))
+                    .foregroundStyle(.secondary)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(nsColor: .controlBackgroundColor).opacity(Constants.bgOpacity))
+            .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
+            .overlay(border)
+        }
+        .buttonStyle(.plain)
+        .dropDestination(for: String.self) { items, _ in
+            acceptDrop(items)
+        } isTargeted: { targeted in
+            isDropTargeted = targeted
         }
     }
 
@@ -57,7 +53,10 @@ struct EmptyCellView: View {
         }
     }
 
-    func acceptDrop(sessionID: UUID) -> Bool {
-        onSessionDropped?(sessionID) ?? false
+    func acceptDrop(_ items: [String]) -> Bool {
+        guard let onSessionDropped,
+              let idString = items.first,
+              let sourceID = UUID(uuidString: idString) else { return false }
+        return onSessionDropped(sourceID)
     }
 }

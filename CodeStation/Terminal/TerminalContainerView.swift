@@ -101,14 +101,11 @@ struct TerminalContainerView: View {
 
         if let dragSessionID {
             header
-                .onDrag { TerminalDragPayload.itemProvider(for: dragSessionID) }
-                .onDrop(of: TerminalDragPayload.contentTypes, isTargeted: nil) { providers in
-                    TerminalDragPayload.loadSessionID(from: providers) { sourceID in
-                        DispatchQueue.main.async {
-                            guard let sourceID else { return }
-                            _ = onSessionDropped?(sourceID)
-                        }
-                    }
+                .draggable(dragSessionID.uuidString)
+                .dropDestination(for: String.self) { items, _ in
+                    guard let idString = items.first,
+                          let sourceID = UUID(uuidString: idString) else { return false }
+                    return onSessionDropped?(sourceID) ?? false
                 }
         } else {
             header
