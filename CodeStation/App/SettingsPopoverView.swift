@@ -154,14 +154,19 @@ struct SettingsWindowView: View {
                 List {
                     ForEach(viewModel.promptButtons) { button in
                         promptButtonRow(button)
-                    }
-                    .onMove { source, destination in
-                        viewModel.movePromptButtons(from: source, to: destination)
+                            .draggable(button.id.uuidString)
+                            .dropDestination(for: String.self) { items, _ in
+                                viewModel.handlePromptButtonDrop(items, before: button)
+                            }
                     }
 
                     if isAddingNew {
                         newButtonRow
                     }
+                }
+                // Dropping below the last row moves the prompt to the end.
+                .dropDestination(for: String.self) { items, _ in
+                    viewModel.handlePromptButtonDrop(items, before: nil)
                 }
 
                 if !selectedButtonIDs.isEmpty {

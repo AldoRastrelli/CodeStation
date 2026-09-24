@@ -213,9 +213,25 @@ class AppViewModel {
 
     // MARK: - Custom Prompt Buttons
 
-    func movePromptButtons(from source: IndexSet, to destination: Int) {
-        promptButtons.move(fromOffsets: source, toOffset: destination)
+    func movePromptButton(id: UUID, before targetID: UUID?) {
+        guard let sourceIndex = promptButtons.firstIndex(where: { $0.id == id }) else { return }
+        let button = promptButtons.remove(at: sourceIndex)
+        if let targetID, let targetIndex = promptButtons.firstIndex(where: { $0.id == targetID }) {
+            promptButtons.insert(button, at: targetIndex)
+        } else {
+            promptButtons.append(button)
+        }
         scheduleSave()
+    }
+
+    @discardableResult
+    func handlePromptButtonDrop(_ items: [String], before target: PromptButton?) -> Bool {
+        guard let idString = items.first,
+              let id = UUID(uuidString: idString),
+              promptButtons.contains(where: { $0.id == id }),
+              id != target?.id else { return false }
+        movePromptButton(id: id, before: target?.id)
+        return true
     }
 
     // MARK: - Folder CRUD
