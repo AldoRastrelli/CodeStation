@@ -8,7 +8,7 @@ struct SidebarView: View {
     @Bindable var viewModel: AppViewModel
 
     var body: some View {
-        List(selection: $viewModel.selectedEnvironmentID) {
+        List(selection: $viewModel.sidebarSelectedEnvironmentID) {
             ForEach(viewModel.sortedFolders) { folder in
                 SidebarFolderView(folder: folder, viewModel: viewModel)
             }

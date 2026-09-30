@@ -70,6 +70,26 @@ class AppViewModel {
         sortedEnvironments.filter { $0.folderID == folder.id }
     }
 
+    func isVisibleInSidebar(_ env: Environment) -> Bool {
+        guard let folderID = env.folderID else { return true }
+        return folders.first { $0.id == folderID }?.isExpanded ?? true
+    }
+
+    // The sidebar List keeps rendering a selected row detached at the bottom
+    // once its folder collapses, so the selection handed to the List is
+    // dropped while the selected environment is hidden. The environment
+    // itself stays selected so its board remains on screen.
+    var sidebarSelectedEnvironmentID: UUID? {
+        get {
+            guard let env = selectedEnvironment, isVisibleInSidebar(env) else { return nil }
+            return env.id
+        }
+        set {
+            if newValue == nil, let env = selectedEnvironment, !isVisibleInSidebar(env) { return }
+            selectedEnvironmentID = newValue
+        }
+    }
+
     // Flattened order of environments a user can step through, following the
     // sidebar layout: each folder's environments (only when the folder is
     // expanded) then the top-level environments.
