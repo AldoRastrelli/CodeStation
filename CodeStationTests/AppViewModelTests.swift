@@ -694,6 +694,92 @@ final class AppViewModelTests: XCTestCase {
         XCTAssertTrue(folder.isExpanded)
     }
 
+    // MARK: - Sidebar Selection
+
+    func testTopLevelEnvironmentIsVisibleInSidebar() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let env = vm.environments.first!
+        XCTAssertTrue(vm.isVisibleInSidebar(env))
+    }
+
+    func testEnvironmentInExpandedFolderIsVisibleInSidebar() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let env = vm.environments.first!
+        let folder = vm.addFolder(name: "Group")
+        vm.moveEnvironment(env, toFolder: folder.id)
+        XCTAssertTrue(vm.isVisibleInSidebar(env))
+    }
+
+    func testEnvironmentInCollapsedFolderIsHiddenInSidebar() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let env = vm.environments.first!
+        let folder = vm.addFolder(name: "Group")
+        vm.moveEnvironment(env, toFolder: folder.id)
+        vm.setFolderExpanded(folder, expanded: false)
+        XCTAssertFalse(vm.isVisibleInSidebar(env))
+    }
+
+    func testSidebarSelectionMatchesVisibleSelection() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let env = vm.addEnvironment(name: "Visible")
+        XCTAssertEqual(vm.sidebarSelectedEnvironmentID, env.id)
+    }
+
+    func testSidebarSelectionIsNilWhileSelectionIsInCollapsedFolder() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let env = vm.addEnvironment(name: "Hidden")
+        let folder = vm.addFolder(name: "Group")
+        vm.moveEnvironment(env, toFolder: folder.id)
+
+        vm.setFolderExpanded(folder, expanded: false)
+
+        XCTAssertNil(vm.sidebarSelectedEnvironmentID)
+        XCTAssertEqual(vm.selectedEnvironmentID, env.id)
+
+        vm.setFolderExpanded(folder, expanded: true)
+        XCTAssertEqual(vm.sidebarSelectedEnvironmentID, env.id)
+    }
+
+    func testSettingSidebarSelectionSelectsEnvironment() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let a = vm.addEnvironment(name: "A")
+        let b = vm.addEnvironment(name: "B")
+        XCTAssertEqual(vm.selectedEnvironmentID, b.id)
+
+        vm.sidebarSelectedEnvironmentID = a.id
+
+        XCTAssertEqual(vm.selectedEnvironmentID, a.id)
+    }
+
+    func testClearingSidebarSelectionClearsVisibleSelection() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        vm.addEnvironment(name: "Visible")
+
+        vm.sidebarSelectedEnvironmentID = nil
+
+        XCTAssertNil(vm.selectedEnvironmentID)
+    }
+
+    func testClearingSidebarSelectionKeepsHiddenSelection() {
+        let vm = makeSUT()
+        cleanFolders(vm)
+        let env = vm.addEnvironment(name: "Hidden")
+        let folder = vm.addFolder(name: "Group")
+        vm.moveEnvironment(env, toFolder: folder.id)
+        vm.setFolderExpanded(folder, expanded: false)
+
+        vm.sidebarSelectedEnvironmentID = nil
+
+        XCTAssertEqual(vm.selectedEnvironmentID, env.id)
+    }
+
     func testMoveEnvironmentBeforeReorders() {
         let vm = makeSUT()
         cleanFolders(vm)
